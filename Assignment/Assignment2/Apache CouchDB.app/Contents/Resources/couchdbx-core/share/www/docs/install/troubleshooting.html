@@ -1,0 +1,472 @@
+<!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>2.5. Troubleshooting an Installation &mdash; Apache CouchDB 2.0 Documentation</title>
+    
+    <link rel="stylesheet" href="../_static/rtd.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '2.0.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+    <link rel="author" title="About these documents" href="../about.html" />
+    <link rel="top" title="Apache CouchDB 2.0 Documentation" href="../index.html" />
+    <link rel="up" title="2. Installation" href="index.html" />
+    <link rel="next" title="3. Configuring CouchDB" href="../config/index.html" />
+    <link rel="prev" title="2.4. Installation on FreeBSD" href="freebsd.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../http-api.html" title="HTTP API Reference"
+             >API Reference</a></li>
+        <li class="right" >
+          <a href="../config-ref.html" title="Configuration Reference"
+             >Config Reference</a> |</li>
+        <li class="right" >
+          <a href="../config/index.html" title="3. Configuring CouchDB"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="freebsd.html" title="2.4. Installation on FreeBSD"
+             accesskey="P">previous</a> |</li>
+  <li><a href="../index.html">Apache CouchDB 2.0 Documentation</a> &raquo;</li>
+          <li><a href="index.html" accesskey="U">2. Installation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="troubleshooting-an-installation">
+<span id="install-troubleshooting"></span><h1>2.5. Troubleshooting an Installation<a class="headerlink" href="#troubleshooting-an-installation" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="first-install">
+<h2>2.5.1. First Install<a class="headerlink" href="#first-install" title="Permalink to this headline">¶</a></h2>
+<p>If your CouchDB doesn&#8217;t start after you&#8217;ve just installed, check the following
+things:</p>
+<ul class="simple">
+<li>On UNIX-like systems, this is usually this is a permissions issue. Ensure
+that you&#8217;ve followed the <a class="reference internal" href="unix.html#install-unix-security"><em>User Registration and Security</em></a>
+<tt class="docutils literal"><span class="pre">chown</span></tt>/<tt class="docutils literal"><span class="pre">chmod</span></tt> commands. This problem is indicated by the presence of
+the keyword <tt class="docutils literal"><span class="pre">eacces</span></tt> somewhere in the error output from CouchDB itself.</li>
+<li>Some Linux distributions split up Erlang into multiple packages. For your
+distribution, check that you <strong>really</strong> installed all the required Erlang
+modules. This varies from platform to platform, so you&#8217;ll just have to
+work it out for yourself. For example, on recent versions of Ubuntu/Debian,
+the <tt class="docutils literal"><span class="pre">erlang</span></tt> package includes all Erlang modules.</li>
+<li>Confirm that Erlang itself starts up with crypto (SSL) support:</li>
+</ul>
+<div class="highlight-text"><div class="highlight"><pre>## what version of erlang are you running? Ensure it is supported
+erl -noshell -eval &#39;io:put_chars(erlang:system_info(otp_release)).&#39; -s erlang halt
+## are the erlang crypto (SSL) libraries working?
+erl -noshell -eval &#39;case application:load(crypto) of ok -&gt; io:put_chars(&quot;yay_crypto\n&quot;) ; _ -&gt; exit(no_crypto) end.&#39; -s init stop
+</pre></div>
+</div>
+<ul class="simple">
+<li>Next, identify where your Erlang CouchDB libraries are installed. This will
+typically be the lib/ subdirectory of the release that you have installed.</li>
+<li>Use this to start up Erlang with the CouchDB libraries in its path:</li>
+</ul>
+<div class="highlight-text"><div class="highlight"><pre>erl -env ERL_LIBS $ERL_LIBS:/path/to/couchdb/lib -couch_ini -s crypto
+</pre></div>
+</div>
+<ul class="simple">
+<li>In that Erlang shell, let&#8217;s check that the key libraries are running. The
+<tt class="docutils literal"><span class="pre">%%</span></tt> lines are comments, so you can skip them:</li>
+</ul>
+<div class="highlight-text"><div class="highlight"><pre>%% test SSL support. If this fails, ensure you have the OTP erlang-crypto library installed
+crypto:md5_init().
+
+%% test Snappy compression. If this fails, check your CouchDB configure script output or alternatively
+%% if your distro comes with erlang-snappy make sure you&#39;re using only the CouchDB supplied version
+snappy:compress(&quot;gogogogogogogogogogogogogogo&quot;).
+
+%% test the CouchDB JSON encoder. CouchDB uses different encoders in each release, this one matches
+%% what is used in 2.0.x.
+jiffy:decode(jiffy:encode(&lt;&lt;&quot;[1,2,3,4,5]&quot;&gt;&gt;)).
+
+%% this is how you quit the erlang shell.
+q().
+</pre></div>
+</div>
+<ul class="simple">
+<li>The output should resemble this, or an error will be thrown:</li>
+</ul>
+<div class="highlight-text"><div class="highlight"><pre>Erlang/OTP 17 [erts-6.2] [source] [64-bit] [smp:2:2] [async-threads:10] [kernel-poll:false]
+
+Eshell V6.2  (abort with ^G)
+1&gt; crypto:md5_init().
+&lt;&lt;1,35,69,103,137,171,205,239,254,220,186,152,118,84,50,
+  16,0,0,0,0,0,0,0,0,0,0,0,0,0,...&gt;&gt;
+2&gt; snappy:compress(&quot;gogogogogogogogogogogogogogo&quot;).
+{ok,&lt;&lt;28,4,103,111,102,2,0&gt;&gt;}
+3&gt; jiffy:decode(jiffy:encode(&lt;&lt;&quot;[1,2,3,4,5]&quot;&gt;&gt;)).
+&lt;&lt;&quot;[1,2,3,4,5]&quot;&gt;&gt;
+4&gt; q().
+</pre></div>
+</div>
+<ul class="simple">
+<li>At this point the only remaining dependency is your systems&#8217; unicode support
+library, ICU, and the Spidermonkey Javascript VM from Mozilla. Make sure that
+your <tt class="docutils literal"><span class="pre">LD_LIBRARY_PATH</span></tt> or similar for non-Linux systems
+(<tt class="docutils literal"><span class="pre">DYLD_LIBRARY_PATH</span></tt> on macOS) makes these available to CouchDB.
+Linux example running as normal user:</li>
+</ul>
+<div class="highlight-text"><div class="highlight"><pre>  LD_LIBRARY_PATH=/usr/local/lib:/usr/local/spidermonkey/lib couchdb
+
+Linux example running as couchdb user:
+</pre></div>
+</div>
+<div class="highlight-text"><div class="highlight"><pre>echo LD_LIBRARY_PATH=/usr/local/lib:/usr/local/spidermonkey/lib couchdb | sudo -u couchdb sh
+</pre></div>
+</div>
+<ul class="simple">
+<li>If you receive an error message including the key word <tt class="docutils literal"><span class="pre">eaddrinuse</span></tt>,
+such as this:</li>
+</ul>
+<div class="highlight-text"><div class="highlight"><pre>  Failure to start Mochiweb: eaddrinuse
+
+edit your ``etc/default.ini`` or ``etc/local.ini`` file and change the
+``[chttpd] port = 5984`` line to an available port.
+</pre></div>
+</div>
+<ul class="simple">
+<li>If you receive an error including the string:</li>
+</ul>
+<div class="highlight-text"><div class="highlight"><pre>… OS Process Error … {os_process_error,{exit_status,127}}
+</pre></div>
+</div>
+<p>then it is likely your SpiderMonkey JavaScript VM installation is not
+correct. Please recheck your build dependencies and try again.</p>
+<ul class="simple">
+<li>If you receive an error including the string:</li>
+</ul>
+<div class="highlight-text"><div class="highlight"><pre>… OS Process Error … {os_process_error,{exit_status,139}}
+</pre></div>
+</div>
+<p>this is caused by the fact that SELinux blocks access to certain areas of
+the filesystem. You must re-configure SELinux, or you can fully disable
+SELinux using the command:</p>
+<div class="highlight-text"><div class="highlight"><pre>setenforce 0
+</pre></div>
+</div>
+<ul class="simple">
+<li>If you are still not able to get CouchDB to start at this point, keep
+reading.</li>
+</ul>
+</div>
+<div class="section" id="quick-build">
+<h2>2.5.2. Quick Build<a class="headerlink" href="#quick-build" title="Permalink to this headline">¶</a></h2>
+<p>Having problems getting CouchDB to run for the first time? Follow this simple
+procedure and report back to the user mailing list or IRC with the output
+of each step. Please put the output of these steps into a paste service (such
+as <a class="reference external" href="https://paste.apache.org/">https://paste.apache.org/</a>) rather than including the output of your entire
+run in IRC or the mailing list directly.</p>
+<ol class="arabic simple">
+<li>Note down the name and version of your operating system and your processor
+architecture.</li>
+<li>Note down the installed versions of CouchDB&#8217;s dependencies.</li>
+<li>Follow the checkout instructions to get a fresh copy of CouchDB&#8217;s trunk.</li>
+<li>Configure from the couchdb directory:</li>
+</ol>
+<div class="highlight-text"><div class="highlight"><pre>./configure
+</pre></div>
+</div>
+<ol class="arabic simple" start="5">
+<li>Build the release:</li>
+</ol>
+<div class="highlight-text"><div class="highlight"><pre>make release
+</pre></div>
+</div>
+<ol class="arabic simple" start="6">
+<li>Run the couchdb command and log the output:</li>
+</ol>
+<div class="highlight-text"><div class="highlight"><pre>cd rel/couchdb
+bin/couchdb
+</pre></div>
+</div>
+<ol class="arabic simple" start="7">
+<li>Use your system&#8217;s kernel trace tool and log the output of the above command.<ol class="loweralpha">
+<li>For example, linux systems should use <tt class="docutils literal"><span class="pre">strace</span></tt>:</li>
+</ol>
+</li>
+</ol>
+<div class="highlight-text"><div class="highlight"><pre>strace bin/couchdb 2&gt; strace.out
+</pre></div>
+</div>
+<ol class="arabic simple" start="8">
+<li>Report back to the mailing list (or IRC) with the output of each step.</li>
+</ol>
+</div>
+<div class="section" id="upgrading">
+<h2>2.5.3. Upgrading<a class="headerlink" href="#upgrading" title="Permalink to this headline">¶</a></h2>
+<p>Are you upgrading from CouchDB 2.0? Install CouchDB into a fresh directory.
+CouchDB&#8217;s directory layout has changed and may be confused by libraries
+present from previous releases.</p>
+</div>
+<div class="section" id="runtime-errors">
+<h2>2.5.4. Runtime Errors<a class="headerlink" href="#runtime-errors" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="lots-of-memory-being-used-on-startup">
+<h3>Lots of memory being used on startup<a class="headerlink" href="#lots-of-memory-being-used-on-startup" title="Permalink to this headline">¶</a></h3>
+<p>Is your CouchDB using a lot of memory (several hundred MB) on startup? This one
+seems to especially affect Dreamhost installs. It&#8217;s really an issue with the
+Erlang VM pre-allocating data structures when ulimit is very large or
+unlimited. A detailed dicussion can be found on the erlang-questions list,
+but the short answer is that you should decrease <tt class="docutils literal"><span class="pre">ulimit</span> <span class="pre">-n</span></tt> or define
+<tt class="docutils literal"><span class="pre">ERL_MAX_PORTS</span></tt> to something reasonable like 1024.</p>
+</div>
+<div class="section" id="erlang-stack-trace-contains-system-limit-open-port">
+<h3>erlang stack trace contains <tt class="docutils literal"><span class="pre">system_limit</span></tt>, <tt class="docutils literal"><span class="pre">open_port</span></tt><a class="headerlink" href="#erlang-stack-trace-contains-system-limit-open-port" title="Permalink to this headline">¶</a></h3>
+<p>Erlang has a default limit of 1024 ports, where each FD, tcp connection, and
+linked-in driver uses one port. You seem to have exceeded this. You can
+change it at runtime using the <tt class="docutils literal"><span class="pre">ERL_MAX_PORTS</span></tt> env variable.</p>
+</div>
+<div class="section" id="function-raised-exception-cannot-encode-undefined-value-as-json">
+<h3>function raised exception (Cannot encode &#8216;undefined&#8217; value as JSON)<a class="headerlink" href="#function-raised-exception-cannot-encode-undefined-value-as-json" title="Permalink to this headline">¶</a></h3>
+<p>If you see this in the CouchDB error logs, the JavaScript code you are using
+for either a map or reduce function is referencing an object member that is
+not defined in at least one document in your database. Consider this
+document:</p>
+<div class="highlight-text"><div class="highlight"><pre>{
+  &quot;_id&quot;:&quot;XYZ123&quot;,
+  &quot;_rev&quot;:&quot;1BB2BB&quot;,
+  &quot;field&quot;:&quot;value&quot;
+}
+</pre></div>
+</div>
+<p>and this map function:</p>
+<div class="highlight-javascript"><div class="highlight"><pre><span class="kd">function</span><span class="p">(</span><span class="nx">doc</span><span class="p">)</span> <span class="p">{</span>
+  <span class="nx">emit</span><span class="p">(</span><span class="nx">doc</span><span class="p">.</span><span class="nx">name</span><span class="p">,</span> <span class="nx">doc</span><span class="p">.</span><span class="nx">address</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>This will fail on the above document, as it does not contain a <tt class="docutils literal"><span class="pre">name</span></tt> or
+<tt class="docutils literal"><span class="pre">address</span></tt> member. Instead, use guarding to make sure the function only
+accesses members when they exist in a document:</p>
+<div class="highlight-javascript"><div class="highlight"><pre><span class="kd">function</span><span class="p">(</span><span class="nx">doc</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">if</span><span class="p">(</span><span class="nx">doc</span><span class="p">.</span><span class="nx">name</span> <span class="o">&amp;&amp;</span> <span class="nx">doc</span><span class="p">.</span><span class="nx">address</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">emit</span><span class="p">(</span><span class="nx">doc</span><span class="p">.</span><span class="nx">name</span><span class="p">,</span> <span class="nx">doc</span><span class="p">.</span><span class="nx">address</span><span class="p">);</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>While the above guard will work in most cases, it&#8217;s worth bearing JavaScript&#8217;s
+understanding of &#8216;false&#8217; values in mind. Testing against a property with a
+value of 0 (zero), <tt class="docutils literal"><span class="pre">''</span></tt> (empty String), <tt class="docutils literal"><span class="pre">false</span></tt> or <tt class="docutils literal"><span class="pre">null</span></tt> will return
+false. If this is undesired, a guard of the form <tt class="docutils literal"><span class="pre">if</span> <span class="pre">(doc.foo</span> <span class="pre">!==</span> <span class="pre">undefined)</span></tt>
+should do the trick.</p>
+<p>This error can also be caused if a reduce function does not return a value. For
+example, this reduce function will cause an error:</p>
+<div class="highlight-javascript"><div class="highlight"><pre><span class="kd">function</span><span class="p">(</span><span class="nx">key</span><span class="p">,</span> <span class="nx">values</span><span class="p">)</span> <span class="p">{</span>
+  <span class="nx">sum</span><span class="p">(</span><span class="nx">values</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>The function needs to return a value:</p>
+<div class="highlight-javascript"><div class="highlight"><pre><span class="kd">function</span><span class="p">(</span><span class="nx">key</span><span class="p">,</span> <span class="nx">values</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="nx">sum</span><span class="p">(</span><span class="nx">values</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="erlang-stack-trace-contains-bad-utf8-character-code">
+<h3>erlang stack trace contains <tt class="docutils literal"><span class="pre">bad_utf8_character_code</span></tt><a class="headerlink" href="#erlang-stack-trace-contains-bad-utf8-character-code" title="Permalink to this headline">¶</a></h3>
+<p>CouchDB 1.1.1 and later contains stricter handling of UTF8 encoding. If you are
+replicating from older versions to newer versions, then this error may occur
+during replication.</p>
+<p>A number of work-arounds exist; the simplest is to do an in-place upgrade of
+the relevant CouchDB and then compact prior to replicating.</p>
+<p>Alternatively, if the number of documents impacted is small, use filtered
+replication to exclude only those documents.</p>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+    <p class="logo"><a href="../index.html">
+      <img class="logo" src="../_static/logo.png" alt="Logo"/>
+    </a></p><!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+<div id="searchbox" style="display: none">
+
+<h3>Quick Search</h3>
+
+<form class="search" action="../search.html" method="get">
+<input type="text" name="q" style="width:115px">
+<input type="submit" value="Go">
+<input type="hidden" name="check_keywords" value="yes">
+<input type="hidden" name="area" value="default">
+</form>
+
+<br>
+
+</div>
+
+<script type="text/javascript">$('#searchbox').show(0);</script>
+  <h3><a href="../contents.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">2.5. Troubleshooting an Installation</a><ul>
+<li><a class="reference internal" href="#first-install">2.5.1. First Install</a></li>
+<li><a class="reference internal" href="#quick-build">2.5.2. Quick Build</a></li>
+<li><a class="reference internal" href="#upgrading">2.5.3. Upgrading</a></li>
+<li><a class="reference internal" href="#runtime-errors">2.5.4. Runtime Errors</a><ul>
+<li><a class="reference internal" href="#lots-of-memory-being-used-on-startup">Lots of memory being used on startup</a></li>
+<li><a class="reference internal" href="#erlang-stack-trace-contains-system-limit-open-port">erlang stack trace contains <tt class="docutils literal"><span class="pre">system_limit</span></tt>, <tt class="docutils literal"><span class="pre">open_port</span></tt></a></li>
+<li><a class="reference internal" href="#function-raised-exception-cannot-encode-undefined-value-as-json">function raised exception (Cannot encode &#8216;undefined&#8217; value as JSON)</a></li>
+<li><a class="reference internal" href="#erlang-stack-trace-contains-bad-utf8-character-code">erlang stack trace contains <tt class="docutils literal"><span class="pre">bad_utf8_character_code</span></tt></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="freebsd.html"
+                        title="previous chapter">2.4. Installation on FreeBSD</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="../config/index.html"
+                        title="next chapter">3. Configuring CouchDB</a></p><!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+
+<h3>Utilities</h3>
+
+<ul>
+<li><a href="../">Fauxton</a></li>
+</ul>
+<!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+<h3>More Help</h3>
+
+<ul>
+<li><a href="https://couchdb.apache.org/">Homepage</a></li>
+<li><a href="https://cwiki.apache.org/confluence/display/COUCHDB/">Wiki</a></li>
+<li><a href="https://couchdb.apache.org/#mailing-list">Mailing Lists</a></li>
+<li><a href="http://webchat.freenode.net/?channels=couchdb">IRC</a></li>
+<li><a href="https://issues.apache.org/jira/browse/CouchDB">Issues</a></li>
+<li><a href="../download.html">Download</a></li>
+<li><a href="https://github.com/apache/couchdb-documentation/blob/master/src/install/troubleshooting.rst"
+       rel="nofollow">Show on GitHub</a></li>
+<li><a href="https://github.com/apache/couchdb-documentation/edit/master/src/install/troubleshooting.rst"
+       rel="nofollow">Edit on GitHub</a></li>
+</ul><!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../http-api.html" title="HTTP API Reference"
+             >API Reference</a></li>
+        <li class="right" >
+          <a href="../config-ref.html" title="Configuration Reference"
+             >Config Reference</a> |</li>
+        <li class="right" >
+          <a href="../config/index.html" title="3. Configuring CouchDB"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="freebsd.html" title="2.4. Installation on FreeBSD"
+             >previous</a> |</li>
+  <li><a href="../index.html">Apache CouchDB 2.0 Documentation</a> &raquo;</li>
+          <li><a href="index.html" >2. Installation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2016, Apache Software Foundation.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
+    </div>
+  </body>
+</html>

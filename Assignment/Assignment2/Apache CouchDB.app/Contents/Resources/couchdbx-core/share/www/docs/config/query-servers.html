@@ -1,0 +1,366 @@
+<!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>3.9. Query Servers &mdash; Apache CouchDB 2.0 Documentation</title>
+    
+    <link rel="stylesheet" href="../_static/rtd.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '2.0.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+    <link rel="author" title="About these documents" href="../about.html" />
+    <link rel="top" title="Apache CouchDB 2.0 Documentation" href="../index.html" />
+    <link rel="up" title="3. Configuring CouchDB" href="index.html" />
+    <link rel="next" title="3.10. External Processes" href="externals.html" />
+    <link rel="prev" title="3.8. Replicator" href="replicator.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../http-api.html" title="HTTP API Reference"
+             >API Reference</a></li>
+        <li class="right" >
+          <a href="../config-ref.html" title="Configuration Reference"
+             >Config Reference</a> |</li>
+        <li class="right" >
+          <a href="externals.html" title="3.10. External Processes"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="replicator.html" title="3.8. Replicator"
+             accesskey="P">previous</a> |</li>
+  <li><a href="../index.html">Apache CouchDB 2.0 Documentation</a> &raquo;</li>
+          <li><a href="index.html" accesskey="U">3. Configuring CouchDB</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="query-servers">
+<h1>3.9. Query Servers<a class="headerlink" href="#query-servers" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="query-servers-definition">
+<span id="config-query-servers"></span><h2>3.9.1. Query Servers Definition<a class="headerlink" href="#query-servers-definition" title="Permalink to this headline">¶</a></h2>
+<dl class="section">
+<dt id="query_servers">
+<tt class="descname">[query_servers]</tt><a class="headerlink" href="#query_servers" title="Permalink to this definition">¶</a></dt>
+<dd><div class="versionchanged">
+<p><span class="versionmodified">Changed in version 1.2:: </span>Added CoffeeScript query server</p>
+</div>
+<p>CouchDB delegates computation of <a class="reference internal" href="../couchapp/ddocs.html#ddocs"><em>design documents</em></a> functions
+to external query servers. The external query server is a special OS
+process which communicates with CouchDB over standard input/output using a
+very simple line-based protocol with JSON messages.</p>
+<p>The external query server may be defined in configuration file following
+next pattern:</p>
+<div class="highlight-ini"><div class="highlight"><pre><span class="k">[query_servers]</span>
+<span class="na">LANGUAGE</span> <span class="o">=</span> <span class="s">PATH ARGS</span>
+</pre></div>
+</div>
+<p>Where:</p>
+<ul>
+<li><p class="first"><tt class="docutils literal"><span class="pre">LANGUAGE</span></tt>: is a programming language which code this query server may
+execute. For instance, there are <cite>python</cite>, <cite>ruby</cite>, <cite>clojure</cite> and other
+query servers in wild. This value is also used for <cite>ddoc</cite> field
+<tt class="docutils literal"><span class="pre">language</span></tt> to determine which query server processes the functions.</p>
+<p>Note, that you may set up multiple query servers for the same programming
+language, but you have to name them different (like <cite>python-dev</cite> etc.).</p>
+</li>
+<li><p class="first"><tt class="docutils literal"><span class="pre">PATH</span></tt>: is a system path to the executable binary program that runs the
+query server.</p>
+</li>
+<li><p class="first"><tt class="docutils literal"><span class="pre">ARGS</span></tt>: optionally, you may specify additional command line arguments
+for the executable <tt class="docutils literal"><span class="pre">PATH</span></tt>.</p>
+</li>
+</ul>
+<p>The default query server is written in <a class="reference internal" href="../query-server/javascript.html#query-server-js"><em>JavaScript</em></a>,
+running via <a class="reference external" href="https://developer.mozilla.org/en/docs/SpiderMonkey">Mozilla SpiderMonkey</a>:</p>
+<div class="highlight-ini"><div class="highlight"><pre><span class="k">[query_servers]</span>
+<span class="na">javascript</span> <span class="o">=</span> <span class="s">/usr/bin/couchjs /usr/share/couchdb/server/main.js</span>
+<span class="na">coffeescript</span> <span class="o">=</span> <span class="s">/usr/bin/couchjs /usr/share/couchdb/server/main-coffee.js</span>
+</pre></div>
+</div>
+<div class="admonition seealso">
+<p class="first admonition-title">See also</p>
+<p class="last"><a class="reference internal" href="#config-native-query-servers"><em>Native Erlang Query Server</em></a> that
+allows to process Erlang <cite>ddocs</cite> and runs within CouchDB bypassing
+stdio communication and JSON serialization/deserialization round trip
+overhead.</p>
+</div>
+</dd></dl>
+
+</div>
+<div class="section" id="query-servers-configuration">
+<span id="config-query-server-config"></span><h2>3.9.2. Query Servers Configuration<a class="headerlink" href="#query-servers-configuration" title="Permalink to this headline">¶</a></h2>
+<dl class="section">
+<dt id="query_server_config">
+<tt class="descname">[query_server_config]</tt><a class="headerlink" href="#query_server_config" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="option">
+<dt id="query_server_config/commit_freq">
+<tt class="descname">commit_freq</tt><a class="headerlink" href="#query_server_config/commit_freq" title="Permalink to this definition">¶</a></dt>
+<dd><p>Specifies the delay in seconds before view index changes are committed
+to disk. The default value is <tt class="docutils literal"><span class="pre">5</span></tt>:</p>
+<div class="highlight-ini"><div class="highlight"><pre><span class="k">[query_server_config]</span>
+<span class="na">commit_freq</span> <span class="o">=</span> <span class="s">5</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="option">
+<dt id="query_server_config/os_process_limit">
+<tt class="descname">os_process_limit</tt><a class="headerlink" href="#query_server_config/os_process_limit" title="Permalink to this definition">¶</a></dt>
+<dd><p>Amount of time in seconds that the Query Server may process CouchDB
+command:</p>
+<div class="highlight-ini"><div class="highlight"><pre><span class="k">[query_server_config]</span>
+<span class="na">os_process_limit</span> <span class="o">=</span> <span class="s">10</span>
+</pre></div>
+</div>
+<p>CouchDB will raise <cite>os_process_timeout</cite> error and kill the process in
+case the Query Server doesn&#8217;t return any result within this limit.</p>
+</dd></dl>
+
+<dl class="option">
+<dt id="query_server_config/reduce_limit">
+<tt class="descname">reduce_limit</tt><a class="headerlink" href="#query_server_config/reduce_limit" title="Permalink to this definition">¶</a></dt>
+<dd><p>Controls <cite>Reduce overflow</cite> error that raises when output of
+<a class="reference internal" href="../couchapp/ddocs.html#reducefun"><em>reduce functions</em></a> is too big:</p>
+<div class="highlight-ini"><div class="highlight"><pre><span class="k">[query_server_config]</span>
+<span class="na">reduce_limit</span> <span class="o">=</span> <span class="s">true</span>
+</pre></div>
+</div>
+<p>Normally, you don&#8217;t have to disable (by setting <tt class="docutils literal"><span class="pre">false</span></tt> value) this
+option since main propose of <cite>reduce</cite> functions is to <em>reduce</em> the
+input.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="native-erlang-query-server">
+<span id="config-native-query-servers"></span><h2>3.9.3. Native Erlang Query Server<a class="headerlink" href="#native-erlang-query-server" title="Permalink to this headline">¶</a></h2>
+<dl class="section">
+<dt id="native_query_servers">
+<tt class="descname">[native_query_servers]</tt><a class="headerlink" href="#native_query_servers" title="Permalink to this definition">¶</a></dt>
+<dd><div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p>Due to security restrictions, the Erlang query server is disabled by
+default.</p>
+<p class="last">Unlike the JavaScript query server, the Erlang one does not runs in a
+sandbox mode. This means that Erlang code has full access to your OS,
+filesystem and network, which may lead to security issues. While Erlang
+functions are faster than JavaScript ones, you need to be careful
+about running them, especially if they were written by someone else.</p>
+</div>
+<p>CouchDB has a native Erlang query server, allowing you to write your
+map/reduce functions in Erlang.</p>
+<p>First, you&#8217;ll need to edit your <cite>local.ini</cite> to include a
+<tt class="docutils literal"><span class="pre">[native_query_servers]</span></tt> section:</p>
+<div class="highlight-ini"><div class="highlight"><pre><span class="k">[native_query_servers]</span>
+<span class="na">erlang</span> <span class="o">=</span> <span class="s">{couch_native_process, start_link, []}</span>
+</pre></div>
+</div>
+<p>To see these changes you will also need to restart the server.</p>
+<p>Let&#8217;s try an example of map/reduce functions which count the total
+documents at each number of revisions (there are x many documents at
+version &#8220;1&#8221;, and y documents at &#8220;2&#8221;... etc). Add a few documents to the
+database, then enter the following functions as a view:</p>
+<div class="highlight-erlang"><div class="highlight"><pre><span class="c">%% Map Function</span>
+<span class="k">fun</span><span class="p">({</span><span class="nv">Doc</span><span class="p">})</span> <span class="o">-&gt;</span>
+    <span class="o">&lt;&lt;</span><span class="nv">K</span><span class="p">,_</span><span class="o">/</span><span class="n">binary</span><span class="o">&gt;&gt;</span> <span class="o">=</span> <span class="nn">proplists</span><span class="p">:</span><span class="nf">get_value</span><span class="p">(</span><span class="o">&lt;&lt;</span><span class="s">&quot;_rev&quot;</span><span class="o">&gt;&gt;</span><span class="p">,</span> <span class="nv">Doc</span><span class="p">,</span> <span class="n">null</span><span class="p">),</span>
+    <span class="nv">V</span> <span class="o">=</span> <span class="nn">proplists</span><span class="p">:</span><span class="nf">get_value</span><span class="p">(</span><span class="o">&lt;&lt;</span><span class="s">&quot;_id&quot;</span><span class="o">&gt;&gt;</span><span class="p">,</span> <span class="nv">Doc</span><span class="p">,</span> <span class="n">null</span><span class="p">),</span>
+    <span class="nv">Emit</span><span class="p">(</span><span class="o">&lt;&lt;</span><span class="nv">K</span><span class="o">&gt;&gt;</span><span class="p">,</span> <span class="nv">V</span><span class="p">)</span>
+<span class="k">end</span><span class="p">.</span>
+
+<span class="c">%% Reduce Function</span>
+<span class="k">fun</span><span class="p">(</span><span class="nv">Keys</span><span class="p">,</span> <span class="nv">Values</span><span class="p">,</span> <span class="nv">ReReduce</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">length</span><span class="p">(</span><span class="nv">Values</span><span class="p">)</span> <span class="k">end</span><span class="p">.</span>
+</pre></div>
+</div>
+<p>If all has gone well, after running the view you should see a list of the
+total number of documents at each revision number.</p>
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+    <p class="logo"><a href="../index.html">
+      <img class="logo" src="../_static/logo.png" alt="Logo"/>
+    </a></p><!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+<div id="searchbox" style="display: none">
+
+<h3>Quick Search</h3>
+
+<form class="search" action="../search.html" method="get">
+<input type="text" name="q" style="width:115px">
+<input type="submit" value="Go">
+<input type="hidden" name="check_keywords" value="yes">
+<input type="hidden" name="area" value="default">
+</form>
+
+<br>
+
+</div>
+
+<script type="text/javascript">$('#searchbox').show(0);</script>
+  <h3><a href="../contents.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">3.9. Query Servers</a><ul>
+<li><a class="reference internal" href="#query-servers-definition">3.9.1. Query Servers Definition</a></li>
+<li><a class="reference internal" href="#query-servers-configuration">3.9.2. Query Servers Configuration</a></li>
+<li><a class="reference internal" href="#native-erlang-query-server">3.9.3. Native Erlang Query Server</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="replicator.html"
+                        title="previous chapter">3.8. Replicator</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="externals.html"
+                        title="next chapter">3.10. External Processes</a></p><!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+
+<h3>Utilities</h3>
+
+<ul>
+<li><a href="../">Fauxton</a></li>
+</ul>
+<!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+<h3>More Help</h3>
+
+<ul>
+<li><a href="https://couchdb.apache.org/">Homepage</a></li>
+<li><a href="https://cwiki.apache.org/confluence/display/COUCHDB/">Wiki</a></li>
+<li><a href="https://couchdb.apache.org/#mailing-list">Mailing Lists</a></li>
+<li><a href="http://webchat.freenode.net/?channels=couchdb">IRC</a></li>
+<li><a href="https://issues.apache.org/jira/browse/CouchDB">Issues</a></li>
+<li><a href="../download.html">Download</a></li>
+<li><a href="https://github.com/apache/couchdb-documentation/blob/master/src/config/query-servers.rst"
+       rel="nofollow">Show on GitHub</a></li>
+<li><a href="https://github.com/apache/couchdb-documentation/edit/master/src/config/query-servers.rst"
+       rel="nofollow">Edit on GitHub</a></li>
+</ul><!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../http-api.html" title="HTTP API Reference"
+             >API Reference</a></li>
+        <li class="right" >
+          <a href="../config-ref.html" title="Configuration Reference"
+             >Config Reference</a> |</li>
+        <li class="right" >
+          <a href="externals.html" title="3.10. External Processes"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="replicator.html" title="3.8. Replicator"
+             >previous</a> |</li>
+  <li><a href="../index.html">Apache CouchDB 2.0 Documentation</a> &raquo;</li>
+          <li><a href="index.html" >3. Configuring CouchDB</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2016, Apache Software Foundation.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
+    </div>
+  </body>
+</html>

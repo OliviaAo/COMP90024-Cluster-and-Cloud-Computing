@@ -1,0 +1,1192 @@
+
+<!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Configuration Reference &mdash; Apache CouchDB 2.0 Documentation</title>
+    
+    <link rel="stylesheet" href="_static/rtd.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '2.0.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="shortcut icon" href="_static/favicon.ico"/>
+    <link rel="author" title="About these documents" href="about.html" />
+    <link rel="top" title="Apache CouchDB 2.0 Documentation" href="index.html" />
+ 
+
+
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="http-api.html" title="HTTP API Reference"
+             >API Reference</a></li>
+        <li class="right" >
+          <a href="#" title="Configuration Reference"
+             >Config Reference</a> |</li>
+  <li><a href="index.html">Apache CouchDB 2.0 Documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+
+   <h1>Configuration Reference</h1>
+
+   <table class="indextable modindextable" cellspacing="0" cellpadding="2">
+     <tr class="pcap"><td></td><td>&nbsp;</td><td></td></tr>
+     <tr class="cap" id="cap-admins"><td></td><td>
+       <strong>admins</strong></td><td></td></tr>
+     <tr>
+       <td><img src="_static/minus.png" class="toggler"
+              id="toggle-1" style="display: none" alt="-" /></td>
+       <td>
+       <a href="config/auth.html#admins"><tt class="xref">admins</tt></a></td><td>
+       <em>Server Administrators</em></td></tr>
+     <tr class="pcap"><td></td><td>&nbsp;</td><td></td></tr>
+     <tr class="cap" id="cap-attachments"><td></td><td>
+       <strong>attachments</strong></td><td></td></tr>
+     <tr>
+       <td><img src="_static/minus.png" class="toggler"
+              id="toggle-2" style="display: none" alt="-" /></td>
+       <td>
+       <a href="config/misc.html#attachments"><tt class="xref">attachments</tt></a></td><td>
+       <em>Configuration of Attachment Storage</em></td></tr>
+     <tr class="cg-2">
+       <td></td>
+       <td>&nbsp;&nbsp;&nbsp;
+       <a href="config/misc.html#attachments/compressible_types"><tt class="xref">compressible_types</tt></a></td><td>
+       <em></em></td></tr>
+     <tr class="cg-2">
+       <td></td>
+       <td>&nbsp;&nbsp;&nbsp;
+       <a href="config/misc.html#attachments/compression_level"><tt class="xref">compression_level</tt></a></td><td>
+       <em></em></td></tr>
+     <tr class="pcap"><td></td><td>&nbsp;</td><td></td></tr>
+     <tr class="cap" id="cap-compaction_daemon"><td></td><td>
+       <strong>compaction_daemon</strong></td><td></td></tr>
+     <tr>
+       <td><img src="_static/minus.png" class="toggler"
+              id="toggle-3" style="display: none" alt="-" /></td>
+       <td>
+       <a href="config/compaction.html#compaction_daemon"><tt class="xref">compaction_daemon</tt></a></td><td>
+       <em>Configuration of Compaction Daemon</em></td></tr>
+     <tr class="cg-3">
+       <td></td>
+       <td>&nbsp;&nbsp;&nbsp;
+       <a href="config/compaction.html#compaction_daemon/check_interval"><tt class="xref">check_interval</tt></a></td><td>
+       <em></em></td></tr>
+     <tr class="cg-3">
+       <td></td>
+       <td>&nbsp;&nbsp;&nbsp;
+       <a href="config/compaction.html#compaction_daemon/min_file_size"><tt class="xref">min_file_size</tt></a></td><td>
+       <em></em></td></tr>
+     <tr class="pcap"><td></td><td>&nbsp;</td><td></td></tr>
+     <tr class="cap" id="cap-compactions"><td></td><td>
+       <strong>compactions</strong></td><td></td></tr>
+     <tr>
+       <td><img src="_static/minus.png" class="toggler"
+              id="toggle-4" style="display: none" alt="-" /></td>
+       <td>
+       <a href="config/compaction.html#compactions"><tt class="xref">compactions</tt></a></td><td>
+       <em>Compaction Daemon Rules</em></td></tr>
+     <tr class="pcap"><td></td><td>&nbsp;</td><td></td></tr>
+     <tr class="cap" id="cap-cors"><td></td><td>
+       <strong>cors</strong></td><td></td></tr>
+     <tr>
+       <td><img src="_static/minus.png" class="toggler"
+              id="toggle-5" style="display: none" alt="-" /></td>
+       <td>
+       <a href="config/http.html#cors"><tt class="xref">cors</tt></a></td><td>
+       <em>Cross-Origin Resource Sharing</em></td></tr>
+     <tr class="cg-5">
+       <td></td>
+       <td>&nbsp;&nbsp;&nbsp;
+       <a href="config/http.html#cors/credentials"><tt class="xref">credentials</tt></a></td><td>
+       <em></em></td></tr>
+     <tr class="cg-5">
+       <td></td>
+       <td>&nbsp;&nbsp;&nbsp;
+       <a href="config/http.html#cors/headers"><tt class="xref">headers</tt></a></td><td>
+       <em></em></td></tr>
+     <tr class="cg-5">
+       <td></td>
+       <td>&nbsp;&nbsp;&nbsp;
+       <a href="config/http.html#cors/methods"><tt class="xref">methods</tt></a></td><td>
+       <em></em></td></tr>
+     <tr class="cg-5">
+       <td></td>
+       <td>&nbsp;&nbsp;&nbsp;
+       <a href="config/http.html#cors/origins"><tt class="xref">origins</tt></a></td><td>
+       <em></em></td></tr>
+     <tr class="pcap"><td></td><td>&nbsp;</td><td></td></tr>
+     <tr class="cap" id="cap-couch_httpd_auth"><td></td><td>
+       <strong>couch_httpd_auth</strong></td><td></td></tr>
+     <tr>
+       <td><img src="_static/minus.png" class="toggler"
+              id="toggle-6" style="display: none" alt="-" /></td>
+       <td>
+       <a href="config/auth.html#couch_httpd_auth"><tt class="xref">couch_httpd_auth</tt></a></td><td>
+       <em>Authentication Configuration</em></td></tr>
+     <tr class="cg-6">
+       <td></td>
+       <td>&nbsp;&nbsp;&nbsp;
+       <a href="config/auth.html#couch_httpd_auth/allow_persistent_cookies"><tt class="xref">allow_persistent_cookies</tt></a></td><td>
+       <em>Persistent cookies</em></td></tr>
+     <tr class="cg-6">
+       <td></td>
+       <td>&nbsp;&nbsp;&nbsp;
+       <a href="config/auth.html#couch_httpd_auth/auth_cache_size"><tt class="xref">auth_cache_size</tt></a></td><td>
+       <em>Authentication cache</em></td></tr>
+     <tr class="cg-6">
+       <td></td>
+       <td>&nbsp;&nbsp;&nbsp;
+       <a href="config/auth.html#couch_httpd_auth/authentication_db"><tt class="xref">authentication_db</tt></a></td><td>
+       <em>Users database</em></td></tr>
+     <tr class="cg-6">
+       <td></td>
+       <td>&nbsp;&nbsp;&nbsp;
+       <a href="config/auth.html#couch_httpd_auth/authentication_redirect"><tt class="xref">authentication_redirect</tt></a></td><td>
+       <em>Default redirect for authentication requests</em></td></tr>
+     <tr class="cg-6">
+       <td></td>
+       <td>&nbsp;&nbsp;&nbsp;
+       <a href="config/auth.html#couch_httpd_auth/iterations"><tt class="xref">iterations</tt></a></td><td>
+       <em>PBKDF2 iterations count</em></td></tr>
+     <tr class="cg-6">
+       <td></td>
+       <td>&nbsp;&nbsp;&nbsp;
+       <a href="config/auth.html#couch_httpd_auth/max_iterations"><tt class="xref">max_iterations</tt></a></td><td>
+       <em>Maximum PBKDF2 iterations count</em></td></tr>
+     <tr class="cg-6">
+       <td></td>
+       <td>&nbsp;&nbsp;&nbsp;
+       <a href="config/auth.html#couch_httpd_auth/min_iterations"><tt class="xref">min_iterations</tt></a></td><td>
+       <em>Minimum PBKDF2 iterations count</em></td></tr>
+     <tr class="cg-6">
+       <td></td>
+       <td>&nbsp;&nbsp;&nbsp;
+       <a href="config/auth.html#couch_httpd_auth/proxy_use_secret"><tt class="xref">proxy_use_secret</tt></a></td><td>
+       <em>Force proxy auth use secret token</em></td></tr>
+     <tr class="cg-6">
+       <td></td>
+       <td>&nbsp;&nbsp;&nbsp;
+       <a href="config/auth.html#couch_httpd_auth/public_fields"><tt class="xref">public_fields</tt></a></td><td>
+       <em>User documents public fields</em></td></tr>
+     <tr class="cg-6">
+       <td></td>
+       <td>&nbsp;&nbsp;&nbsp;
+       <a href="config/auth.html#couch_httpd_auth/require_valid_user"><tt class="xref">require_valid_user</tt></a></td><td>
+       <em>Force user authentication</em></td></tr>
+     <tr class="cg-6">
+       <td></td>
+       <td>&nbsp;&nbsp;&nbsp;
+       <a href="config/auth.html#couch_httpd_auth/secret"><tt class="xref">secret</tt></a></td><td>
+       <em>Authentication secret token</em></td></tr>
+     <tr class="cg-6">
+       <td></td>
+       <td>&nbsp;&nbsp;&nbsp;
+       <a href="config/auth.html#couch_httpd_auth/timeout"><tt class="xref">timeout</tt></a></td><td>
+       <em>Session timeout</em></td></tr>
+     <tr class="cg-6">
+       <td></td>
+       <td>&nbsp;&nbsp;&nbsp;
+       <a href="config/auth.html#couch_httpd_auth/users_db_public"><tt class="xref">users_db_public</tt></a></td><td>
+       <em>Publish user documents</em></td></tr>
+     <tr class="cg-6">
+       <td></td>
+       <td>&nbsp;&nbsp;&nbsp;
+       <a href="config/auth.html#couch_httpd_auth/x_auth_roles"><tt class="xref">x_auth_roles</tt></a></td><td>
+       <em>Proxy Auth roles header</em></td></tr>
+     <tr class="cg-6">
+       <td></td>
+       <td>&nbsp;&nbsp;&nbsp;
+       <a href="config/auth.html#couch_httpd_auth/x_auth_token"><tt class="xref">x_auth_token</tt></a></td><td>
+       <em>Proxy Auth token header</em></td></tr>
+     <tr class="cg-6">
+       <td></td>
+       <td>&nbsp;&nbsp;&nbsp;
+       <a href="config/auth.html#couch_httpd_auth/x_auth_username"><tt class="xref">x_auth_username</tt></a></td><td>
+       <em>Proxy Auth username header</em></td></tr>
+     <tr class="pcap"><td></td><td>&nbsp;</td><td></td></tr>
+     <tr class="cap" id="cap-couch_httpd_oauth"><td></td><td>
+       <strong>couch_httpd_oauth</strong></td><td></td></tr>
+     <tr>
+       <td><img src="_static/minus.png" class="toggler"
+              id="toggle-7" style="display: none" alt="-" /></td>
+       <td>
+       <a href="config/auth.html#couch_httpd_oauth"><tt class="xref">couch_httpd_oauth</tt></a></td><td>
+       <em>HTTP OAuth Configuration</em></td></tr>
+     <tr class="cg-7">
+       <td></td>
+       <td>&nbsp;&nbsp;&nbsp;
+       <a href="config/auth.html#couch_httpd_oauth/use_users_db"><tt class="xref">use_users_db</tt></a></td><td>
+       <em></em></td></tr>
+     <tr class="pcap"><td></td><td>&nbsp;</td><td></td></tr>
+     <tr class="cap" id="cap-couch_peruser"><td></td><td>
+       <strong>couch_peruser</strong></td><td></td></tr>
+     <tr>
+       <td><img src="_static/minus.png" class="toggler"
+              id="toggle-8" style="display: none" alt="-" /></td>
+       <td>
+       <a href="config/couch-peruser.html#couch_peruser"><tt class="xref">couch_peruser</tt></a></td><td>
+       <em>couch_peruser Options</em></td></tr>
+     <tr class="cg-8">
+       <td></td>
+       <td>&nbsp;&nbsp;&nbsp;
+       <a href="config/couch-peruser.html#couch_peruser/delete_dbs"><tt class="xref">delete_dbs</tt></a></td><td>
+       <em></em></td></tr>
+     <tr class="cg-8">
+       <td></td>
+       <td>&nbsp;&nbsp;&nbsp;
+       <a href="config/couch-peruser.html#couch_peruser/enable"><tt class="xref">enable</tt></a></td><td>
+       <em></em></td></tr>
+     <tr class="pcap"><td></td><td>&nbsp;</td><td></td></tr>
+     <tr class="cap" id="cap-couchdb"><td></td><td>
+       <strong>couchdb</strong></td><td></td></tr>
+     <tr>
+       <td><img src="_static/minus.png" class="toggler"
+              id="toggle-9" style="display: none" alt="-" /></td>
+       <td>
+       <a href="config/couchdb.html#couchdb"><tt class="xref">couchdb</tt></a></td><td>
+       <em>Base CouchDB Options</em></td></tr>
+     <tr class="cg-9">
+       <td></td>
+       <td>&nbsp;&nbsp;&nbsp;
+       <a href="config/couchdb.html#couchdb/attachment_stream_buffer_size"><tt class="xref">attachment_stream_buffer_size</tt></a></td><td>
+       <em>Attachment streaming buffer</em></td></tr>
+     <tr class="cg-9">
+       <td></td>
+       <td>&nbsp;&nbsp;&nbsp;
+       <a href="config/couchdb.html#couchdb/database_dir"><tt class="xref">database_dir</tt></a></td><td>
+       <em>Databases location directory</em></td></tr>
+     <tr class="cg-9">
+       <td></td>
+       <td>&nbsp;&nbsp;&nbsp;
+       <a href="config/couchdb.html#couchdb/delayed_commits"><tt class="xref">delayed_commits</tt></a></td><td>
+       <em>Delayed commits</em></td></tr>
+     <tr class="cg-9">
+       <td></td>
+       <td>&nbsp;&nbsp;&nbsp;
+       <a href="config/couchdb.html#couchdb/file_compression"><tt class="xref">file_compression</tt></a></td><td>
+       <em>Compression method for documents</em></td></tr>
+     <tr class="cg-9">
+       <td></td>
+       <td>&nbsp;&nbsp;&nbsp;
+       <a href="config/couchdb.html#couchdb/fsync_options"><tt class="xref">fsync_options</tt></a></td><td>
+       <em>Fsync options</em></td></tr>
+     <tr class="cg-9">
+       <td></td>
+       <td>&nbsp;&nbsp;&nbsp;
+       <a href="config/couchdb.html#couchdb/maintenance_mode"><tt class="xref">maintenance_mode</tt></a></td><td>
+       <em>Maintenance mode</em></td></tr>
+     <tr class="cg-9">
+       <td></td>
+       <td>&nbsp;&nbsp;&nbsp;
+       <a href="config/couchdb.html#couchdb/max_dbs_open"><tt class="xref">max_dbs_open</tt></a></td><td>
+       <em>Limit of simultaneously opened databases</em></td></tr>
+     <tr class="cg-9">
+       <td></td>
+       <td>&nbsp;&nbsp;&nbsp;
+       <a href="config/couchdb.html#couchdb/max_document_size"><tt class="xref">max_document_size</tt></a></td><td>
+       <em>Maximum document size</em></td></tr>
+     <tr class="cg-9">
+       <td></td>
+       <td>&nbsp;&nbsp;&nbsp;
+       <a href="config/couchdb.html#couchdb/os_process_timeout"><tt class="xref">os_process_timeout</tt></a></td><td>
+       <em>External processes time limit</em></td></tr>
+     <tr class="cg-9">
+       <td></td>
+       <td>&nbsp;&nbsp;&nbsp;
+       <a href="config/couchdb.html#couchdb/uri_file"><tt class="xref">uri_file</tt></a></td><td>
+       <em>Discovery CouchDB help file</em></td></tr>
+     <tr class="cg-9">
+       <td></td>
+       <td>&nbsp;&nbsp;&nbsp;
+       <a href="config/couchdb.html#couchdb/util_driver_dir"><tt class="xref">util_driver_dir</tt></a></td><td>
+       <em>CouchDB binary utility drivers</em></td></tr>
+     <tr class="cg-9">
+       <td></td>
+       <td>&nbsp;&nbsp;&nbsp;
+       <a href="config/couchdb.html#couchdb/uuid"><tt class="xref">uuid</tt></a></td><td>
+       <em>CouchDB server UUID</em></td></tr>
+     <tr class="cg-9">
+       <td></td>
+       <td>&nbsp;&nbsp;&nbsp;
+       <a href="config/couchdb.html#couchdb/view_index_dir"><tt class="xref">view_index_dir</tt></a></td><td>
+       <em>View indexes location directory</em></td></tr>
+     <tr class="pcap"><td></td><td>&nbsp;</td><td></td></tr>
+     <tr class="cap" id="cap-csp"><td></td><td>
+       <strong>csp</strong></td><td></td></tr>
+     <tr>
+       <td><img src="_static/minus.png" class="toggler"
+              id="toggle-10" style="display: none" alt="-" /></td>
+       <td>
+       <a href="config/misc.html#csp"><tt class="xref">csp</tt></a></td><td>
+       <em>Content-Security-Policy</em></td></tr>
+     <tr class="cg-10">
+       <td></td>
+       <td>&nbsp;&nbsp;&nbsp;
+       <a href="config/misc.html#csp/enable"><tt class="xref">enable</tt></a></td><td>
+       <em></em></td></tr>
+     <tr class="cg-10">
+       <td></td>
+       <td>&nbsp;&nbsp;&nbsp;
+       <a href="config/misc.html#csp/header_value"><tt class="xref">header_value</tt></a></td><td>
+       <em></em></td></tr>
+     <tr class="pcap"><td></td><td>&nbsp;</td><td></td></tr>
+     <tr class="cap" id="cap-daemons"><td></td><td>
+       <strong>daemons</strong></td><td></td></tr>
+     <tr>
+       <td><img src="_static/minus.png" class="toggler"
+              id="toggle-11" style="display: none" alt="-" /></td>
+       <td>
+       <a href="config/services.html#daemons"><tt class="xref">daemons</tt></a></td><td>
+       <em>CouchDB Daemonized Mini Apps</em></td></tr>
+     <tr class="cg-11">
+       <td></td>
+       <td>&nbsp;&nbsp;&nbsp;
+       <a href="config/services.html#daemons/auth_cache"><tt class="xref">auth_cache</tt></a></td><td>
+       <em></em></td></tr>
+     <tr class="cg-11">
+       <td></td>
+       <td>&nbsp;&nbsp;&nbsp;
+       <a href="config/services.html#daemons/compaction_daemon"><tt class="xref">compaction_daemon</tt></a></td><td>
+       <em></em></td></tr>
+     <tr class="cg-11">
+       <td></td>
+       <td>&nbsp;&nbsp;&nbsp;
+       <a href="config/services.html#daemons/external_manager"><tt class="xref">external_manager</tt></a></td><td>
+       <em></em></td></tr>
+     <tr class="cg-11">
+       <td></td>
+       <td>&nbsp;&nbsp;&nbsp;
+       <a href="config/services.html#daemons/httpd"><tt class="xref">httpd</tt></a></td><td>
+       <em></em></td></tr>
+     <tr class="cg-11">
+       <td></td>
+       <td>&nbsp;&nbsp;&nbsp;
+       <a href="config/services.html#daemons/httpsd"><tt class="xref">httpsd</tt></a></td><td>
+       <em></em></td></tr>
+     <tr class="cg-11">
+       <td></td>
+       <td>&nbsp;&nbsp;&nbsp;
+       <a href="config/services.html#daemons/index_server"><tt class="xref">index_server</tt></a></td><td>
+       <em></em></td></tr>
+     <tr class="cg-11">
+       <td></td>
+       <td>&nbsp;&nbsp;&nbsp;
+       <a href="config/services.html#daemons/os_daemons"><tt class="xref">os_daemons</tt></a></td><td>
+       <em></em></td></tr>
+     <tr class="cg-11">
+       <td></td>
+       <td>&nbsp;&nbsp;&nbsp;
+       <a href="config/services.html#daemons/query_servers"><tt class="xref">query_servers</tt></a></td><td>
+       <em></em></td></tr>
+     <tr class="cg-11">
+       <td></td>
+       <td>&nbsp;&nbsp;&nbsp;
+       <a href="config/services.html#daemons/replicator_manager"><tt class="xref">replicator_manager</tt></a></td><td>
+       <em></em></td></tr>
+     <tr class="cg-11">
+       <td></td>
+       <td>&nbsp;&nbsp;&nbsp;
+       <a href="config/services.html#daemons/stats_aggregator"><tt class="xref">stats_aggregator</tt></a></td><td>
+       <em></em></td></tr>
+     <tr class="cg-11">
+       <td></td>
+       <td>&nbsp;&nbsp;&nbsp;
+       <a href="config/services.html#daemons/stats_collector"><tt class="xref">stats_collector</tt></a></td><td>
+       <em></em></td></tr>
+     <tr class="cg-11">
+       <td></td>
+       <td>&nbsp;&nbsp;&nbsp;
+       <a href="config/services.html#daemons/uuids"><tt class="xref">uuids</tt></a></td><td>
+       <em></em></td></tr>
+     <tr class="cg-11">
+       <td></td>
+       <td>&nbsp;&nbsp;&nbsp;
+       <a href="config/services.html#daemons/vhosts"><tt class="xref">vhosts</tt></a></td><td>
+       <em></em></td></tr>
+     <tr class="pcap"><td></td><td>&nbsp;</td><td></td></tr>
+     <tr class="cap" id="cap-database_compaction"><td></td><td>
+       <strong>database_compaction</strong></td><td></td></tr>
+     <tr>
+       <td><img src="_static/minus.png" class="toggler"
+              id="toggle-12" style="display: none" alt="-" /></td>
+       <td>
+       <a href="config/compaction.html#database_compaction"><tt class="xref">database_compaction</tt></a></td><td>
+       <em>Database Compaction Options</em></td></tr>
+     <tr class="cg-12">
+       <td></td>
+       <td>&nbsp;&nbsp;&nbsp;
+       <a href="config/compaction.html#database_compaction/checkpoint_after"><tt class="xref">checkpoint_after</tt></a></td><td>
+       <em>Checkpoint trigger</em></td></tr>
+     <tr class="cg-12">
+       <td></td>
+       <td>&nbsp;&nbsp;&nbsp;
+       <a href="config/compaction.html#database_compaction/doc_buffer_size"><tt class="xref">doc_buffer_size</tt></a></td><td>
+       <em>Documents buffer size</em></td></tr>
+     <tr class="pcap"><td></td><td>&nbsp;</td><td></td></tr>
+     <tr class="cap" id="cap-httpd"><td></td><td>
+       <strong>httpd</strong></td><td></td></tr>
+     <tr>
+       <td><img src="_static/minus.png" class="toggler"
+              id="toggle-13" style="display: none" alt="-" /></td>
+       <td>
+       <a href="config/http.html#httpd"><tt class="xref">httpd</tt></a></td><td>
+       <em>HTTP Server Options</em></td></tr>
+     <tr class="cg-13">
+       <td></td>
+       <td>&nbsp;&nbsp;&nbsp;
+       <a href="config/http.html#httpd/WWW-Authenticate"><tt class="xref">WWW-Authenticate</tt></a></td><td>
+       <em>Force basic auth</em></td></tr>
+     <tr class="cg-13">
+       <td></td>
+       <td>&nbsp;&nbsp;&nbsp;
+       <a href="config/http.html#httpd/allow_jsonp"><tt class="xref">allow_jsonp</tt></a></td><td>
+       <em>Enables JSONP support</em></td></tr>
+     <tr class="cg-13">
+       <td></td>
+       <td>&nbsp;&nbsp;&nbsp;
+       <a href="config/http.html#httpd/authentication_handlers"><tt class="xref">authentication_handlers</tt></a></td><td>
+       <em>Authentication handlers</em></td></tr>
+     <tr class="cg-13">
+       <td></td>
+       <td>&nbsp;&nbsp;&nbsp;
+       <a href="config/http.html#httpd/bind_address"><tt class="xref">bind_address</tt></a></td><td>
+       <em>Listen IP address</em></td></tr>
+     <tr class="cg-13">
+       <td></td>
+       <td>&nbsp;&nbsp;&nbsp;
+       <a href="config/http.html#httpd/changes_timeout"><tt class="xref">changes_timeout</tt></a></td><td>
+       <em>Changes feed timeout</em></td></tr>
+     <tr class="cg-13">
+       <td></td>
+       <td>&nbsp;&nbsp;&nbsp;
+       <a href="config/http.html#httpd/config_whitelist"><tt class="xref">config_whitelist</tt></a></td><td>
+       <em>Config options while list</em></td></tr>
+     <tr class="cg-13">
+       <td></td>
+       <td>&nbsp;&nbsp;&nbsp;
+       <a href="config/http.html#httpd/default_handler"><tt class="xref">default_handler</tt></a></td><td>
+       <em>Default request handler</em></td></tr>
+     <tr class="cg-13">
+       <td></td>
+       <td>&nbsp;&nbsp;&nbsp;
+       <a href="config/http.html#httpd/enable_cors"><tt class="xref">enable_cors</tt></a></td><td>
+       <em>Activates CORS</em></td></tr>
+     <tr class="cg-13">
+       <td></td>
+       <td>&nbsp;&nbsp;&nbsp;
+       <a href="config/http.html#httpd/log_max_chunk_size"><tt class="xref">log_max_chunk_size</tt></a></td><td>
+       <em>Logs chunk size</em></td></tr>
+     <tr class="cg-13">
+       <td></td>
+       <td>&nbsp;&nbsp;&nbsp;
+       <a href="config/http.html#httpd/port"><tt class="xref">port</tt></a></td><td>
+       <em>Listen port</em></td></tr>
+     <tr class="cg-13">
+       <td></td>
+       <td>&nbsp;&nbsp;&nbsp;
+       <a href="config/http.html#httpd/redirect_vhost_handler"><tt class="xref">redirect_vhost_handler</tt></a></td><td>
+       <em>Virtual Hosts custom redirect handler</em></td></tr>
+     <tr class="cg-13">
+       <td></td>
+       <td>&nbsp;&nbsp;&nbsp;
+       <a href="config/http.html#httpd/secure_rewrites"><tt class="xref">secure_rewrites</tt></a></td><td>
+       <em>Default request handler</em></td></tr>
+     <tr class="cg-13">
+       <td></td>
+       <td>&nbsp;&nbsp;&nbsp;
+       <a href="config/http.html#httpd/server_options"><tt class="xref">server_options</tt></a></td><td>
+       <em>MochiWeb Server Options</em></td></tr>
+     <tr class="cg-13">
+       <td></td>
+       <td>&nbsp;&nbsp;&nbsp;
+       <a href="config/http.html#httpd/socket_options"><tt class="xref">socket_options</tt></a></td><td>
+       <em>Socket Options</em></td></tr>
+     <tr class="cg-13">
+       <td></td>
+       <td>&nbsp;&nbsp;&nbsp;
+       <a href="config/http.html#httpd/vhost_global_handlers"><tt class="xref">vhost_global_handlers</tt></a></td><td>
+       <em>Virtual hosts global handlers</em></td></tr>
+     <tr class="cg-13">
+       <td></td>
+       <td>&nbsp;&nbsp;&nbsp;
+       <a href="config/http.html#httpd/x_forwarded_host"><tt class="xref">x_forwarded_host</tt></a></td><td>
+       <em>X-Forwarder-Host</em></td></tr>
+     <tr class="cg-13">
+       <td></td>
+       <td>&nbsp;&nbsp;&nbsp;
+       <a href="config/http.html#httpd/x_forwarded_proto"><tt class="xref">x_forwarded_proto</tt></a></td><td>
+       <em>X-Forwarder-Proto</em></td></tr>
+     <tr class="cg-13">
+       <td></td>
+       <td>&nbsp;&nbsp;&nbsp;
+       <a href="config/http.html#httpd/x_forwarded_ssl"><tt class="xref">x_forwarded_ssl</tt></a></td><td>
+       <em>X-Forwarder-Ssl</em></td></tr>
+     <tr class="pcap"><td></td><td>&nbsp;</td><td></td></tr>
+     <tr class="cap" id="cap-httpd_db_handlers"><td></td><td>
+       <strong>httpd_db_handlers</strong></td><td></td></tr>
+     <tr>
+       <td><img src="_static/minus.png" class="toggler"
+              id="toggle-14" style="display: none" alt="-" /></td>
+       <td>
+       <a href="config/http-handlers.html#httpd_db_handlers"><tt class="xref">httpd_db_handlers</tt></a></td><td>
+       <em>Database HTTP Handlers</em></td></tr>
+     <tr class="cg-14">
+       <td></td>
+       <td>&nbsp;&nbsp;&nbsp;
+       <a href="config/http-handlers.html#httpd_db_handlers/_all_docs"><tt class="xref">_all_docs</tt></a></td><td>
+       <em></em></td></tr>
+     <tr class="cg-14">
+       <td></td>
+       <td>&nbsp;&nbsp;&nbsp;
+       <a href="config/http-handlers.html#httpd_db_handlers/_changes"><tt class="xref">_changes</tt></a></td><td>
+       <em></em></td></tr>
+     <tr class="cg-14">
+       <td></td>
+       <td>&nbsp;&nbsp;&nbsp;
+       <a href="config/http-handlers.html#httpd_db_handlers/_compact"><tt class="xref">_compact</tt></a></td><td>
+       <em></em></td></tr>
+     <tr class="cg-14">
+       <td></td>
+       <td>&nbsp;&nbsp;&nbsp;
+       <a href="config/http-handlers.html#httpd_db_handlers/_design"><tt class="xref">_design</tt></a></td><td>
+       <em></em></td></tr>
+     <tr class="cg-14">
+       <td></td>
+       <td>&nbsp;&nbsp;&nbsp;
+       <a href="config/http-handlers.html#httpd_db_handlers/_design_docs"><tt class="xref">_design_docs</tt></a></td><td>
+       <em></em></td></tr>
+     <tr class="cg-14">
+       <td></td>
+       <td>&nbsp;&nbsp;&nbsp;
+       <a href="config/http-handlers.html#httpd_db_handlers/_local_docs"><tt class="xref">_local_docs</tt></a></td><td>
+       <em></em></td></tr>
+     <tr class="cg-14">
+       <td></td>
+       <td>&nbsp;&nbsp;&nbsp;
+       <a href="config/http-handlers.html#httpd_db_handlers/_view_cleanup"><tt class="xref">_view_cleanup</tt></a></td><td>
+       <em></em></td></tr>
+     <tr class="pcap"><td></td><td>&nbsp;</td><td></td></tr>
+     <tr class="cap" id="cap-httpd_design_handlers"><td></td><td>
+       <strong>httpd_design_handlers</strong></td><td></td></tr>
+     <tr>
+       <td><img src="_static/minus.png" class="toggler"
+              id="toggle-15" style="display: none" alt="-" /></td>
+       <td>
+       <a href="config/http-handlers.html#httpd_design_handlers"><tt class="xref">httpd_design_handlers</tt></a></td><td>
+       <em>Design Documents HTTP Handlers</em></td></tr>
+     <tr class="cg-15">
+       <td></td>
+       <td>&nbsp;&nbsp;&nbsp;
+       <a href="config/http-handlers.html#httpd_design_handlers/_compact"><tt class="xref">_compact</tt></a></td><td>
+       <em></em></td></tr>
+     <tr class="cg-15">
+       <td></td>
+       <td>&nbsp;&nbsp;&nbsp;
+       <a href="config/http-handlers.html#httpd_design_handlers/_info"><tt class="xref">_info</tt></a></td><td>
+       <em></em></td></tr>
+     <tr class="cg-15">
+       <td></td>
+       <td>&nbsp;&nbsp;&nbsp;
+       <a href="config/http-handlers.html#httpd_design_handlers/_list"><tt class="xref">_list</tt></a></td><td>
+       <em></em></td></tr>
+     <tr class="cg-15">
+       <td></td>
+       <td>&nbsp;&nbsp;&nbsp;
+       <a href="config/http-handlers.html#httpd_design_handlers/_rewrite"><tt class="xref">_rewrite</tt></a></td><td>
+       <em></em></td></tr>
+     <tr class="cg-15">
+       <td></td>
+       <td>&nbsp;&nbsp;&nbsp;
+       <a href="config/http-handlers.html#httpd_design_handlers/_show"><tt class="xref">_show</tt></a></td><td>
+       <em></em></td></tr>
+     <tr class="cg-15">
+       <td></td>
+       <td>&nbsp;&nbsp;&nbsp;
+       <a href="config/http-handlers.html#httpd_design_handlers/_update"><tt class="xref">_update</tt></a></td><td>
+       <em></em></td></tr>
+     <tr class="cg-15">
+       <td></td>
+       <td>&nbsp;&nbsp;&nbsp;
+       <a href="config/http-handlers.html#httpd_design_handlers/_view"><tt class="xref">_view</tt></a></td><td>
+       <em></em></td></tr>
+     <tr class="pcap"><td></td><td>&nbsp;</td><td></td></tr>
+     <tr class="cap" id="cap-httpd_global_handlers"><td></td><td>
+       <strong>httpd_global_handlers</strong></td><td></td></tr>
+     <tr>
+       <td><img src="_static/minus.png" class="toggler"
+              id="toggle-16" style="display: none" alt="-" /></td>
+       <td>
+       <a href="config/http-handlers.html#httpd_global_handlers"><tt class="xref">httpd_global_handlers</tt></a></td><td>
+       <em>Global HTTP Handlers</em></td></tr>
+     <tr class="cg-16">
+       <td></td>
+       <td>&nbsp;&nbsp;&nbsp;
+       <a href="config/http-handlers.html#httpd_global_handlers//"><tt class="xref">/</tt></a></td><td>
+       <em></em></td></tr>
+     <tr class="cg-16">
+       <td></td>
+       <td>&nbsp;&nbsp;&nbsp;
+       <a href="config/http-handlers.html#httpd_global_handlers/_active_tasks"><tt class="xref">_active_tasks</tt></a></td><td>
+       <em></em></td></tr>
+     <tr class="cg-16">
+       <td></td>
+       <td>&nbsp;&nbsp;&nbsp;
+       <a href="config/http-handlers.html#httpd_global_handlers/_all_dbs"><tt class="xref">_all_dbs</tt></a></td><td>
+       <em></em></td></tr>
+     <tr class="cg-16">
+       <td></td>
+       <td>&nbsp;&nbsp;&nbsp;
+       <a href="config/http-handlers.html#httpd_global_handlers/_config"><tt class="xref">_config</tt></a></td><td>
+       <em></em></td></tr>
+     <tr class="cg-16">
+       <td></td>
+       <td>&nbsp;&nbsp;&nbsp;
+       <a href="config/http-handlers.html#httpd_global_handlers/_log"><tt class="xref">_log</tt></a></td><td>
+       <em></em></td></tr>
+     <tr class="cg-16">
+       <td></td>
+       <td>&nbsp;&nbsp;&nbsp;
+       <a href="config/http-handlers.html#httpd_global_handlers/_oauth"><tt class="xref">_oauth</tt></a></td><td>
+       <em></em></td></tr>
+     <tr class="cg-16">
+       <td></td>
+       <td>&nbsp;&nbsp;&nbsp;
+       <a href="config/http-handlers.html#httpd_global_handlers/_replicate"><tt class="xref">_replicate</tt></a></td><td>
+       <em></em></td></tr>
+     <tr class="cg-16">
+       <td></td>
+       <td>&nbsp;&nbsp;&nbsp;
+       <a href="config/http-handlers.html#httpd_global_handlers/_restart"><tt class="xref">_restart</tt></a></td><td>
+       <em></em></td></tr>
+     <tr class="cg-16">
+       <td></td>
+       <td>&nbsp;&nbsp;&nbsp;
+       <a href="config/http-handlers.html#httpd_global_handlers/_session"><tt class="xref">_session</tt></a></td><td>
+       <em></em></td></tr>
+     <tr class="cg-16">
+       <td></td>
+       <td>&nbsp;&nbsp;&nbsp;
+       <a href="config/http-handlers.html#httpd_global_handlers/_stats"><tt class="xref">_stats</tt></a></td><td>
+       <em></em></td></tr>
+     <tr class="cg-16">
+       <td></td>
+       <td>&nbsp;&nbsp;&nbsp;
+       <a href="config/http-handlers.html#httpd_global_handlers/_utils"><tt class="xref">_utils</tt></a></td><td>
+       <em></em></td></tr>
+     <tr class="cg-16">
+       <td></td>
+       <td>&nbsp;&nbsp;&nbsp;
+       <a href="config/http-handlers.html#httpd_global_handlers/_uuids"><tt class="xref">_uuids</tt></a></td><td>
+       <em></em></td></tr>
+     <tr class="cg-16">
+       <td></td>
+       <td>&nbsp;&nbsp;&nbsp;
+       <a href="config/http-handlers.html#httpd_global_handlers/favicon.ico"><tt class="xref">favicon.ico</tt></a></td><td>
+       <em></em></td></tr>
+     <tr class="pcap"><td></td><td>&nbsp;</td><td></td></tr>
+     <tr class="cap" id="cap-log"><td></td><td>
+       <strong>log</strong></td><td></td></tr>
+     <tr>
+       <td><img src="_static/minus.png" class="toggler"
+              id="toggle-17" style="display: none" alt="-" /></td>
+       <td>
+       <a href="config/logging.html#log"><tt class="xref">log</tt></a></td><td>
+       <em>Logging options</em></td></tr>
+     <tr class="cg-17">
+       <td></td>
+       <td>&nbsp;&nbsp;&nbsp;
+       <a href="config/logging.html#log/file"><tt class="xref">file</tt></a></td><td>
+       <em>Logging file path</em></td></tr>
+     <tr class="cg-17">
+       <td></td>
+       <td>&nbsp;&nbsp;&nbsp;
+       <a href="config/logging.html#log/include_sasl"><tt class="xref">include_sasl</tt></a></td><td>
+       <em></em></td></tr>
+     <tr class="cg-17">
+       <td></td>
+       <td>&nbsp;&nbsp;&nbsp;
+       <a href="config/logging.html#log/level"><tt class="xref">level</tt></a></td><td>
+       <em>Logging verbose level</em></td></tr>
+     <tr class="pcap"><td></td><td>&nbsp;</td><td></td></tr>
+     <tr class="cap" id="cap-log_level_by_module"><td></td><td>
+       <strong>log_level_by_module</strong></td><td></td></tr>
+     <tr>
+       <td><img src="_static/minus.png" class="toggler"
+              id="toggle-18" style="display: none" alt="-" /></td>
+       <td>
+       <a href="config/logging.html#log_level_by_module"><tt class="xref">log_level_by_module</tt></a></td><td>
+       <em>Per module logging</em></td></tr>
+     <tr class="pcap"><td></td><td>&nbsp;</td><td></td></tr>
+     <tr class="cap" id="cap-native_query_servers"><td></td><td>
+       <strong>native_query_servers</strong></td><td></td></tr>
+     <tr>
+       <td><img src="_static/minus.png" class="toggler"
+              id="toggle-19" style="display: none" alt="-" /></td>
+       <td>
+       <a href="config/query-servers.html#native_query_servers"><tt class="xref">native_query_servers</tt></a></td><td>
+       <em>Native Erlang Query Server</em></td></tr>
+     <tr class="pcap"><td></td><td>&nbsp;</td><td></td></tr>
+     <tr class="cap" id="cap-oauth_*"><td></td><td>
+       <strong>oauth_*</strong></td><td></td></tr>
+     <tr>
+       <td><img src="_static/minus.png" class="toggler"
+              id="toggle-20" style="display: none" alt="-" /></td>
+       <td>
+       <a href="config/auth.html#oauth_*"><tt class="xref">oauth_*</tt></a></td><td>
+       <em>OAuth Configuration</em></td></tr>
+     <tr class="pcap"><td></td><td>&nbsp;</td><td></td></tr>
+     <tr class="cap" id="cap-os_daemon_settings"><td></td><td>
+       <strong>os_daemon_settings</strong></td><td></td></tr>
+     <tr>
+       <td><img src="_static/minus.png" class="toggler"
+              id="toggle-21" style="display: none" alt="-" /></td>
+       <td>
+       <a href="config/externals.html#os_daemon_settings"><tt class="xref">os_daemon_settings</tt></a></td><td>
+       <em>OS Daemons settings</em></td></tr>
+     <tr class="cg-21">
+       <td></td>
+       <td>&nbsp;&nbsp;&nbsp;
+       <a href="config/externals.html#os_daemon_settings/max_retries"><tt class="xref">max_retries</tt></a></td><td>
+       <em>Maximum restart retries</em></td></tr>
+     <tr class="cg-21">
+       <td></td>
+       <td>&nbsp;&nbsp;&nbsp;
+       <a href="config/externals.html#os_daemon_settings/retry_time"><tt class="xref">retry_time</tt></a></td><td>
+       <em>Delay between restart attempts</em></td></tr>
+     <tr class="pcap"><td></td><td>&nbsp;</td><td></td></tr>
+     <tr class="cap" id="cap-os_daemons"><td></td><td>
+       <strong>os_daemons</strong></td><td></td></tr>
+     <tr>
+       <td><img src="_static/minus.png" class="toggler"
+              id="toggle-22" style="display: none" alt="-" /></td>
+       <td>
+       <a href="config/externals.html#os_daemons"><tt class="xref">os_daemons</tt></a></td><td>
+       <em>OS Daemons</em></td></tr>
+     <tr class="pcap"><td></td><td>&nbsp;</td><td></td></tr>
+     <tr class="cap" id="cap-query_server_config"><td></td><td>
+       <strong>query_server_config</strong></td><td></td></tr>
+     <tr>
+       <td><img src="_static/minus.png" class="toggler"
+              id="toggle-23" style="display: none" alt="-" /></td>
+       <td>
+       <a href="config/query-servers.html#query_server_config"><tt class="xref">query_server_config</tt></a></td><td>
+       <em>Query Servers Configuration</em></td></tr>
+     <tr class="cg-23">
+       <td></td>
+       <td>&nbsp;&nbsp;&nbsp;
+       <a href="config/query-servers.html#query_server_config/commit_freq"><tt class="xref">commit_freq</tt></a></td><td>
+       <em>View index commit delay</em></td></tr>
+     <tr class="cg-23">
+       <td></td>
+       <td>&nbsp;&nbsp;&nbsp;
+       <a href="config/query-servers.html#query_server_config/os_process_limit"><tt class="xref">os_process_limit</tt></a></td><td>
+       <em>Query Server operation timeout</em></td></tr>
+     <tr class="cg-23">
+       <td></td>
+       <td>&nbsp;&nbsp;&nbsp;
+       <a href="config/query-servers.html#query_server_config/reduce_limit"><tt class="xref">reduce_limit</tt></a></td><td>
+       <em>Reduce limit control</em></td></tr>
+     <tr class="pcap"><td></td><td>&nbsp;</td><td></td></tr>
+     <tr class="cap" id="cap-query_servers"><td></td><td>
+       <strong>query_servers</strong></td><td></td></tr>
+     <tr>
+       <td><img src="_static/minus.png" class="toggler"
+              id="toggle-24" style="display: none" alt="-" /></td>
+       <td>
+       <a href="config/query-servers.html#query_servers"><tt class="xref">query_servers</tt></a></td><td>
+       <em>Query Servers Definition</em></td></tr>
+     <tr class="pcap"><td></td><td>&nbsp;</td><td></td></tr>
+     <tr class="cap" id="cap-replicator"><td></td><td>
+       <strong>replicator</strong></td><td></td></tr>
+     <tr>
+       <td><img src="_static/minus.png" class="toggler"
+              id="toggle-25" style="display: none" alt="-" /></td>
+       <td>
+       <a href="config/replicator.html#replicator"><tt class="xref">replicator</tt></a></td><td>
+       <em>Replicator Database Configuration</em></td></tr>
+     <tr class="cg-25">
+       <td></td>
+       <td>&nbsp;&nbsp;&nbsp;
+       <a href="config/replicator.html#replicator/cert_file"><tt class="xref">cert_file</tt></a></td><td>
+       <em></em></td></tr>
+     <tr class="cg-25">
+       <td></td>
+       <td>&nbsp;&nbsp;&nbsp;
+       <a href="config/replicator.html#replicator/checkpoint_interval"><tt class="xref">checkpoint_interval</tt></a></td><td>
+       <em></em></td></tr>
+     <tr class="cg-25">
+       <td></td>
+       <td>&nbsp;&nbsp;&nbsp;
+       <a href="config/replicator.html#replicator/connection_timeout"><tt class="xref">connection_timeout</tt></a></td><td>
+       <em></em></td></tr>
+     <tr class="cg-25">
+       <td></td>
+       <td>&nbsp;&nbsp;&nbsp;
+       <a href="config/replicator.html#replicator/http_connections"><tt class="xref">http_connections</tt></a></td><td>
+       <em></em></td></tr>
+     <tr class="cg-25">
+       <td></td>
+       <td>&nbsp;&nbsp;&nbsp;
+       <a href="config/replicator.html#replicator/key_file"><tt class="xref">key_file</tt></a></td><td>
+       <em></em></td></tr>
+     <tr class="cg-25">
+       <td></td>
+       <td>&nbsp;&nbsp;&nbsp;
+       <a href="config/replicator.html#replicator/max_replication_retry_count"><tt class="xref">max_replication_retry_count</tt></a></td><td>
+       <em></em></td></tr>
+     <tr class="cg-25">
+       <td></td>
+       <td>&nbsp;&nbsp;&nbsp;
+       <a href="config/replicator.html#replicator/password"><tt class="xref">password</tt></a></td><td>
+       <em></em></td></tr>
+     <tr class="cg-25">
+       <td></td>
+       <td>&nbsp;&nbsp;&nbsp;
+       <a href="config/replicator.html#replicator/retries_per_request"><tt class="xref">retries_per_request</tt></a></td><td>
+       <em></em></td></tr>
+     <tr class="cg-25">
+       <td></td>
+       <td>&nbsp;&nbsp;&nbsp;
+       <a href="config/replicator.html#replicator/socket_options"><tt class="xref">socket_options</tt></a></td><td>
+       <em></em></td></tr>
+     <tr class="cg-25">
+       <td></td>
+       <td>&nbsp;&nbsp;&nbsp;
+       <a href="config/replicator.html#replicator/ssl_certificate_max_depth"><tt class="xref">ssl_certificate_max_depth</tt></a></td><td>
+       <em></em></td></tr>
+     <tr class="cg-25">
+       <td></td>
+       <td>&nbsp;&nbsp;&nbsp;
+       <a href="config/replicator.html#replicator/ssl_trusted_certificates_file"><tt class="xref">ssl_trusted_certificates_file</tt></a></td><td>
+       <em></em></td></tr>
+     <tr class="cg-25">
+       <td></td>
+       <td>&nbsp;&nbsp;&nbsp;
+       <a href="config/replicator.html#replicator/use_checkpoints"><tt class="xref">use_checkpoints</tt></a></td><td>
+       <em></em></td></tr>
+     <tr class="cg-25">
+       <td></td>
+       <td>&nbsp;&nbsp;&nbsp;
+       <a href="config/replicator.html#replicator/verify_ssl_certificates"><tt class="xref">verify_ssl_certificates</tt></a></td><td>
+       <em></em></td></tr>
+     <tr class="cg-25">
+       <td></td>
+       <td>&nbsp;&nbsp;&nbsp;
+       <a href="config/replicator.html#replicator/worker_batch_size"><tt class="xref">worker_batch_size</tt></a></td><td>
+       <em></em></td></tr>
+     <tr class="cg-25">
+       <td></td>
+       <td>&nbsp;&nbsp;&nbsp;
+       <a href="config/replicator.html#replicator/worker_processes"><tt class="xref">worker_processes</tt></a></td><td>
+       <em></em></td></tr>
+     <tr class="pcap"><td></td><td>&nbsp;</td><td></td></tr>
+     <tr class="cap" id="cap-ssl"><td></td><td>
+       <strong>ssl</strong></td><td></td></tr>
+     <tr>
+       <td><img src="_static/minus.png" class="toggler"
+              id="toggle-26" style="display: none" alt="-" /></td>
+       <td>
+       <a href="config/http.html#ssl"><tt class="xref">ssl</tt></a></td><td>
+       <em>Secure Socket Level Options</em></td></tr>
+     <tr class="cg-26">
+       <td></td>
+       <td>&nbsp;&nbsp;&nbsp;
+       <a href="config/http.html#ssl/cacert_file"><tt class="xref">cacert_file</tt></a></td><td>
+       <em>CA Certificate file</em></td></tr>
+     <tr class="cg-26">
+       <td></td>
+       <td>&nbsp;&nbsp;&nbsp;
+       <a href="config/http.html#ssl/cert_file"><tt class="xref">cert_file</tt></a></td><td>
+       <em>Certificate file</em></td></tr>
+     <tr class="cg-26">
+       <td></td>
+       <td>&nbsp;&nbsp;&nbsp;
+       <a href="config/http.html#ssl/ciphers"><tt class="xref">ciphers</tt></a></td><td>
+       <em>Specify permitted server cipher list</em></td></tr>
+     <tr class="cg-26">
+       <td></td>
+       <td>&nbsp;&nbsp;&nbsp;
+       <a href="config/http.html#ssl/fail_if_no_peer_cert"><tt class="xref">fail_if_no_peer_cert</tt></a></td><td>
+       <em>Require presence of client certificate if certificate verification is enabled</em></td></tr>
+     <tr class="cg-26">
+       <td></td>
+       <td>&nbsp;&nbsp;&nbsp;
+       <a href="config/http.html#ssl/key_file"><tt class="xref">key_file</tt></a></td><td>
+       <em>Certificate key file</em></td></tr>
+     <tr class="cg-26">
+       <td></td>
+       <td>&nbsp;&nbsp;&nbsp;
+       <a href="config/http.html#ssl/password"><tt class="xref">password</tt></a></td><td>
+       <em>Certificate key password</em></td></tr>
+     <tr class="cg-26">
+       <td></td>
+       <td>&nbsp;&nbsp;&nbsp;
+       <a href="config/http.html#ssl/secure_renegotiate"><tt class="xref">secure_renegotiate</tt></a></td><td>
+       <em>Enable secure renegotiation</em></td></tr>
+     <tr class="cg-26">
+       <td></td>
+       <td>&nbsp;&nbsp;&nbsp;
+       <a href="config/http.html#ssl/ssl_certificate_max_depth"><tt class="xref">ssl_certificate_max_depth</tt></a></td><td>
+       <em>Maximum peer certificate depth</em></td></tr>
+     <tr class="cg-26">
+       <td></td>
+       <td>&nbsp;&nbsp;&nbsp;
+       <a href="config/http.html#ssl/tls_versions"><tt class="xref">tls_versions</tt></a></td><td>
+       <em>Specify permitted server SSL/TLS protocol versions</em></td></tr>
+     <tr class="cg-26">
+       <td></td>
+       <td>&nbsp;&nbsp;&nbsp;
+       <a href="config/http.html#ssl/verify_fun"><tt class="xref">verify_fun</tt></a></td><td>
+       <em>SSL verification function</em></td></tr>
+     <tr class="cg-26">
+       <td></td>
+       <td>&nbsp;&nbsp;&nbsp;
+       <a href="config/http.html#ssl/verify_ssl_certificates"><tt class="xref">verify_ssl_certificates</tt></a></td><td>
+       <em>Enable certificate verification</em></td></tr>
+     <tr class="pcap"><td></td><td>&nbsp;</td><td></td></tr>
+     <tr class="cap" id="cap-stats"><td></td><td>
+       <strong>stats</strong></td><td></td></tr>
+     <tr>
+       <td><img src="_static/minus.png" class="toggler"
+              id="toggle-27" style="display: none" alt="-" /></td>
+       <td>
+       <a href="config/misc.html#stats"><tt class="xref">stats</tt></a></td><td>
+       <em>Statistic Calculation</em></td></tr>
+     <tr class="cg-27">
+       <td></td>
+       <td>&nbsp;&nbsp;&nbsp;
+       <a href="config/misc.html#stats/rate"><tt class="xref">rate</tt></a></td><td>
+       <em></em></td></tr>
+     <tr class="cg-27">
+       <td></td>
+       <td>&nbsp;&nbsp;&nbsp;
+       <a href="config/misc.html#stats/samples"><tt class="xref">samples</tt></a></td><td>
+       <em></em></td></tr>
+     <tr class="pcap"><td></td><td>&nbsp;</td><td></td></tr>
+     <tr class="cap" id="cap-update_notification"><td></td><td>
+       <strong>update_notification</strong></td><td></td></tr>
+     <tr>
+       <td><img src="_static/minus.png" class="toggler"
+              id="toggle-28" style="display: none" alt="-" /></td>
+       <td>
+       <a href="config/externals.html#update_notification"><tt class="xref">update_notification</tt></a></td><td>
+       <em>Update notifications</em></td></tr>
+     <tr class="pcap"><td></td><td>&nbsp;</td><td></td></tr>
+     <tr class="cap" id="cap-uuids"><td></td><td>
+       <strong>uuids</strong></td><td></td></tr>
+     <tr>
+       <td><img src="_static/minus.png" class="toggler"
+              id="toggle-29" style="display: none" alt="-" /></td>
+       <td>
+       <a href="config/misc.html#uuids"><tt class="xref">uuids</tt></a></td><td>
+       <em>UUIDs Configuration</em></td></tr>
+     <tr class="cg-29">
+       <td></td>
+       <td>&nbsp;&nbsp;&nbsp;
+       <a href="config/misc.html#uuids/algorithm"><tt class="xref">algorithm</tt></a></td><td>
+       <em>Generation Algorithm</em></td></tr>
+     <tr class="cg-29">
+       <td></td>
+       <td>&nbsp;&nbsp;&nbsp;
+       <a href="config/misc.html#uuids/max_count"><tt class="xref">max_count</tt></a></td><td>
+       <em>Per-Request UUID Limit</em></td></tr>
+     <tr class="cg-29">
+       <td></td>
+       <td>&nbsp;&nbsp;&nbsp;
+       <a href="config/misc.html#uuids/utc_id_suffix"><tt class="xref">utc_id_suffix</tt></a></td><td>
+       <em>UTC ID Suffix</em></td></tr>
+     <tr class="pcap"><td></td><td>&nbsp;</td><td></td></tr>
+     <tr class="cap" id="cap-vendor"><td></td><td>
+       <strong>vendor</strong></td><td></td></tr>
+     <tr>
+       <td><img src="_static/minus.png" class="toggler"
+              id="toggle-30" style="display: none" alt="-" /></td>
+       <td>
+       <a href="config/misc.html#vendor"><tt class="xref">vendor</tt></a></td><td>
+       <em>Vendor information</em></td></tr>
+     <tr class="pcap"><td></td><td>&nbsp;</td><td></td></tr>
+     <tr class="cap" id="cap-vhosts"><td></td><td>
+       <strong>vhosts</strong></td><td></td></tr>
+     <tr>
+       <td><img src="_static/minus.png" class="toggler"
+              id="toggle-31" style="display: none" alt="-" /></td>
+       <td>
+       <a href="config/http.html#vhosts"><tt class="xref">vhosts</tt></a></td><td>
+       <em>Virtual Hosts</em></td></tr>
+     <tr class="pcap"><td></td><td>&nbsp;</td><td></td></tr>
+     <tr class="cap" id="cap-view_compaction"><td></td><td>
+       <strong>view_compaction</strong></td><td></td></tr>
+     <tr>
+       <td><img src="_static/minus.png" class="toggler"
+              id="toggle-32" style="display: none" alt="-" /></td>
+       <td>
+       <a href="config/compaction.html#view_compaction"><tt class="xref">view_compaction</tt></a></td><td>
+       <em>Views Compaction Options</em></td></tr>
+     <tr class="cg-32">
+       <td></td>
+       <td>&nbsp;&nbsp;&nbsp;
+       <a href="config/compaction.html#view_compaction/keyvalue_buffer_size"><tt class="xref">keyvalue_buffer_size</tt></a></td><td>
+       <em>Key-Values buffer size</em></td></tr>
+   </table>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+    <p class="logo"><a href="index.html">
+      <img class="logo" src="_static/logo.png" alt="Logo"/>
+    </a></p><!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+<div id="searchbox" style="display: none">
+
+<h3>Quick Search</h3>
+
+<form class="search" action="search.html" method="get">
+<input type="text" name="q" style="width:115px">
+<input type="submit" value="Go">
+<input type="hidden" name="check_keywords" value="yes">
+<input type="hidden" name="area" value="default">
+</form>
+
+<br>
+
+</div>
+
+<script type="text/javascript">$('#searchbox').show(0);</script><!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+
+<h3>Utilities</h3>
+
+<ul>
+<li><a href="../">Fauxton</a></li>
+</ul>
+<!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+<h3>More Help</h3>
+
+<ul>
+<li><a href="https://couchdb.apache.org/">Homepage</a></li>
+<li><a href="https://cwiki.apache.org/confluence/display/COUCHDB/">Wiki</a></li>
+<li><a href="https://couchdb.apache.org/#mailing-list">Mailing Lists</a></li>
+<li><a href="http://webchat.freenode.net/?channels=couchdb">IRC</a></li>
+<li><a href="https://issues.apache.org/jira/browse/CouchDB">Issues</a></li>
+<li><a href="download.html">Download</a></li>
+</ul><!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="http-api.html" title="HTTP API Reference"
+             >API Reference</a></li>
+        <li class="right" >
+          <a href="#" title="Configuration Reference"
+             >Config Reference</a> |</li>
+  <li><a href="index.html">Apache CouchDB 2.0 Documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2016, Apache Software Foundation.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
+    </div>
+  </body>
+</html>

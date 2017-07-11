@@ -1,0 +1,255 @@
+<!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>3.3. couch_peruser &mdash; Apache CouchDB 2.0 Documentation</title>
+    
+    <link rel="stylesheet" href="../_static/rtd.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '2.0.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+    <link rel="author" title="About these documents" href="../about.html" />
+    <link rel="top" title="Apache CouchDB 2.0 Documentation" href="../index.html" />
+    <link rel="up" title="3. Configuring CouchDB" href="index.html" />
+    <link rel="next" title="3.4. CouchDB HTTP Server" href="http.html" />
+    <link rel="prev" title="3.2. Base Configuration" href="couchdb.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../http-api.html" title="HTTP API Reference"
+             >API Reference</a></li>
+        <li class="right" >
+          <a href="../config-ref.html" title="Configuration Reference"
+             >Config Reference</a> |</li>
+        <li class="right" >
+          <a href="http.html" title="3.4. CouchDB HTTP Server"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="couchdb.html" title="3.2. Base Configuration"
+             accesskey="P">previous</a> |</li>
+  <li><a href="../index.html">Apache CouchDB 2.0 Documentation</a> &raquo;</li>
+          <li><a href="index.html" accesskey="U">3. Configuring CouchDB</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="couch-peruser">
+<h1>3.3. couch_peruser<a class="headerlink" href="#couch-peruser" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="couch-peruser-options">
+<span id="config-couch-peruser"></span><h2>3.3.1. couch_peruser Options<a class="headerlink" href="#couch-peruser-options" title="Permalink to this headline">¶</a></h2>
+<dl class="section">
+<dt id="couch_peruser">
+<tt class="descname">[couch_peruser]</tt><a class="headerlink" href="#couch_peruser" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="option">
+<dt id="couch_peruser/enable">
+<tt class="descname">enable</tt><a class="headerlink" href="#couch_peruser/enable" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<p>If set to <tt class="docutils literal"><span class="pre">true</span></tt>, couch_peruser ensures that a private per-user
+database exists for each document in <tt class="docutils literal"><span class="pre">_users</span></tt>. These databases are
+writable only by the corresponding user. Databases are in the following
+form: <tt class="docutils literal"><span class="pre">userdb-{hex</span> <span class="pre">encoded</span> <span class="pre">username}</span></tt>.</p>
+<div class="highlight-ini"><div class="highlight"><pre><span class="k">[couch_peruser]</span>
+<span class="na">enable</span> <span class="o">=</span> <span class="s">false</span>
+</pre></div>
+</div>
+<dl class="option">
+<dt id="couch_peruser/delete_dbs">
+<tt class="descname">delete_dbs</tt><a class="headerlink" href="#couch_peruser/delete_dbs" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<p>If set to <tt class="docutils literal"><span class="pre">true</span></tt> and a user is deleted, the respective database gets
+deleted as well.</p>
+<div class="highlight-ini"><div class="highlight"><pre><span class="k">[couch_peruser]</span>
+<span class="na">delete_dbs</span> <span class="o">=</span> <span class="s">false</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+    <p class="logo"><a href="../index.html">
+      <img class="logo" src="../_static/logo.png" alt="Logo"/>
+    </a></p><!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+<div id="searchbox" style="display: none">
+
+<h3>Quick Search</h3>
+
+<form class="search" action="../search.html" method="get">
+<input type="text" name="q" style="width:115px">
+<input type="submit" value="Go">
+<input type="hidden" name="check_keywords" value="yes">
+<input type="hidden" name="area" value="default">
+</form>
+
+<br>
+
+</div>
+
+<script type="text/javascript">$('#searchbox').show(0);</script>
+  <h3><a href="../contents.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">3.3. couch_peruser</a><ul>
+<li><a class="reference internal" href="#couch-peruser-options">3.3.1. couch_peruser Options</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="couchdb.html"
+                        title="previous chapter">3.2. Base Configuration</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="http.html"
+                        title="next chapter">3.4. CouchDB HTTP Server</a></p><!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+
+<h3>Utilities</h3>
+
+<ul>
+<li><a href="../">Fauxton</a></li>
+</ul>
+<!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+<h3>More Help</h3>
+
+<ul>
+<li><a href="https://couchdb.apache.org/">Homepage</a></li>
+<li><a href="https://cwiki.apache.org/confluence/display/COUCHDB/">Wiki</a></li>
+<li><a href="https://couchdb.apache.org/#mailing-list">Mailing Lists</a></li>
+<li><a href="http://webchat.freenode.net/?channels=couchdb">IRC</a></li>
+<li><a href="https://issues.apache.org/jira/browse/CouchDB">Issues</a></li>
+<li><a href="../download.html">Download</a></li>
+<li><a href="https://github.com/apache/couchdb-documentation/blob/master/src/config/couch-peruser.rst"
+       rel="nofollow">Show on GitHub</a></li>
+<li><a href="https://github.com/apache/couchdb-documentation/edit/master/src/config/couch-peruser.rst"
+       rel="nofollow">Edit on GitHub</a></li>
+</ul><!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../http-api.html" title="HTTP API Reference"
+             >API Reference</a></li>
+        <li class="right" >
+          <a href="../config-ref.html" title="Configuration Reference"
+             >Config Reference</a> |</li>
+        <li class="right" >
+          <a href="http.html" title="3.4. CouchDB HTTP Server"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="couchdb.html" title="3.2. Base Configuration"
+             >previous</a> |</li>
+  <li><a href="../index.html">Apache CouchDB 2.0 Documentation</a> &raquo;</li>
+          <li><a href="index.html" >3. Configuring CouchDB</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2016, Apache Software Foundation.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
+    </div>
+  </body>
+</html>

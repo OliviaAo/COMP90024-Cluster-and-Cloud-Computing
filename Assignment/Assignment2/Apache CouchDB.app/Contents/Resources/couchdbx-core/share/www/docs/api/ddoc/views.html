@@ -1,0 +1,1138 @@
+<!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>10.5.4. /db/_design/design-doc/_view/view-name &mdash; Apache CouchDB 2.0 Documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/rtd.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '2.0.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <link rel="author" title="About these documents" href="../../about.html" />
+    <link rel="top" title="Apache CouchDB 2.0 Documentation" href="../../index.html" />
+    <link rel="up" title="10.5. Design Documents" href="index.html" />
+    <link rel="next" title="10.5.5. /db/_design/design-doc/_show/show-name" href="render.html" />
+    <link rel="prev" title="10.5.1. /db/_design/design-doc" href="common.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../http-api.html" title="HTTP API Reference"
+             >API Reference</a></li>
+        <li class="right" >
+          <a href="../../config-ref.html" title="Configuration Reference"
+             >Config Reference</a> |</li>
+        <li class="right" >
+          <a href="render.html" title="10.5.5. /db/_design/design-doc/_show/show-name"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="common.html" title="10.5.1. /db/_design/design-doc"
+             accesskey="P">previous</a> |</li>
+  <li><a href="../../index.html">Apache CouchDB 2.0 Documentation</a> &raquo;</li>
+          <li><a href="../index.html" >10. API Reference</a> &raquo;</li>
+          <li><a href="index.html" accesskey="U">10.5. Design Documents</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="db-design-design-doc-view-view-name">
+<span id="api-ddoc-view"></span><h1>10.5.4. <tt class="docutils literal"><span class="pre">/db/_design/design-doc/_view/view-name</span></tt><a class="headerlink" href="#db-design-design-doc-view-view-name" title="Permalink to this headline">¶</a></h1>
+<dl class="get">
+<dt id="get--db-_design-ddoc-_view-view">
+<tt class="descname">GET </tt><tt class="descname">/{db}/_design/{ddoc}/_view/{view}</tt><a class="headerlink" href="#get--db-_design-ddoc-_view-view" title="Permalink to this definition">¶</a></dt>
+<dd><p>Executes the specified view function from the specified design document.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>db</strong> &#8211; Database name</li>
+<li><strong>ddoc</strong> &#8211; Design document name</li>
+<li><strong>view</strong> &#8211; View function name</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name" colspan="2">Request Headers:</th></tr>
+<tr class="field-even field"><td>&nbsp;</td><td class="field-body"><ul class="first simple">
+<li><a class="reference external" href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.1">Accept</a> &#8211; <ul>
+<li><em class="mimetype">application/json</em></li>
+<li><em class="mimetype">text/plain</em></li>
+</ul>
+</li>
+</ul>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name" colspan="2">Query Parameters:</th></tr>
+<tr class="field-odd field"><td>&nbsp;</td><td class="field-body"><ul class="first simple">
+<li><strong>conflicts</strong> (<em>boolean</em>) &#8211; Includes <cite>conflicts</cite> information in response.
+Ignored if <cite>include_docs</cite> isn&#8217;t <tt class="docutils literal"><span class="pre">true</span></tt>. Default is <tt class="docutils literal"><span class="pre">false</span></tt></li>
+<li><strong>descending</strong> (<em>boolean</em>) &#8211; Return the documents in descending by key order.
+Default is <tt class="docutils literal"><span class="pre">false</span></tt></li>
+<li><strong>endkey</strong> (<em>json</em>) &#8211; Stop returning records when the specified key is
+reached. <em>Optional</em></li>
+<li><strong>end_key</strong> (<em>json</em>) &#8211; Alias for <cite>endkey</cite> param</li>
+<li><strong>endkey_docid</strong> (<em>string</em>) &#8211; Stop returning records when the specified
+document ID is reached. Requires <tt class="docutils literal"><span class="pre">endkey</span></tt> to be specified for this to
+have any effect. <em>Optional</em></li>
+<li><strong>end_key_doc_id</strong> (<em>string</em>) &#8211; Alias for <cite>endkey_docid</cite> param</li>
+<li><strong>group</strong> (<em>boolean</em>) &#8211; Group the results using the reduce function to a
+group or single row. Default is <tt class="docutils literal"><span class="pre">false</span></tt></li>
+<li><strong>group_level</strong> (<em>number</em>) &#8211; Specify the group level to be used. <em>Optional</em></li>
+<li><strong>include_docs</strong> (<em>boolean</em>) &#8211; Include the associated document with each row.
+Default is <tt class="docutils literal"><span class="pre">false</span></tt>.</li>
+<li><strong>attachments</strong> (<em>boolean</em>) &#8211; Include the Base64-encoded content of
+<a class="reference internal" href="../document/common.html#api-doc-attachments"><em>attachments</em></a> in the documents that are
+included if <cite>include_docs</cite> is <tt class="docutils literal"><span class="pre">true</span></tt>. Ignored if <cite>include_docs</cite> isn&#8217;t
+<tt class="docutils literal"><span class="pre">true</span></tt>. Default is <tt class="docutils literal"><span class="pre">false</span></tt>.</li>
+<li><strong>att_encoding_info</strong> (<em>boolean</em>) &#8211; Include encoding information in
+attachment stubs if <cite>include_docs</cite> is <tt class="docutils literal"><span class="pre">true</span></tt> and the particular
+attachment is compressed. Ignored if <cite>include_docs</cite> isn&#8217;t <tt class="docutils literal"><span class="pre">true</span></tt>.
+Default is <tt class="docutils literal"><span class="pre">false</span></tt>.</li>
+<li><strong>inclusive_end</strong> (<em>boolean</em>) &#8211; Specifies whether the specified end key
+should be included in the result. Default is <tt class="docutils literal"><span class="pre">true</span></tt></li>
+<li><strong>key</strong> (<em>json</em>) &#8211; Return only documents that match the specified key.
+<em>Optional</em></li>
+<li><strong>keys</strong> (<em>json-array</em>) &#8211; Return only documents where the key matches one of
+the keys specified in the array. <em>Optional</em></li>
+<li><strong>limit</strong> (<em>number</em>) &#8211; Limit the number of the returned documents to the
+specified number. <em>Optional</em></li>
+<li><strong>reduce</strong> (<em>boolean</em>) &#8211; Use the reduction function. Default is <tt class="docutils literal"><span class="pre">true</span></tt></li>
+<li><strong>skip</strong> (<em>number</em>) &#8211; Skip this number of records before starting to return
+the results. Default is <tt class="docutils literal"><span class="pre">0</span></tt></li>
+<li><strong>sorted</strong> (<em>boolean</em>) &#8211; Sort returned rows (see <a class="reference internal" href="#api-ddoc-view-sorting"><em>Sorting Returned Rows</em></a>). Setting this to <tt class="docutils literal"><span class="pre">false</span></tt> offers a performance
+boost. The <cite>total_rows</cite> and <cite>offset</cite> fields are not available when this
+is set to <tt class="docutils literal"><span class="pre">false</span></tt>. Default is <tt class="docutils literal"><span class="pre">true</span></tt></li>
+<li><strong>stale</strong> (<em>string</em>) &#8211; Allow the results from a stale view to be used.
+Supported values: <tt class="docutils literal"><span class="pre">ok</span></tt> and <tt class="docutils literal"><span class="pre">update_after</span></tt>. <em>Optional</em></li>
+<li><strong>startkey</strong> (<em>json</em>) &#8211; Return records starting with the specified key.
+<em>Optional</em></li>
+<li><strong>start_key</strong> (<em>json</em>) &#8211; Alias for <cite>startkey</cite> param</li>
+<li><strong>startkey_docid</strong> (<em>string</em>) &#8211; Return records starting with the specified
+document ID. Requires <tt class="docutils literal"><span class="pre">startkey</span></tt> to be specified for this to have any
+effect. <em>Optional</em></li>
+<li><strong>start_key_doc_id</strong> (<em>string</em>) &#8211; Alias for <cite>startkey_docid</cite> param</li>
+<li><strong>update_seq</strong> (<em>boolean</em>) &#8211; Response includes an <tt class="docutils literal"><span class="pre">update_seq</span></tt> value
+indicating which sequence id of the database the view reflects.
+Default is <tt class="docutils literal"><span class="pre">false</span></tt></li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name" colspan="2">Response Headers:</th></tr>
+<tr class="field-even field"><td>&nbsp;</td><td class="field-body"><ul class="first simple">
+<li><a class="reference external" href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.17">Content-Type</a> &#8211; <ul>
+<li><em class="mimetype">application/json</em></li>
+<li><em class="mimetype">text/plain; charset=utf-8</em></li>
+</ul>
+</li>
+<li><a class="reference external" href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.19">ETag</a> &#8211; Response signature</li>
+<li><a class="reference external" href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.41">Transfer-Encoding</a> &#8211; <tt class="docutils literal"><span class="pre">chunked</span></tt></li>
+</ul>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name" colspan="2">Response JSON Object:</th></tr>
+<tr class="field-odd field"><td>&nbsp;</td><td class="field-body"><ul class="first simple">
+<li><strong>offset</strong> (<em>number</em>) &#8211; Offset where the document list started</li>
+<li><strong>rows</strong> (<em>array</em>) &#8211; Array of view row objects. By default the information
+returned contains only the document ID and revision</li>
+<li><strong>total_rows</strong> (<em>number</em>) &#8211; Number of documents in the database/view</li>
+<li><strong>update_seq</strong> (<em>number</em>) &#8211; Current update sequence for the database</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Status Codes:</th><td class="field-body"><ul class="first last simple">
+<li><a class="reference external" href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.2.1">200 OK</a> &#8211; Request completed successfully</li>
+<li><a class="reference external" href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.4.1">400 Bad Request</a> &#8211; Invalid request</li>
+<li><a class="reference external" href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.4.2">401 Unauthorized</a> &#8211; Read permission required</li>
+<li><a class="reference external" href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.4.5">404 Not Found</a> &#8211; Specified database, design document or view is missed</li>
+<li><a class="reference external" href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.5.1">500 Internal Server Error</a> &#8211; View function execution error</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Request</strong>:</p>
+<div class="highlight-http"><div class="highlight"><pre><span class="nf">GET</span> <span class="nn">/recipes/_design/ingredients/_view/by_name</span> <span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span>
+<span class="na">Accept</span><span class="o">:</span> <span class="l">application/json</span>
+<span class="na">Host</span><span class="o">:</span> <span class="l">localhost:5984</span>
+</pre></div>
+</div>
+<p><strong>Response</strong>:</p>
+<div class="highlight-http"><div class="highlight"><pre><span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span> <span class="m">200</span> <span class="ne">OK</span>
+<span class="na">Cache-Control</span><span class="o">:</span> <span class="l">must-revalidate</span>
+<span class="na">Content-Type</span><span class="o">:</span> <span class="l">application/json</span>
+<span class="na">Date</span><span class="o">:</span> <span class="l">Wed, 21 Aug 2013 09:12:06 GMT</span>
+<span class="na">ETag</span><span class="o">:</span> <span class="l">&quot;2FOLSBSW4O6WB798XU4AQYA9B&quot;</span>
+<span class="na">Server</span><span class="o">:</span> <span class="l">CouchDB (Erlang/OTP)</span>
+<span class="na">Transfer-Encoding</span><span class="o">:</span> <span class="l">chunked</span>
+
+<span class="p">{</span>
+    <span class="nt">&quot;offset&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="nt">&quot;rows&quot;</span><span class="p">:</span> <span class="p">[</span>
+        <span class="p">{</span>
+            <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;SpaghettiWithMeatballs&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;key&quot;</span><span class="p">:</span> <span class="s2">&quot;meatballs&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;value&quot;</span><span class="p">:</span> <span class="mi">1</span>
+        <span class="p">},</span>
+        <span class="p">{</span>
+            <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;SpaghettiWithMeatballs&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;key&quot;</span><span class="p">:</span> <span class="s2">&quot;spaghetti&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;value&quot;</span><span class="p">:</span> <span class="mi">1</span>
+        <span class="p">},</span>
+        <span class="p">{</span>
+            <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;SpaghettiWithMeatballs&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;key&quot;</span><span class="p">:</span> <span class="s2">&quot;tomato sauce&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;value&quot;</span><span class="p">:</span> <span class="mi">1</span>
+        <span class="p">}</span>
+    <span class="p">],</span>
+    <span class="nt">&quot;total_rows&quot;</span><span class="p">:</span> <span class="mi">3</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<div class="versionchanged">
+<p><span class="versionmodified">Changed in version 1.6.0: </span>added <tt class="docutils literal"><span class="pre">attachments</span></tt> and <tt class="docutils literal"><span class="pre">att_encoding_info</span></tt>
+parameters</p>
+</div>
+<div class="versionchanged">
+<p><span class="versionmodified">Changed in version 2.0.0: </span>added <tt class="docutils literal"><span class="pre">sorted</span></tt> parameter</p>
+</div>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">Using the <tt class="docutils literal"><span class="pre">attachments</span></tt> parameter to include attachments in view results
+is not recommended for large attachment sizes. Also note that the
+Base64-encoding that is used leads to a 33% overhead (i.e. one third) in
+transfer size for attachments.</p>
+</div>
+<dl class="post">
+<dt id="post--db-_design-ddoc-_view-view">
+<tt class="descname">POST </tt><tt class="descname">/{db}/_design/{ddoc}/_view/{view}</tt><a class="headerlink" href="#post--db-_design-ddoc-_view-view" title="Permalink to this definition">¶</a></dt>
+<dd><p>Executes the specified view function from the specified design document.
+Unlike <a class="reference internal" href="#get--db-_design-ddoc-_view-view" title="GET /{db}/_design/{ddoc}/_view/{view}"><tt class="xref http http-get docutils literal"><span class="pre">GET</span> <span class="pre">/{db}/_design/{ddoc}/_view/{view}</span></tt></a> for accessing views, the
+<a class="reference external" href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.5">POST</a> method supports the specification
+of explicit keys to be retrieved from the view results. The remainder of
+the <a class="reference external" href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.5">POST</a> view functionality is identical to the
+<a class="reference internal" href="#get--db-_design-ddoc-_view-view" title="GET /{db}/_design/{ddoc}/_view/{view}"><tt class="xref http http-get docutils literal"><span class="pre">GET</span> <span class="pre">/{db}/_design/{ddoc}/_view/{view}</span></tt></a> API.</p>
+<p><strong>Request</strong>:</p>
+<div class="highlight-http"><div class="highlight"><pre><span class="nf">POST</span> <span class="nn">/recipes/_design/ingredients/_view/by_name</span> <span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span>
+<span class="na">Accept</span><span class="o">:</span> <span class="l">application/json</span>
+<span class="na">Content-Length</span><span class="o">:</span> <span class="l">37</span>
+<span class="na">Host</span><span class="o">:</span> <span class="l">localhost:5984</span>
+
+<span class="p">{</span>
+    <span class="nt">&quot;keys&quot;</span><span class="p">:</span> <span class="p">[</span>
+        <span class="s2">&quot;meatballs&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;spaghetti&quot;</span>
+    <span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p><strong>Response</strong>:</p>
+<div class="highlight-http"><div class="highlight"><pre><span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span> <span class="m">200</span> <span class="ne">OK</span>
+<span class="na">Cache-Control</span><span class="o">:</span> <span class="l">must-revalidate</span>
+<span class="na">Content-Type</span><span class="o">:</span> <span class="l">application/json</span>
+<span class="na">Date</span><span class="o">:</span> <span class="l">Wed, 21 Aug 2013 09:14:13 GMT</span>
+<span class="na">ETag</span><span class="o">:</span> <span class="l">&quot;6R5NM8E872JIJF796VF7WI3FZ&quot;</span>
+<span class="na">Server</span><span class="o">:</span> <span class="l">CouchDB (Erlang/OTP)</span>
+<span class="na">Transfer-Encoding</span><span class="o">:</span> <span class="l">chunked</span>
+
+<span class="p">{</span>
+    <span class="nt">&quot;offset&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="nt">&quot;rows&quot;</span><span class="p">:</span> <span class="p">[</span>
+        <span class="p">{</span>
+            <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;SpaghettiWithMeatballs&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;key&quot;</span><span class="p">:</span> <span class="s2">&quot;meatballs&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;value&quot;</span><span class="p">:</span> <span class="mi">1</span>
+        <span class="p">},</span>
+        <span class="p">{</span>
+            <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;SpaghettiWithMeatballs&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;key&quot;</span><span class="p">:</span> <span class="s2">&quot;spaghetti&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;value&quot;</span><span class="p">:</span> <span class="mi">1</span>
+        <span class="p">}</span>
+    <span class="p">],</span>
+    <span class="nt">&quot;total_rows&quot;</span><span class="p">:</span> <span class="mi">3</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<div class="section" id="view-options">
+<span id="api-ddoc-view-options"></span><h2>View Options<a class="headerlink" href="#view-options" title="Permalink to this headline">¶</a></h2>
+<p>There are two view indexing options that can be defined in a design document
+as boolean properties of an <tt class="docutils literal"><span class="pre">options</span></tt> object. Unlike the others querying
+options, these aren&#8217;t URL parameters because they take effect when the view
+index is generated, not when it&#8217;s accessed:</p>
+<ul class="simple">
+<li><strong>local_seq</strong> (<em>boolean</em>): Makes documents&#8217; local sequence numbers available
+to map functions (as a <tt class="docutils literal"><span class="pre">_local_seq</span></tt> document property)</li>
+<li><strong>include_design</strong> (<em>boolean</em>): Allows map functions to be called on design
+documents as well as regular documents</li>
+</ul>
+</div>
+<div class="section" id="querying-views-and-indexes">
+<span id="api-ddoc-view-indexing"></span><h2>Querying Views and Indexes<a class="headerlink" href="#querying-views-and-indexes" title="Permalink to this headline">¶</a></h2>
+<p>The definition of a view within a design document also creates an index based
+on the key information defined within each view. The production and use of the
+index significantly increases the speed of access and searching or selecting
+documents from the view.</p>
+<p>However, the index is not updated when new documents are added or modified in
+the database. Instead, the index is generated or updated, either when the view
+is first accessed, or when the view is accessed after a document has been
+updated. In each case, the index is updated before the view query is executed
+against the database.</p>
+<p>View indexes are updated incrementally in the following situations:</p>
+<ul class="simple">
+<li>A new document has been added to the database.</li>
+<li>A document has been deleted from the database.</li>
+<li>A document in the database has been updated.</li>
+</ul>
+<p>View indexes are rebuilt entirely when the view definition changes. To achieve
+this, a &#8216;fingerprint&#8217; of the view definition is created when the design
+document is updated. If the fingerprint changes, then the view indexes are
+entirely rebuilt. This ensures that changes to the view definitions are
+reflected in the view indexes.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">View index rebuilds occur when one view from the same the view group (i.e.
+all the views defined within a single a design document) has been
+determined as needing a rebuild. For example, if if you have a design
+document with different views, and you update the database, all three view
+indexes within the design document will be updated.</p>
+</div>
+<p>Because the view is updated when it has been queried, it can result in a delay
+in returned information when the view is accessed, especially if there are a
+large number of documents in the database and the view index does not exist.
+There are a number of ways to mitigate, but not completely eliminate, these
+issues. These include:</p>
+<ul class="simple">
+<li>Create the view definition (and associated design documents) on your database
+before allowing insertion or updates to the documents. If this is allowed
+while the view is being accessed, the index can be updated incrementally.</li>
+<li>Manually force a view request from the database. You can do this either
+before users are allowed to use the view, or you can access the view manually
+after documents are added or updated.</li>
+<li>Use the <a class="reference internal" href="../database/changes.html#api-db-changes"><em>changes feed</em></a> to monitor for changes to the
+database and then access the view to force the corresponding view index to be
+updated.</li>
+<li>Use a monitor with the <a class="reference internal" href="../../config/externals.html#update-notifications"><em>update notification</em></a>
+section of the CouchDB configuration file to monitor for changes to your
+database, and trigger a view query to force the view to be updated.</li>
+</ul>
+<p>None of these can completely eliminate the need for the indexes to be rebuilt
+or updated when the view is accessed, but they may lessen the effects on
+end-users of the index update affecting the user experience.</p>
+<p>Another alternative is to allow users to access a &#8216;stale&#8217; version of the view
+index, rather than forcing the index to be updated and displaying the updated
+results. Using a stale view may not return the latest information, but will
+return the results of the view query using an existing version of the index.</p>
+<p>For example, to access the existing stale view <tt class="docutils literal"><span class="pre">by_recipe</span></tt> in the
+<tt class="docutils literal"><span class="pre">recipes</span></tt> design document:</p>
+<div class="highlight-text"><div class="highlight"><pre>http://localhost:5984/recipes/_design/recipes/_view/by_recipe?stale=ok
+</pre></div>
+</div>
+<p>Accessing a stale view:</p>
+<ul class="simple">
+<li>Does not trigger a rebuild of the view indexes, even if there have been
+changes since the last access.</li>
+<li>Returns the current version of the view index, if a current version exists.</li>
+<li>Returns an empty result set if the given view index does exist.</li>
+</ul>
+<p>As an alternative, you use the <tt class="docutils literal"><span class="pre">update_after</span></tt> value to the <tt class="docutils literal"><span class="pre">stale</span></tt>
+parameter. This causes the view to be returned as a stale view, but for the
+update process to be triggered after the view information has been returned to
+the client.</p>
+<p>In addition to using stale views, you can also make use of the <tt class="docutils literal"><span class="pre">update_seq</span></tt>
+query argument. Using this query argument generates the view information
+including the update sequence of the database from which the view was
+generated. The returned value can be compared this to the current update
+sequence exposed in the database information (returned by <a class="reference internal" href="../database/common.html#get--db" title="GET /{db}"><tt class="xref http http-get docutils literal"><span class="pre">GET</span> <span class="pre">/{db}</span></tt></a>).</p>
+</div>
+<div class="section" id="sorting-returned-rows">
+<span id="api-ddoc-view-sorting"></span><h2>Sorting Returned Rows<a class="headerlink" href="#sorting-returned-rows" title="Permalink to this headline">¶</a></h2>
+<p>Each element within the returned array is sorted using native UTF-8 sorting
+according to the contents of the key portion of the emitted content. The basic
+order of output is as follows:</p>
+<ul class="simple">
+<li><tt class="docutils literal"><span class="pre">null</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">false</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">true</span></tt></li>
+<li>Numbers</li>
+<li>Text (case sensitive, lowercase first)</li>
+<li>Arrays (according to the values of each element, in order)</li>
+<li>Objects (according to the values of keys, in key order)</li>
+</ul>
+<p><strong>Request</strong>:</p>
+<div class="highlight-http"><div class="highlight"><pre><span class="nf">GET</span> <span class="nn">/db/_design/test/_view/sorting</span> <span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span>
+<span class="na">Accept</span><span class="o">:</span> <span class="l">application/json</span>
+<span class="na">Host</span><span class="o">:</span> <span class="l">localhost:5984</span>
+</pre></div>
+</div>
+<p><strong>Response</strong>:</p>
+<div class="highlight-http"><div class="highlight"><pre><span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span> <span class="m">200</span> <span class="ne">OK</span>
+<span class="na">Cache-Control</span><span class="o">:</span> <span class="l">must-revalidate</span>
+<span class="na">Content-Type</span><span class="o">:</span> <span class="l">application/json</span>
+<span class="na">Date</span><span class="o">:</span> <span class="l">Wed, 21 Aug 2013 10:09:25 GMT</span>
+<span class="na">ETag</span><span class="o">:</span> <span class="l">&quot;8LA1LZPQ37B6R9U8BK9BGQH27&quot;</span>
+<span class="na">Server</span><span class="o">:</span> <span class="l">CouchDB (Erlang/OTP)</span>
+<span class="na">Transfer-Encoding</span><span class="o">:</span> <span class="l">chunked</span>
+
+<span class="p">{</span>
+    <span class="nt">&quot;offset&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="nt">&quot;rows&quot;</span><span class="p">:</span> <span class="p">[</span>
+        <span class="p">{</span>
+            <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;dummy-doc&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;key&quot;</span><span class="p">:</span> <span class="kc">null</span><span class="p">,</span>
+            <span class="nt">&quot;value&quot;</span><span class="p">:</span> <span class="kc">null</span>
+        <span class="p">},</span>
+        <span class="p">{</span>
+            <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;dummy-doc&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;key&quot;</span><span class="p">:</span> <span class="kc">false</span><span class="p">,</span>
+            <span class="nt">&quot;value&quot;</span><span class="p">:</span> <span class="kc">null</span>
+        <span class="p">},</span>
+        <span class="p">{</span>
+            <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;dummy-doc&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;key&quot;</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
+            <span class="nt">&quot;value&quot;</span><span class="p">:</span> <span class="kc">null</span>
+        <span class="p">},</span>
+        <span class="p">{</span>
+            <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;dummy-doc&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;key&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+            <span class="nt">&quot;value&quot;</span><span class="p">:</span> <span class="kc">null</span>
+        <span class="p">},</span>
+        <span class="p">{</span>
+            <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;dummy-doc&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;key&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+            <span class="nt">&quot;value&quot;</span><span class="p">:</span> <span class="kc">null</span>
+        <span class="p">},</span>
+        <span class="p">{</span>
+            <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;dummy-doc&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;key&quot;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span>
+            <span class="nt">&quot;value&quot;</span><span class="p">:</span> <span class="kc">null</span>
+        <span class="p">},</span>
+        <span class="p">{</span>
+            <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;dummy-doc&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;key&quot;</span><span class="p">:</span> <span class="mi">42</span><span class="p">,</span>
+            <span class="nt">&quot;value&quot;</span><span class="p">:</span> <span class="kc">null</span>
+        <span class="p">},</span>
+        <span class="p">{</span>
+            <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;dummy-doc&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;key&quot;</span><span class="p">:</span> <span class="s2">&quot;10&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;value&quot;</span><span class="p">:</span> <span class="kc">null</span>
+        <span class="p">},</span>
+        <span class="p">{</span>
+            <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;dummy-doc&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;key&quot;</span><span class="p">:</span> <span class="s2">&quot;hello&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;value&quot;</span><span class="p">:</span> <span class="kc">null</span>
+        <span class="p">},</span>
+        <span class="p">{</span>
+            <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;dummy-doc&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;key&quot;</span><span class="p">:</span> <span class="s2">&quot;Hello&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;value&quot;</span><span class="p">:</span> <span class="kc">null</span>
+        <span class="p">},</span>
+        <span class="p">{</span>
+            <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;dummy-doc&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;key&quot;</span><span class="p">:</span> <span class="s2">&quot;\u043f\u0440\u0438\u0432\u0435\u0442&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;value&quot;</span><span class="p">:</span> <span class="kc">null</span>
+        <span class="p">},</span>
+        <span class="p">{</span>
+            <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;dummy-doc&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;key&quot;</span><span class="p">:</span> <span class="p">[],</span>
+            <span class="nt">&quot;value&quot;</span><span class="p">:</span> <span class="kc">null</span>
+        <span class="p">},</span>
+        <span class="p">{</span>
+            <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;dummy-doc&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;key&quot;</span><span class="p">:</span> <span class="p">[</span>
+                <span class="mi">1</span><span class="p">,</span>
+                <span class="mi">2</span><span class="p">,</span>
+                <span class="mi">3</span>
+            <span class="p">],</span>
+            <span class="nt">&quot;value&quot;</span><span class="p">:</span> <span class="kc">null</span>
+        <span class="p">},</span>
+        <span class="p">{</span>
+            <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;dummy-doc&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;key&quot;</span><span class="p">:</span> <span class="p">[</span>
+                <span class="mi">2</span><span class="p">,</span>
+                <span class="mi">3</span>
+            <span class="p">],</span>
+            <span class="nt">&quot;value&quot;</span><span class="p">:</span> <span class="kc">null</span>
+        <span class="p">},</span>
+        <span class="p">{</span>
+            <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;dummy-doc&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;key&quot;</span><span class="p">:</span> <span class="p">[</span>
+                <span class="mi">3</span>
+            <span class="p">],</span>
+            <span class="nt">&quot;value&quot;</span><span class="p">:</span> <span class="kc">null</span>
+        <span class="p">},</span>
+        <span class="p">{</span>
+            <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;dummy-doc&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;key&quot;</span><span class="p">:</span> <span class="p">{},</span>
+            <span class="nt">&quot;value&quot;</span><span class="p">:</span> <span class="kc">null</span>
+        <span class="p">},</span>
+        <span class="p">{</span>
+            <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;dummy-doc&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;key&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="nt">&quot;foo&quot;</span><span class="p">:</span> <span class="s2">&quot;bar&quot;</span>
+            <span class="p">},</span>
+            <span class="nt">&quot;value&quot;</span><span class="p">:</span> <span class="kc">null</span>
+        <span class="p">}</span>
+    <span class="p">],</span>
+    <span class="nt">&quot;total_rows&quot;</span><span class="p">:</span> <span class="mi">17</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>You can reverse the order of the returned view information by using the
+<tt class="docutils literal"><span class="pre">descending</span></tt> query value set to true:</p>
+<p><strong>Request</strong>:</p>
+<div class="highlight-http"><div class="highlight"><pre><span class="nf">GET</span> <span class="nn">/db/_design/test/_view/sorting?descending=true</span> <span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span>
+<span class="na">Accept</span><span class="o">:</span> <span class="l">application/json</span>
+<span class="na">Host</span><span class="o">:</span> <span class="l">localhost:5984</span>
+</pre></div>
+</div>
+<p><strong>Response</strong>:</p>
+<div class="highlight-http"><div class="highlight"><pre><span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span> <span class="m">200</span> <span class="ne">OK</span>
+<span class="na">Cache-Control</span><span class="o">:</span> <span class="l">must-revalidate</span>
+<span class="na">Content-Type</span><span class="o">:</span> <span class="l">application/json</span>
+<span class="na">Date</span><span class="o">:</span> <span class="l">Wed, 21 Aug 2013 10:09:25 GMT</span>
+<span class="na">ETag</span><span class="o">:</span> <span class="l">&quot;Z4N468R15JBT98OM0AMNSR8U&quot;</span>
+<span class="na">Server</span><span class="o">:</span> <span class="l">CouchDB (Erlang/OTP)</span>
+<span class="na">Transfer-Encoding</span><span class="o">:</span> <span class="l">chunked</span>
+
+<span class="p">{</span>
+    <span class="nt">&quot;offset&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="nt">&quot;rows&quot;</span><span class="p">:</span> <span class="p">[</span>
+        <span class="p">{</span>
+            <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;dummy-doc&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;key&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="nt">&quot;foo&quot;</span><span class="p">:</span> <span class="s2">&quot;bar&quot;</span>
+            <span class="p">},</span>
+            <span class="nt">&quot;value&quot;</span><span class="p">:</span> <span class="kc">null</span>
+        <span class="p">},</span>
+        <span class="p">{</span>
+            <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;dummy-doc&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;key&quot;</span><span class="p">:</span> <span class="p">{},</span>
+            <span class="nt">&quot;value&quot;</span><span class="p">:</span> <span class="kc">null</span>
+        <span class="p">},</span>
+        <span class="p">{</span>
+            <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;dummy-doc&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;key&quot;</span><span class="p">:</span> <span class="p">[</span>
+                <span class="mi">3</span>
+            <span class="p">],</span>
+            <span class="nt">&quot;value&quot;</span><span class="p">:</span> <span class="kc">null</span>
+        <span class="p">},</span>
+        <span class="p">{</span>
+            <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;dummy-doc&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;key&quot;</span><span class="p">:</span> <span class="p">[</span>
+                <span class="mi">2</span><span class="p">,</span>
+                <span class="mi">3</span>
+            <span class="p">],</span>
+            <span class="nt">&quot;value&quot;</span><span class="p">:</span> <span class="kc">null</span>
+        <span class="p">},</span>
+        <span class="p">{</span>
+            <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;dummy-doc&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;key&quot;</span><span class="p">:</span> <span class="p">[</span>
+                <span class="mi">1</span><span class="p">,</span>
+                <span class="mi">2</span><span class="p">,</span>
+                <span class="mi">3</span>
+            <span class="p">],</span>
+            <span class="nt">&quot;value&quot;</span><span class="p">:</span> <span class="kc">null</span>
+        <span class="p">},</span>
+        <span class="p">{</span>
+            <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;dummy-doc&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;key&quot;</span><span class="p">:</span> <span class="p">[],</span>
+            <span class="nt">&quot;value&quot;</span><span class="p">:</span> <span class="kc">null</span>
+        <span class="p">},</span>
+        <span class="p">{</span>
+            <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;dummy-doc&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;key&quot;</span><span class="p">:</span> <span class="s2">&quot;\u043f\u0440\u0438\u0432\u0435\u0442&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;value&quot;</span><span class="p">:</span> <span class="kc">null</span>
+        <span class="p">},</span>
+        <span class="p">{</span>
+            <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;dummy-doc&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;key&quot;</span><span class="p">:</span> <span class="s2">&quot;Hello&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;value&quot;</span><span class="p">:</span> <span class="kc">null</span>
+        <span class="p">},</span>
+        <span class="p">{</span>
+            <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;dummy-doc&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;key&quot;</span><span class="p">:</span> <span class="s2">&quot;hello&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;value&quot;</span><span class="p">:</span> <span class="kc">null</span>
+        <span class="p">},</span>
+        <span class="p">{</span>
+            <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;dummy-doc&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;key&quot;</span><span class="p">:</span> <span class="s2">&quot;10&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;value&quot;</span><span class="p">:</span> <span class="kc">null</span>
+        <span class="p">},</span>
+        <span class="p">{</span>
+            <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;dummy-doc&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;key&quot;</span><span class="p">:</span> <span class="mi">42</span><span class="p">,</span>
+            <span class="nt">&quot;value&quot;</span><span class="p">:</span> <span class="kc">null</span>
+        <span class="p">},</span>
+        <span class="p">{</span>
+            <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;dummy-doc&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;key&quot;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span>
+            <span class="nt">&quot;value&quot;</span><span class="p">:</span> <span class="kc">null</span>
+        <span class="p">},</span>
+        <span class="p">{</span>
+            <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;dummy-doc&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;key&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+            <span class="nt">&quot;value&quot;</span><span class="p">:</span> <span class="kc">null</span>
+        <span class="p">},</span>
+        <span class="p">{</span>
+            <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;dummy-doc&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;key&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+            <span class="nt">&quot;value&quot;</span><span class="p">:</span> <span class="kc">null</span>
+        <span class="p">},</span>
+        <span class="p">{</span>
+            <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;dummy-doc&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;key&quot;</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
+            <span class="nt">&quot;value&quot;</span><span class="p">:</span> <span class="kc">null</span>
+        <span class="p">},</span>
+        <span class="p">{</span>
+            <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;dummy-doc&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;key&quot;</span><span class="p">:</span> <span class="kc">false</span><span class="p">,</span>
+            <span class="nt">&quot;value&quot;</span><span class="p">:</span> <span class="kc">null</span>
+        <span class="p">},</span>
+        <span class="p">{</span>
+            <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;dummy-doc&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;key&quot;</span><span class="p">:</span> <span class="kc">null</span><span class="p">,</span>
+            <span class="nt">&quot;value&quot;</span><span class="p">:</span> <span class="kc">null</span>
+        <span class="p">}</span>
+    <span class="p">],</span>
+    <span class="nt">&quot;total_rows&quot;</span><span class="p">:</span> <span class="mi">17</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<div class="section" id="sorting-order-and-startkey-endkey">
+<h3>Sorting order and startkey/endkey<a class="headerlink" href="#sorting-order-and-startkey-endkey" title="Permalink to this headline">¶</a></h3>
+<p>The sorting direction is applied before the filtering applied using the
+<tt class="docutils literal"><span class="pre">startkey</span></tt> and <tt class="docutils literal"><span class="pre">endkey</span></tt> query arguments. For example the following query:</p>
+<div class="highlight-http"><div class="highlight"><pre><span class="nf">GET</span> <span class="nn">http://couchdb:5984/recipes/_design/recipes/_view/by_ingredient?startkey=%22carrots%22&amp;endkey=%22egg%22</span> <span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span>
+<span class="na">Accept</span><span class="o">:</span> <span class="l">application/json</span>
+</pre></div>
+</div>
+<p>will operate correctly when listing all the matching entries between
+<tt class="docutils literal"><span class="pre">carrots</span></tt> and <tt class="docutils literal"><span class="pre">egg</span></tt>. If the order of output is reversed with the
+<tt class="docutils literal"><span class="pre">descending</span></tt> query argument, the view request will return no entries:</p>
+<div class="highlight-http"><div class="highlight"><pre><span class="nf">GET</span> <span class="nn">/recipes/_design/recipes/_view/by_ingredient?descending=true&amp;startkey=%22carrots%22&amp;endkey=%22egg%22</span> <span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span>
+<span class="na">Accept</span><span class="o">:</span> <span class="l">application/json</span>
+<span class="na">Host</span><span class="o">:</span> <span class="l">localhost:5984</span>
+
+<span class="p">{</span>
+    <span class="nt">&quot;total_rows&quot;</span> <span class="p">:</span> <span class="mi">26453</span><span class="p">,</span>
+    <span class="nt">&quot;rows&quot;</span> <span class="p">:</span> <span class="p">[],</span>
+    <span class="nt">&quot;offset&quot;</span> <span class="p">:</span> <span class="mi">21882</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>The results will be empty because the entries in the view are reversed before
+the key filter is applied, and therefore the <tt class="docutils literal"><span class="pre">endkey</span></tt> of “egg” will be seen
+before the <tt class="docutils literal"><span class="pre">startkey</span></tt> of “carrots”, resulting in an empty list.</p>
+<p>Instead, you should reverse the values supplied to the <tt class="docutils literal"><span class="pre">startkey</span></tt> and
+<tt class="docutils literal"><span class="pre">endkey</span></tt> parameters to match the descending sorting applied to the keys.
+Changing the previous example to:</p>
+<div class="highlight-http"><div class="highlight"><pre><span class="nf">GET</span> <span class="nn">/recipes/_design/recipes/_view/by_ingredient?descending=true&amp;startkey=%22egg%22&amp;endkey=%22carrots%22</span> <span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span>
+<span class="na">Accept</span><span class="o">:</span> <span class="l">application/json</span>
+<span class="na">Host</span><span class="o">:</span> <span class="l">localhost:5984</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="raw-collation">
+<span id="api-ddoc-view-sorting-raw"></span><h3>Raw collation<a class="headerlink" href="#raw-collation" title="Permalink to this headline">¶</a></h3>
+<p>By default CouchDB using <a class="reference external" href="http://site.icu-project.org/">ICU</a> driver for sorting view results. It&#8217;s possible
+use binary collation instead for faster view builds where Unicode collation is
+not important.</p>
+<p>To use raw collation add <tt class="docutils literal"><span class="pre">&quot;collation&quot;:</span> <span class="pre">&quot;raw&quot;</span></tt> key-value pair to the design
+documents <tt class="docutils literal"><span class="pre">options</span></tt> object at the root level. After that, views will be
+regenerated and new order applied.</p>
+<div class="admonition seealso">
+<p class="first admonition-title">See also</p>
+<p class="last"><a class="reference internal" href="../../couchapp/views/collation.html#views-collation"><em>Views Collation</em></a></p>
+</div>
+</div>
+</div>
+<div class="section" id="using-limits-and-skipping-rows">
+<span id="api-ddoc-view-limiting"></span><h2>Using Limits and Skipping Rows<a class="headerlink" href="#using-limits-and-skipping-rows" title="Permalink to this headline">¶</a></h2>
+<p>By default requestion views result returns all records for it. That&#8217;s ok when
+they are small, but this may lead to problems when there are billions of them
+since the clients might have to read them all and consume all available memory.</p>
+<p>But it&#8217;s possible to reduce output result rows by specifying <tt class="docutils literal"><span class="pre">limit</span></tt> query
+parameter. For example, retrieving the list of recipes using the <tt class="docutils literal"><span class="pre">by_title</span></tt>
+view and limited to 5 returns only 5 records, while there are total 2667
+records in view:</p>
+<p><strong>Request</strong>:</p>
+<div class="highlight-http"><div class="highlight"><pre><span class="nf">GET</span> <span class="nn">/recipes/_design/recipes/_view/by_title?limit=5</span> <span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span>
+<span class="na">Accept</span><span class="o">:</span> <span class="l">application/json</span>
+<span class="na">Host</span><span class="o">:</span> <span class="l">localhost:5984</span>
+</pre></div>
+</div>
+<p><strong>Response</strong>:</p>
+<div class="highlight-http"><div class="highlight"><pre><span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span> <span class="m">200</span> <span class="ne">OK</span>
+<span class="na">Cache-Control</span><span class="o">:</span> <span class="l">must-revalidate</span>
+<span class="na">Content-Type</span><span class="o">:</span> <span class="l">application/json</span>
+<span class="na">Date</span><span class="o">:</span> <span class="l">Wed, 21 Aug 2013 09:14:13 GMT</span>
+<span class="na">ETag</span><span class="o">:</span> <span class="l">&quot;9Q6Q2GZKPH8D5F8L7PB6DBSS9&quot;</span>
+<span class="na">Server</span><span class="o">:</span> <span class="l">CouchDB (Erlang/OTP)</span>
+<span class="na">Transfer-Encoding</span><span class="o">:</span> <span class="l">chunked</span>
+
+<span class="p">{</span>
+    <span class="nt">&quot;offset&quot;</span> <span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="nt">&quot;rows&quot;</span> <span class="p">:</span> <span class="p">[</span>
+        <span class="p">{</span>
+            <span class="nt">&quot;id&quot;</span> <span class="p">:</span> <span class="s2">&quot;3-tiersalmonspinachandavocadoterrine&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;key&quot;</span> <span class="p">:</span> <span class="s2">&quot;3-tier salmon, spinach and avocado terrine&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;value&quot;</span> <span class="p">:</span> <span class="p">[</span>
+                <span class="kc">null</span><span class="p">,</span>
+                <span class="s2">&quot;3-tier salmon, spinach and avocado terrine&quot;</span>
+            <span class="p">]</span>
+        <span class="p">},</span>
+        <span class="p">{</span>
+            <span class="nt">&quot;id&quot;</span> <span class="p">:</span> <span class="s2">&quot;Aberffrawcake&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;key&quot;</span> <span class="p">:</span> <span class="s2">&quot;Aberffraw cake&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;value&quot;</span> <span class="p">:</span> <span class="p">[</span>
+                <span class="kc">null</span><span class="p">,</span>
+                <span class="s2">&quot;Aberffraw cake&quot;</span>
+            <span class="p">]</span>
+        <span class="p">},</span>
+        <span class="p">{</span>
+            <span class="nt">&quot;id&quot;</span> <span class="p">:</span> <span class="s2">&quot;Adukiandorangecasserole-microwave&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;key&quot;</span> <span class="p">:</span> <span class="s2">&quot;Aduki and orange casserole - microwave&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;value&quot;</span> <span class="p">:</span> <span class="p">[</span>
+                <span class="kc">null</span><span class="p">,</span>
+                <span class="s2">&quot;Aduki and orange casserole - microwave&quot;</span>
+            <span class="p">]</span>
+        <span class="p">},</span>
+        <span class="p">{</span>
+            <span class="nt">&quot;id&quot;</span> <span class="p">:</span> <span class="s2">&quot;Aioli-garlicmayonnaise&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;key&quot;</span> <span class="p">:</span> <span class="s2">&quot;Aioli - garlic mayonnaise&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;value&quot;</span> <span class="p">:</span> <span class="p">[</span>
+                <span class="kc">null</span><span class="p">,</span>
+                <span class="s2">&quot;Aioli - garlic mayonnaise&quot;</span>
+            <span class="p">]</span>
+        <span class="p">},</span>
+        <span class="p">{</span>
+            <span class="nt">&quot;id&quot;</span> <span class="p">:</span> <span class="s2">&quot;Alabamapeanutchicken&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;key&quot;</span> <span class="p">:</span> <span class="s2">&quot;Alabama peanut chicken&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;value&quot;</span> <span class="p">:</span> <span class="p">[</span>
+                <span class="kc">null</span><span class="p">,</span>
+                <span class="s2">&quot;Alabama peanut chicken&quot;</span>
+            <span class="p">]</span>
+        <span class="p">}</span>
+    <span class="p">],</span>
+    <span class="nt">&quot;total_rows&quot;</span> <span class="p">:</span> <span class="mi">2667</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>To omit some records you may use <tt class="docutils literal"><span class="pre">skip</span></tt> query parameter:</p>
+<p><strong>Request</strong>:</p>
+<div class="highlight-http"><div class="highlight"><pre><span class="nf">GET</span> <span class="nn">/recipes/_design/recipes/_view/by_title?limit=3&amp;skip=2</span> <span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span>
+<span class="na">Accept</span><span class="o">:</span> <span class="l">application/json</span>
+<span class="na">Host</span><span class="o">:</span> <span class="l">localhost:5984</span>
+</pre></div>
+</div>
+<p><strong>Response</strong>:</p>
+<div class="highlight-http"><div class="highlight"><pre><span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span> <span class="m">200</span> <span class="ne">OK</span>
+<span class="na">Cache-Control</span><span class="o">:</span> <span class="l">must-revalidate</span>
+<span class="na">Content-Type</span><span class="o">:</span> <span class="l">application/json</span>
+<span class="na">Date</span><span class="o">:</span> <span class="l">Wed, 21 Aug 2013 09:14:13 GMT</span>
+<span class="na">ETag</span><span class="o">:</span> <span class="l">&quot;H3G7YZSNIVRRHO5FXPE16NJHN&quot;</span>
+<span class="na">Server</span><span class="o">:</span> <span class="l">CouchDB (Erlang/OTP)</span>
+<span class="na">Transfer-Encoding</span><span class="o">:</span> <span class="l">chunked</span>
+
+<span class="p">{</span>
+    <span class="nt">&quot;offset&quot;</span> <span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
+    <span class="nt">&quot;rows&quot;</span> <span class="p">:</span> <span class="p">[</span>
+        <span class="p">{</span>
+            <span class="nt">&quot;id&quot;</span> <span class="p">:</span> <span class="s2">&quot;Adukiandorangecasserole-microwave&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;key&quot;</span> <span class="p">:</span> <span class="s2">&quot;Aduki and orange casserole - microwave&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;value&quot;</span> <span class="p">:</span> <span class="p">[</span>
+                <span class="kc">null</span><span class="p">,</span>
+                <span class="s2">&quot;Aduki and orange casserole - microwave&quot;</span>
+            <span class="p">]</span>
+        <span class="p">},</span>
+        <span class="p">{</span>
+            <span class="nt">&quot;id&quot;</span> <span class="p">:</span> <span class="s2">&quot;Aioli-garlicmayonnaise&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;key&quot;</span> <span class="p">:</span> <span class="s2">&quot;Aioli - garlic mayonnaise&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;value&quot;</span> <span class="p">:</span> <span class="p">[</span>
+                <span class="kc">null</span><span class="p">,</span>
+                <span class="s2">&quot;Aioli - garlic mayonnaise&quot;</span>
+            <span class="p">]</span>
+        <span class="p">},</span>
+        <span class="p">{</span>
+            <span class="nt">&quot;id&quot;</span> <span class="p">:</span> <span class="s2">&quot;Alabamapeanutchicken&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;key&quot;</span> <span class="p">:</span> <span class="s2">&quot;Alabama peanut chicken&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;value&quot;</span> <span class="p">:</span> <span class="p">[</span>
+                <span class="kc">null</span><span class="p">,</span>
+                <span class="s2">&quot;Alabama peanut chicken&quot;</span>
+            <span class="p">]</span>
+        <span class="p">}</span>
+    <span class="p">],</span>
+    <span class="nt">&quot;total_rows&quot;</span> <span class="p">:</span> <span class="mi">2667</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">Using <tt class="docutils literal"><span class="pre">limit</span></tt> and <tt class="docutils literal"><span class="pre">skip</span></tt> parameters is not recommended for results
+pagination. Read <a class="reference internal" href="../../couchapp/views/pagination.html#views-pagination"><em>pagination recipe</em></a> why it&#8217;s so
+and how to make it better.</p>
+</div>
+</div>
+<div class="section" id="sending-multiple-queries-to-a-view">
+<span id="api-ddoc-view-multiple-queries"></span><h2>Sending multiple queries to a view<a class="headerlink" href="#sending-multiple-queries-to-a-view" title="Permalink to this headline">¶</a></h2>
+<div class="versionadded">
+<p><span class="versionmodified">New in version 2.0.</span></p>
+</div>
+<dl class="post">
+<dt id="post--db-_design-ddoc-_view-view">
+<tt class="descname">POST </tt><tt class="descname">/{db}/_design/{ddoc}/_view/{view}</tt><a class="headerlink" href="#post--db-_design-ddoc-_view-view" title="Permalink to this definition">¶</a></dt>
+<dd><p>Executes multiple specified view queries against the view function
+from the specified design document.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>db</strong> &#8211; Database name</li>
+<li><strong>ddoc</strong> &#8211; Design document name</li>
+<li><strong>view</strong> &#8211; View function name</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name" colspan="2">Request Headers:</th></tr>
+<tr class="field-even field"><td>&nbsp;</td><td class="field-body"><ul class="first simple">
+<li><a class="reference external" href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.17">Content-Type</a> &#8211; <ul>
+<li><em class="mimetype">application/json</em></li>
+</ul>
+</li>
+<li><a class="reference external" href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.1">Accept</a> &#8211; <ul>
+<li><em class="mimetype">application/json</em></li>
+<li><em class="mimetype">text/plain</em></li>
+</ul>
+</li>
+</ul>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name" colspan="2">Query Parameters:</th></tr>
+<tr class="field-odd field"><td>&nbsp;</td><td class="field-body"><ul class="first simple">
+<li><strong>queries</strong> (<em>json</em>) &#8211; An array of query objects with fields for the
+parameters of each individual view query to be executed. The field names
+and their meaning are the same as the query parameters of a
+regular <a class="reference internal" href="#api-ddoc-view"><em>view request</em></a>.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name" colspan="2">Response Headers:</th></tr>
+<tr class="field-even field"><td>&nbsp;</td><td class="field-body"><ul class="first simple">
+<li><a class="reference external" href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.17">Content-Type</a> &#8211; <ul>
+<li><em class="mimetype">application/json</em></li>
+<li><em class="mimetype">text/plain; charset=utf-8</em></li>
+</ul>
+</li>
+<li><a class="reference external" href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.19">ETag</a> &#8211; Response signature</li>
+<li><a class="reference external" href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.41">Transfer-Encoding</a> &#8211; <tt class="docutils literal"><span class="pre">chunked</span></tt></li>
+</ul>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name" colspan="2">Response JSON Object:</th></tr>
+<tr class="field-odd field"><td>&nbsp;</td><td class="field-body"><ul class="first simple">
+<li><strong>results</strong> (<em>array</em>) &#8211; An array of result objects - one for each query. Each
+result object contains the same fields as the response to a regular
+<a class="reference internal" href="#api-ddoc-view"><em>view request</em></a>.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Status Codes:</th><td class="field-body"><ul class="first last simple">
+<li><a class="reference external" href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.2.1">200 OK</a> &#8211; Request completed successfully</li>
+<li><a class="reference external" href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.4.1">400 Bad Request</a> &#8211; Invalid request</li>
+<li><a class="reference external" href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.4.2">401 Unauthorized</a> &#8211; Read permission required</li>
+<li><a class="reference external" href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.4.5">404 Not Found</a> &#8211; Specified database, design document or view is missed</li>
+<li><a class="reference external" href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.5.1">500 Internal Server Error</a> &#8211; View function execution error</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<p><strong>Request</strong>:</p>
+<div class="highlight-http"><div class="highlight"><pre><span class="nf">POST</span> <span class="nn">/recipes/_design/recipes/_view/by_title</span> <span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span>
+<span class="na">Content-Type</span><span class="o">:</span> <span class="l">application/json</span>
+<span class="na">Accept</span><span class="o">:</span> <span class="l">application/json</span>
+<span class="na">Host</span><span class="o">:</span> <span class="l">localhost:5984</span>
+
+<span class="p">{</span>
+    <span class="nt">&quot;queries&quot;</span><span class="p">:</span> <span class="p">[</span>
+        <span class="p">{</span>
+            <span class="nt">&quot;keys&quot;</span><span class="p">:</span> <span class="p">[</span>
+                <span class="s2">&quot;meatballs&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;spaghetti&quot;</span>
+            <span class="p">]</span>
+        <span class="p">},</span>
+        <span class="p">{</span>
+            <span class="nt">&quot;limit&quot;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span>
+            <span class="nt">&quot;skip&quot;</span><span class="p">:</span> <span class="mi">2</span>
+        <span class="p">}</span>
+    <span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p><strong>Response</strong>:</p>
+<div class="highlight-http"><div class="highlight"><pre><span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span> <span class="m">200</span> <span class="ne">OK</span>
+<span class="na">Cache-Control</span><span class="o">:</span> <span class="l">must-revalidate</span>
+<span class="na">Content-Type</span><span class="o">:</span> <span class="l">application/json</span>
+<span class="na">Date</span><span class="o">:</span> <span class="l">Wed, 07 Sep 2016 11:17:07 GMT</span>
+<span class="na">ETag</span><span class="o">:</span> <span class="l">&quot;1H8RGBCK3ABY6ACDM7ZSC30QK&quot;</span>
+<span class="na">Server</span><span class="o">:</span> <span class="l">CouchDB (Erlang/OTP)</span>
+<span class="na">Transfer-Encoding</span><span class="o">:</span> <span class="l">chunked</span>
+
+<span class="p">{</span>
+    <span class="nt">&quot;results&quot;</span> <span class="p">:</span> <span class="p">[</span>
+        <span class="p">{</span>
+            <span class="nt">&quot;offset&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+            <span class="nt">&quot;rows&quot;</span><span class="p">:</span> <span class="p">[</span>
+                <span class="p">{</span>
+                    <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;SpaghettiWithMeatballs&quot;</span><span class="p">,</span>
+                    <span class="nt">&quot;key&quot;</span><span class="p">:</span> <span class="s2">&quot;meatballs&quot;</span><span class="p">,</span>
+                    <span class="nt">&quot;value&quot;</span><span class="p">:</span> <span class="mi">1</span>
+                <span class="p">},</span>
+                <span class="p">{</span>
+                    <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;SpaghettiWithMeatballs&quot;</span><span class="p">,</span>
+                    <span class="nt">&quot;key&quot;</span><span class="p">:</span> <span class="s2">&quot;spaghetti&quot;</span><span class="p">,</span>
+                    <span class="nt">&quot;value&quot;</span><span class="p">:</span> <span class="mi">1</span>
+                <span class="p">},</span>
+                <span class="p">{</span>
+                    <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;SpaghettiWithMeatballs&quot;</span><span class="p">,</span>
+                    <span class="nt">&quot;key&quot;</span><span class="p">:</span> <span class="s2">&quot;tomato sauce&quot;</span><span class="p">,</span>
+                    <span class="nt">&quot;value&quot;</span><span class="p">:</span> <span class="mi">1</span>
+                <span class="p">}</span>
+            <span class="p">],</span>
+            <span class="nt">&quot;total_rows&quot;</span><span class="p">:</span> <span class="mi">3</span>
+        <span class="p">},</span>
+        <span class="p">{</span>
+            <span class="nt">&quot;offset&quot;</span> <span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
+            <span class="nt">&quot;rows&quot;</span> <span class="p">:</span> <span class="p">[</span>
+                <span class="p">{</span>
+                    <span class="nt">&quot;id&quot;</span> <span class="p">:</span> <span class="s2">&quot;Adukiandorangecasserole-microwave&quot;</span><span class="p">,</span>
+                    <span class="nt">&quot;key&quot;</span> <span class="p">:</span> <span class="s2">&quot;Aduki and orange casserole - microwave&quot;</span><span class="p">,</span>
+                    <span class="nt">&quot;value&quot;</span> <span class="p">:</span> <span class="p">[</span>
+                        <span class="kc">null</span><span class="p">,</span>
+                        <span class="s2">&quot;Aduki and orange casserole - microwave&quot;</span>
+                    <span class="p">]</span>
+                <span class="p">},</span>
+                <span class="p">{</span>
+                    <span class="nt">&quot;id&quot;</span> <span class="p">:</span> <span class="s2">&quot;Aioli-garlicmayonnaise&quot;</span><span class="p">,</span>
+                    <span class="nt">&quot;key&quot;</span> <span class="p">:</span> <span class="s2">&quot;Aioli - garlic mayonnaise&quot;</span><span class="p">,</span>
+                    <span class="nt">&quot;value&quot;</span> <span class="p">:</span> <span class="p">[</span>
+                        <span class="kc">null</span><span class="p">,</span>
+                        <span class="s2">&quot;Aioli - garlic mayonnaise&quot;</span>
+                    <span class="p">]</span>
+                <span class="p">},</span>
+                <span class="p">{</span>
+                    <span class="nt">&quot;id&quot;</span> <span class="p">:</span> <span class="s2">&quot;Alabamapeanutchicken&quot;</span><span class="p">,</span>
+                    <span class="nt">&quot;key&quot;</span> <span class="p">:</span> <span class="s2">&quot;Alabama peanut chicken&quot;</span><span class="p">,</span>
+                    <span class="nt">&quot;value&quot;</span> <span class="p">:</span> <span class="p">[</span>
+                        <span class="kc">null</span><span class="p">,</span>
+                        <span class="s2">&quot;Alabama peanut chicken&quot;</span>
+                    <span class="p">]</span>
+                <span class="p">}</span>
+            <span class="p">],</span>
+            <span class="nt">&quot;total_rows&quot;</span> <span class="p">:</span> <span class="mi">2667</span>
+        <span class="p">}</span>
+    <span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+    <p class="logo"><a href="../../index.html">
+      <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+    </a></p><!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+<div id="searchbox" style="display: none">
+
+<h3>Quick Search</h3>
+
+<form class="search" action="../../search.html" method="get">
+<input type="text" name="q" style="width:115px">
+<input type="submit" value="Go">
+<input type="hidden" name="check_keywords" value="yes">
+<input type="hidden" name="area" value="default">
+</form>
+
+<br>
+
+</div>
+
+<script type="text/javascript">$('#searchbox').show(0);</script>
+  <h3><a href="../../contents.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">10.5.4. <tt class="docutils literal"><span class="pre">/db/_design/design-doc/_view/view-name</span></tt></a><ul>
+<li><a class="reference internal" href="#view-options">View Options</a></li>
+<li><a class="reference internal" href="#querying-views-and-indexes">Querying Views and Indexes</a></li>
+<li><a class="reference internal" href="#sorting-returned-rows">Sorting Returned Rows</a><ul>
+<li><a class="reference internal" href="#sorting-order-and-startkey-endkey">Sorting order and startkey/endkey</a></li>
+<li><a class="reference internal" href="#raw-collation">Raw collation</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#using-limits-and-skipping-rows">Using Limits and Skipping Rows</a></li>
+<li><a class="reference internal" href="#sending-multiple-queries-to-a-view">Sending multiple queries to a view</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="common.html"
+                        title="previous chapter">10.5.1. <tt class="docutils literal"><span class="pre">/db/_design/design-doc</span></tt></a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="render.html"
+                        title="next chapter">10.5.5. <tt class="docutils literal"><span class="pre">/db/_design/design-doc/_show/show-name</span></tt></a></p><!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+
+<h3>Utilities</h3>
+
+<ul>
+<li><a href="../">Fauxton</a></li>
+</ul>
+<!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+<h3>More Help</h3>
+
+<ul>
+<li><a href="https://couchdb.apache.org/">Homepage</a></li>
+<li><a href="https://cwiki.apache.org/confluence/display/COUCHDB/">Wiki</a></li>
+<li><a href="https://couchdb.apache.org/#mailing-list">Mailing Lists</a></li>
+<li><a href="http://webchat.freenode.net/?channels=couchdb">IRC</a></li>
+<li><a href="https://issues.apache.org/jira/browse/CouchDB">Issues</a></li>
+<li><a href="../../download.html">Download</a></li>
+<li><a href="https://github.com/apache/couchdb-documentation/blob/master/src/api/ddoc/views.rst"
+       rel="nofollow">Show on GitHub</a></li>
+<li><a href="https://github.com/apache/couchdb-documentation/edit/master/src/api/ddoc/views.rst"
+       rel="nofollow">Edit on GitHub</a></li>
+</ul><!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../http-api.html" title="HTTP API Reference"
+             >API Reference</a></li>
+        <li class="right" >
+          <a href="../../config-ref.html" title="Configuration Reference"
+             >Config Reference</a> |</li>
+        <li class="right" >
+          <a href="render.html" title="10.5.5. /db/_design/design-doc/_show/show-name"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="common.html" title="10.5.1. /db/_design/design-doc"
+             >previous</a> |</li>
+  <li><a href="../../index.html">Apache CouchDB 2.0 Documentation</a> &raquo;</li>
+          <li><a href="../index.html" >10. API Reference</a> &raquo;</li>
+          <li><a href="index.html" >10.5. Design Documents</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2016, Apache Software Foundation.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
+    </div>
+  </body>
+</html>

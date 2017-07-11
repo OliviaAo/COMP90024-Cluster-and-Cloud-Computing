@@ -1,0 +1,424 @@
+<!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>3.8. Replicator &mdash; Apache CouchDB 2.0 Documentation</title>
+    
+    <link rel="stylesheet" href="../_static/rtd.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '2.0.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+    <link rel="author" title="About these documents" href="../about.html" />
+    <link rel="top" title="Apache CouchDB 2.0 Documentation" href="../index.html" />
+    <link rel="up" title="3. Configuring CouchDB" href="index.html" />
+    <link rel="next" title="3.9. Query Servers" href="query-servers.html" />
+    <link rel="prev" title="3.7. Logging" href="logging.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../http-api.html" title="HTTP API Reference"
+             >API Reference</a></li>
+        <li class="right" >
+          <a href="../config-ref.html" title="Configuration Reference"
+             >Config Reference</a> |</li>
+        <li class="right" >
+          <a href="query-servers.html" title="3.9. Query Servers"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="logging.html" title="3.7. Logging"
+             accesskey="P">previous</a> |</li>
+  <li><a href="../index.html">Apache CouchDB 2.0 Documentation</a> &raquo;</li>
+          <li><a href="index.html" accesskey="U">3. Configuring CouchDB</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="replicator">
+<h1>3.8. Replicator<a class="headerlink" href="#replicator" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="replicator-database-configuration">
+<span id="config-replicator"></span><h2>3.8.1. Replicator Database Configuration<a class="headerlink" href="#replicator-database-configuration" title="Permalink to this headline">¶</a></h2>
+<dl class="section">
+<dt id="replicator">
+<tt class="descname">[replicator]</tt><a class="headerlink" href="#replicator" title="Permalink to this definition">¶</a></dt>
+<dd><div class="versionadded">
+<p><span class="versionmodified">New in version 1.2.</span></p>
+</div>
+<dl class="option">
+<dt id="replicator/max_replication_retry_count">
+<tt class="descname">max_replication_retry_count</tt><a class="headerlink" href="#replicator/max_replication_retry_count" title="Permalink to this definition">¶</a></dt>
+<dd><p>Maximum replication retry count can be a non-negative integer or
+&#8220;infinity&#8221;:</p>
+<div class="highlight-ini"><div class="highlight"><pre><span class="k">[replicator]</span>
+<span class="na">max_replication_retry_count</span> <span class="o">=</span> <span class="s">10</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="option">
+<dt id="replicator/worker_batch_size">
+<tt class="descname">worker_batch_size</tt><a class="headerlink" href="#replicator/worker_batch_size" title="Permalink to this definition">¶</a></dt>
+<dd><p>With lower batch sizes checkpoints are done more frequently. Lower
+batch sizes also reduce the total amount of used RAM memory:</p>
+<div class="highlight-ini"><div class="highlight"><pre><span class="k">[replicator]</span>
+<span class="na">worker_batch_size</span> <span class="o">=</span> <span class="s">500</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="option">
+<dt id="replicator/worker_processes">
+<tt class="descname">worker_processes</tt><a class="headerlink" href="#replicator/worker_processes" title="Permalink to this definition">¶</a></dt>
+<dd><p>More worker processes can give higher network throughput but can also
+imply more disk and network IO:</p>
+<div class="highlight-ini"><div class="highlight"><pre><span class="k">[replicator]</span>
+<span class="na">worker_processes</span> <span class="o">=</span> <span class="s">4</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="option">
+<dt id="replicator/http_connections">
+<tt class="descname">http_connections</tt><a class="headerlink" href="#replicator/http_connections" title="Permalink to this definition">¶</a></dt>
+<dd><p>Maximum number of HTTP connections per replication:</p>
+<div class="highlight-ini"><div class="highlight"><pre><span class="k">[replicator]</span>
+<span class="na">http_connections</span> <span class="o">=</span> <span class="s">20</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="option">
+<dt id="replicator/connection_timeout">
+<tt class="descname">connection_timeout</tt><a class="headerlink" href="#replicator/connection_timeout" title="Permalink to this definition">¶</a></dt>
+<dd><p>HTTP connection timeout per replication.
+Even for very fast/reliable networks it might need to be increased if
+a remote database is too busy:</p>
+<div class="highlight-ini"><div class="highlight"><pre><span class="k">[replicator]</span>
+<span class="na">connection_timeout</span> <span class="o">=</span> <span class="s">30000</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="option">
+<dt id="replicator/retries_per_request">
+<tt class="descname">retries_per_request</tt><a class="headerlink" href="#replicator/retries_per_request" title="Permalink to this definition">¶</a></dt>
+<dd><p>If a request fails, the replicator will retry it up to N times:</p>
+<div class="highlight-ini"><div class="highlight"><pre><span class="k">[replicator]</span>
+<span class="na">retries_per_request</span> <span class="o">=</span> <span class="s">10</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="option">
+<dt id="replicator/socket_options">
+<tt class="descname">socket_options</tt><a class="headerlink" href="#replicator/socket_options" title="Permalink to this definition">¶</a></dt>
+<dd><p>Some socket options that might boost performance in some scenarios:</p>
+<ul class="simple">
+<li><tt class="docutils literal"><span class="pre">{nodelay,</span> <span class="pre">boolean()}</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">{sndbuf,</span> <span class="pre">integer()}</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">{recbuf,</span> <span class="pre">integer()}</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">{priority,</span> <span class="pre">integer()}</span></tt></li>
+</ul>
+<p>See the <a class="reference external" href="http://www.erlang.org/doc/man/inet.html#setopts-2">inet</a> Erlang module&#8217;s man page for the full list of options:</p>
+<div class="highlight-ini"><div class="highlight"><pre><span class="k">[replicator]</span>
+<span class="na">socket_options</span> <span class="o">=</span> <span class="s">[{keepalive, true}, {nodelay, false}]</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="option">
+<dt id="replicator/checkpoint_interval">
+<tt class="descname">checkpoint_interval</tt><a class="headerlink" href="#replicator/checkpoint_interval" title="Permalink to this definition">¶</a></dt>
+<dd><div class="versionadded">
+<p><span class="versionmodified">New in version 1.6.</span></p>
+</div>
+<p>Defines replication checkpoint interval in milliseconds.
+<a class="reference internal" href="../replication/replicator.html#replicator"><em>Replicator</em></a> will <a class="reference internal" href="../api/database/common.html#get--db" title="GET /{db}"><tt class="xref http http-get docutils literal"><span class="pre">requests</span></tt></a> from the
+Source database at the specified interval:</p>
+<div class="highlight-ini"><div class="highlight"><pre><span class="k">[replicator]</span>
+<span class="na">checkpoint_interval</span> <span class="o">=</span> <span class="s">5000</span>
+</pre></div>
+</div>
+<p>Lower intervals may be useful for frequently changing data, while
+higher values will lower bandwidth and make fewer requests for
+infrequently updated databases.</p>
+</dd></dl>
+
+<dl class="option">
+<dt id="replicator/use_checkpoints">
+<tt class="descname">use_checkpoints</tt><a class="headerlink" href="#replicator/use_checkpoints" title="Permalink to this definition">¶</a></dt>
+<dd><div class="versionadded">
+<p><span class="versionmodified">New in version 1.6.</span></p>
+</div>
+<p>If <tt class="docutils literal"><span class="pre">use_checkpoints</span></tt> is set to <tt class="docutils literal"><span class="pre">true</span></tt>, CouchDB will make
+checkpoints during replication and at the completion of replication.
+CouchDB can efficiently resume replication from any of these
+checkpoints:</p>
+<div class="highlight-ini"><div class="highlight"><pre><span class="k">[replicator]</span>
+<span class="na">use_checkpoints</span> <span class="o">=</span> <span class="s">true</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Checkpoints are stored in <a class="reference internal" href="../api/local.html#api-local"><em>local documents</em></a>
+on both the source and target databases (which requires write
+access).</p>
+</div>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">Disabling checkpoints is <strong>not recommended</strong> as CouchDB will scan
+the Source database&#8217;s changes feed from the beginning.</p>
+</div>
+</dd></dl>
+
+<dl class="option">
+<dt id="replicator/cert_file">
+<tt class="descname">cert_file</tt><a class="headerlink" href="#replicator/cert_file" title="Permalink to this definition">¶</a></dt>
+<dd><p>Path to a file containing the user&#8217;s certificate:</p>
+<div class="highlight-ini"><div class="highlight"><pre><span class="k">[replicator]</span>
+<span class="na">cert_file</span> <span class="o">=</span> <span class="s">/full/path/to/server_cert.pem</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="option">
+<dt id="replicator/key_file">
+<tt class="descname">key_file</tt><a class="headerlink" href="#replicator/key_file" title="Permalink to this definition">¶</a></dt>
+<dd><p>Path to file containing user&#8217;s private PEM encoded key:</p>
+<div class="highlight-ini"><div class="highlight"><pre><span class="k">[replicator]</span>
+<span class="na">key_file</span> <span class="o">=</span> <span class="s">/full/path/to/server_key.pem</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="option">
+<dt id="replicator/password">
+<tt class="descname">password</tt><a class="headerlink" href="#replicator/password" title="Permalink to this definition">¶</a></dt>
+<dd><p>String containing the user&#8217;s password. Only used if the private keyfile
+is  password protected:</p>
+<div class="highlight-ini"><div class="highlight"><pre><span class="k">[replicator]</span>
+<span class="na">password</span> <span class="o">=</span> <span class="s">somepassword</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="option">
+<dt id="replicator/verify_ssl_certificates">
+<tt class="descname">verify_ssl_certificates</tt><a class="headerlink" href="#replicator/verify_ssl_certificates" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set to true to validate peer certificates:</p>
+<div class="highlight-ini"><div class="highlight"><pre><span class="k">[replicator]</span>
+<span class="na">verify_ssl_certificates</span> <span class="o">=</span> <span class="s">false</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="option">
+<dt id="replicator/ssl_trusted_certificates_file">
+<tt class="descname">ssl_trusted_certificates_file</tt><a class="headerlink" href="#replicator/ssl_trusted_certificates_file" title="Permalink to this definition">¶</a></dt>
+<dd><p>File containing a list of peer trusted certificates (in the PEM
+format):</p>
+<div class="highlight-ini"><div class="highlight"><pre><span class="k">[replicator]</span>
+<span class="na">ssl_trusted_certificates_file</span> <span class="o">=</span> <span class="s">/etc/ssl/certs/ca-certificates.crt</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="option">
+<dt id="replicator/ssl_certificate_max_depth">
+<tt class="descname">ssl_certificate_max_depth</tt><a class="headerlink" href="#replicator/ssl_certificate_max_depth" title="Permalink to this definition">¶</a></dt>
+<dd><p>Maximum peer certificate depth (must be set even if certificate
+validation is off):</p>
+<div class="highlight-ini"><div class="highlight"><pre><span class="k">[replicator]</span>
+<span class="na">ssl_certificate_max_depth</span> <span class="o">=</span> <span class="s">3</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+    <p class="logo"><a href="../index.html">
+      <img class="logo" src="../_static/logo.png" alt="Logo"/>
+    </a></p><!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+<div id="searchbox" style="display: none">
+
+<h3>Quick Search</h3>
+
+<form class="search" action="../search.html" method="get">
+<input type="text" name="q" style="width:115px">
+<input type="submit" value="Go">
+<input type="hidden" name="check_keywords" value="yes">
+<input type="hidden" name="area" value="default">
+</form>
+
+<br>
+
+</div>
+
+<script type="text/javascript">$('#searchbox').show(0);</script>
+  <h3><a href="../contents.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">3.8. Replicator</a><ul>
+<li><a class="reference internal" href="#replicator-database-configuration">3.8.1. Replicator Database Configuration</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="logging.html"
+                        title="previous chapter">3.7. Logging</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="query-servers.html"
+                        title="next chapter">3.9. Query Servers</a></p><!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+
+<h3>Utilities</h3>
+
+<ul>
+<li><a href="../">Fauxton</a></li>
+</ul>
+<!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+<h3>More Help</h3>
+
+<ul>
+<li><a href="https://couchdb.apache.org/">Homepage</a></li>
+<li><a href="https://cwiki.apache.org/confluence/display/COUCHDB/">Wiki</a></li>
+<li><a href="https://couchdb.apache.org/#mailing-list">Mailing Lists</a></li>
+<li><a href="http://webchat.freenode.net/?channels=couchdb">IRC</a></li>
+<li><a href="https://issues.apache.org/jira/browse/CouchDB">Issues</a></li>
+<li><a href="../download.html">Download</a></li>
+<li><a href="https://github.com/apache/couchdb-documentation/blob/master/src/config/replicator.rst"
+       rel="nofollow">Show on GitHub</a></li>
+<li><a href="https://github.com/apache/couchdb-documentation/edit/master/src/config/replicator.rst"
+       rel="nofollow">Edit on GitHub</a></li>
+</ul><!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../http-api.html" title="HTTP API Reference"
+             >API Reference</a></li>
+        <li class="right" >
+          <a href="../config-ref.html" title="Configuration Reference"
+             >Config Reference</a> |</li>
+        <li class="right" >
+          <a href="query-servers.html" title="3.9. Query Servers"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="logging.html" title="3.7. Logging"
+             >previous</a> |</li>
+  <li><a href="../index.html">Apache CouchDB 2.0 Documentation</a> &raquo;</li>
+          <li><a href="index.html" >3. Configuring CouchDB</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2016, Apache Software Foundation.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
+    </div>
+  </body>
+</html>

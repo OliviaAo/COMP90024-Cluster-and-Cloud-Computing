@@ -1,0 +1,392 @@
+<!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>9.2. Writing Addons &mdash; Apache CouchDB 2.0 Documentation</title>
+    
+    <link rel="stylesheet" href="../_static/rtd.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '2.0.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+    <link rel="author" title="About these documents" href="../about.html" />
+    <link rel="top" title="Apache CouchDB 2.0 Documentation" href="../index.html" />
+    <link rel="up" title="9. Fauxton" href="index.html" />
+    <link rel="next" title="10. API Reference" href="../api/index.html" />
+    <link rel="prev" title="9.1. Installation" href="install.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../http-api.html" title="HTTP API Reference"
+             >API Reference</a></li>
+        <li class="right" >
+          <a href="../config-ref.html" title="Configuration Reference"
+             >Config Reference</a> |</li>
+        <li class="right" >
+          <a href="../api/index.html" title="10. API Reference"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="install.html" title="9.1. Installation"
+             accesskey="P">previous</a> |</li>
+  <li><a href="../index.html">Apache CouchDB 2.0 Documentation</a> &raquo;</li>
+          <li><a href="index.html" accesskey="U">9. Fauxton</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="writing-addons">
+<span id="fauxton-addons"></span><h1>9.2. Writing Addons<a class="headerlink" href="#writing-addons" title="Permalink to this headline">¶</a></h1>
+<p>Addons allow you to extend Fauxton for a specific use case. Usually, they
+have the following structure:</p>
+<div class="highlight-python"><div class="highlight"><pre>+ my_addon/
+| ---+ assets [optional]
+|    \ ---+ less
+|         \ ---- my_addon.less
+| ---+ templates/
+|    \ ---- my_addon.html - underscore template fragments
+| ---- resources.js - models and collections of the addon
+| ---- routes.js - URL routing for the addon
+| ---- views.js - views that the model provides
+</pre></div>
+</div>
+<div class="section" id="generating-an-addon">
+<h2>9.2.1. Generating an Addon<a class="headerlink" href="#generating-an-addon" title="Permalink to this headline">¶</a></h2>
+<p>We have a <cite>grunt-init</cite> template that lets you create a skeleton addon,
+including all the boiler plate code. Run <tt class="docutils literal"><span class="pre">grunt-init</span> <span class="pre">tasks/addon</span></tt> and answer
+the questions it asks to create an addon:</p>
+<div class="highlight-python"><div class="highlight"><pre>± grunt-init tasks/addon
+path.existsSync is now called `fs.existsSync`.
+Running &quot;addon&quot; task
+
+Please answer the following:
+[?] Add on Name (WickedCool) SuperAddon
+[?] Location of add ons (app/addons)
+[?] Do you need an assets folder?(for .less) (y/N)
+[?] Do you need to make any changes to the above before continuing? (y/N)
+
+Created addon SuperAddon in app/addons
+
+Done, without errors.
+</pre></div>
+</div>
+<p>Once the addon is created add the name to the settings.json file to get it
+compiled and added on the next install.</p>
+</div>
+<div class="section" id="routes-and-hooks">
+<h2>9.2.2. Routes and hooks<a class="headerlink" href="#routes-and-hooks" title="Permalink to this headline">¶</a></h2>
+<p>An addon can insert itself into Fauxton in two ways; via a route or via a hook.</p>
+<div class="section" id="routes">
+<h3>Routes<a class="headerlink" href="#routes" title="Permalink to this headline">¶</a></h3>
+<p>An addon will override an existing route should one exist, but in all other
+ways is just a normal backbone <cite>route/view</cite>. This is how you would add a whole
+new feature.</p>
+</div>
+<div class="section" id="hooks">
+<h3>Hooks<a class="headerlink" href="#hooks" title="Permalink to this headline">¶</a></h3>
+<p>Hooks let you modify/extend an existing feature. They modify a DOM element by
+selector for a named set of routes, for example:</p>
+<div class="highlight-javascript"><div class="highlight"><pre><span class="kd">var</span> <span class="nx">Search</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">FauxtonAPI</span><span class="p">.</span><span class="nx">addon</span><span class="p">();</span>
+<span class="nx">Search</span><span class="p">.</span><span class="nx">hooks</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="c1">// Render additional content into the sidebar</span>
+    <span class="s2">&quot;#sidebar-content&quot;</span><span class="o">:</span> <span class="p">{</span>
+      <span class="nx">routes</span><span class="o">:</span><span class="p">[</span>
+          <span class="s2">&quot;database/:database/_design/:ddoc/_search/:search&quot;</span><span class="p">,</span>
+          <span class="s2">&quot;database/:database/_design/:ddoc/_view/:view&quot;</span><span class="p">,</span>
+          <span class="s2">&quot;database/:database/_:handler&quot;</span><span class="p">],</span>
+      <span class="nx">callback</span><span class="o">:</span> <span class="nx">searchSidebar</span>
+    <span class="p">}</span>
+<span class="p">};</span>
+<span class="k">return</span> <span class="nx">Search</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>adds the <cite>searchSidebar</cite> callback to <cite>#sidebar-content</cite> for three routes.</p>
+</div>
+</div>
+<div class="section" id="hello-world-addon">
+<h2>9.2.3. Hello world Addon<a class="headerlink" href="#hello-world-addon" title="Permalink to this headline">¶</a></h2>
+<p>First create the addon skeleton:</p>
+<div class="highlight-python"><div class="highlight"><pre>± bbb addon
+path.existsSync is now called `fs.existsSync`.
+Running &quot;addon&quot; task
+
+Please answer the following:
+[?] Add on Name (WickedCool) Hello
+[?] Location of add ons (app/addons)
+[?] Do you need to make any changes to the above before continuing? (y/N)
+
+Created addon Hello in app/addons
+
+Done, without errors.
+</pre></div>
+</div>
+<p>In <cite>app/addons/hello/templates/hello.html</cite> place:</p>
+<div class="highlight-html"><div class="highlight"><pre><span class="nt">&lt;h1&gt;</span>Hello!<span class="nt">&lt;/h1&gt;</span>
+</pre></div>
+</div>
+<p>Next, we&#8217;ll defined a simple view in <cite>resources.js</cite> (for more complex addons
+you may want to have a views.js) that renders that template:</p>
+<div class="highlight-javascript"><div class="highlight"><pre><span class="nx">define</span><span class="p">([</span>
+    <span class="s2">&quot;app&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;api&quot;</span>
+<span class="p">],</span>
+
+<span class="kd">function</span> <span class="p">(</span><span class="nx">app</span><span class="p">,</span> <span class="nx">FauxtonAPI</span><span class="p">)</span> <span class="p">{</span>
+    <span class="kd">var</span> <span class="nx">Resources</span> <span class="o">=</span> <span class="p">{};</span>
+
+    <span class="nx">Resources</span><span class="p">.</span><span class="nx">Hello</span> <span class="o">=</span> <span class="nx">FauxtonAPI</span><span class="p">.</span><span class="nx">View</span><span class="p">.</span><span class="nx">extend</span><span class="p">({</span>
+        <span class="nx">template</span><span class="o">:</span> <span class="s2">&quot;addons/hello/templates/hello&quot;</span>
+    <span class="p">});</span>
+
+    <span class="k">return</span> <span class="nx">Resources</span><span class="p">;</span>
+<span class="p">});</span>
+</pre></div>
+</div>
+<p>Then define a route in <cite>routes.js</cite> that the addon is accessible at:</p>
+<div class="highlight-javascript"><div class="highlight"><pre><span class="nx">define</span><span class="p">([</span>
+    <span class="s2">&quot;app&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;api&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;addons/hello/resources&quot;</span>
+<span class="p">],</span>
+
+<span class="kd">function</span><span class="p">(</span><span class="nx">app</span><span class="p">,</span> <span class="nx">FauxtonAPI</span><span class="p">,</span> <span class="nx">Resources</span><span class="p">)</span> <span class="p">{</span>
+    <span class="kd">var</span> <span class="nx">helloRoute</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+        <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;helloRoute callback yo&#39;</span><span class="p">);</span>
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="nx">layout</span><span class="o">:</span> <span class="s2">&quot;one_pane&quot;</span><span class="p">,</span>
+            <span class="nx">crumbs</span><span class="o">:</span> <span class="p">[</span>
+                <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="o">:</span> <span class="s2">&quot;Hello&quot;</span><span class="p">,</span><span class="s2">&quot;link&quot;</span><span class="o">:</span> <span class="s2">&quot;_hello&quot;</span><span class="p">}</span>
+            <span class="p">],</span>
+            <span class="nx">views</span><span class="o">:</span> <span class="p">{</span>
+                <span class="s2">&quot;#dashboard-content&quot;</span><span class="o">:</span> <span class="k">new</span> <span class="nx">Resources</span><span class="p">.</span><span class="nx">Hello</span><span class="p">({})</span>
+            <span class="p">},</span>
+            <span class="nx">apiUrl</span><span class="o">:</span> <span class="s1">&#39;hello&#39;</span>
+        <span class="p">};</span>
+    <span class="p">};</span>
+
+    <span class="nx">Routes</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;_hello&quot;</span><span class="o">:</span> <span class="nx">helloRoute</span>
+    <span class="p">};</span>
+
+    <span class="k">return</span> <span class="nx">Routes</span><span class="p">;</span>
+<span class="p">});</span>
+</pre></div>
+</div>
+<p>Then wire it all together in base.js:</p>
+<div class="highlight-javascript"><div class="highlight"><pre><span class="nx">define</span><span class="p">([</span>
+    <span class="s2">&quot;app&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;api&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;addons/hello/routes&quot;</span>
+<span class="p">],</span>
+
+<span class="kd">function</span><span class="p">(</span><span class="nx">app</span><span class="p">,</span> <span class="nx">FauxtonAPI</span><span class="p">,</span> <span class="nx">HelloRoutes</span><span class="p">)</span> <span class="p">{</span>
+    <span class="kd">var</span> <span class="nx">Hello</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">FauxtonAPI</span><span class="p">.</span><span class="nx">addon</span><span class="p">();</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;hello from hello&#39;</span><span class="p">);</span>
+
+    <span class="nx">Hello</span><span class="p">.</span><span class="nx">initialize</span> <span class="o">=</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+        <span class="nx">FauxtonAPI</span><span class="p">.</span><span class="nx">addHeaderLink</span><span class="p">({</span><span class="nx">title</span><span class="o">:</span> <span class="s2">&quot;Hello&quot;</span><span class="p">,</span> <span class="nx">href</span><span class="o">:</span> <span class="s2">&quot;#_hello&quot;</span><span class="p">});</span>
+    <span class="p">};</span>
+
+    <span class="nx">Hello</span><span class="p">.</span><span class="nx">Routes</span> <span class="o">=</span> <span class="nx">HelloRoutes</span><span class="p">;</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">Hello</span><span class="p">);</span>
+    <span class="k">return</span> <span class="nx">Hello</span><span class="p">;</span>
+<span class="p">});</span>
+</pre></div>
+</div>
+<p>Once the code is in place include the add on in your <cite>settings.json</cite> so that it
+gets included by the <cite>require</cite> task. Your addon is included in one of three
+ways; a local path, a git URL or a name. Named plugins assume the plugin is in
+the Fauxton base directory, addons with a git URL will be cloned into the
+application, local paths will be copied. Addons included from a local path will
+be cleaned out by the clean task, others are left alone.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+    <p class="logo"><a href="../index.html">
+      <img class="logo" src="../_static/logo.png" alt="Logo"/>
+    </a></p><!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+<div id="searchbox" style="display: none">
+
+<h3>Quick Search</h3>
+
+<form class="search" action="../search.html" method="get">
+<input type="text" name="q" style="width:115px">
+<input type="submit" value="Go">
+<input type="hidden" name="check_keywords" value="yes">
+<input type="hidden" name="area" value="default">
+</form>
+
+<br>
+
+</div>
+
+<script type="text/javascript">$('#searchbox').show(0);</script>
+  <h3><a href="../contents.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">9.2. Writing Addons</a><ul>
+<li><a class="reference internal" href="#generating-an-addon">9.2.1. Generating an Addon</a></li>
+<li><a class="reference internal" href="#routes-and-hooks">9.2.2. Routes and hooks</a><ul>
+<li><a class="reference internal" href="#routes">Routes</a></li>
+<li><a class="reference internal" href="#hooks">Hooks</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#hello-world-addon">9.2.3. Hello world Addon</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="install.html"
+                        title="previous chapter">9.1. Installation</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="../api/index.html"
+                        title="next chapter">10. API Reference</a></p><!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+
+<h3>Utilities</h3>
+
+<ul>
+<li><a href="../">Fauxton</a></li>
+</ul>
+<!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+<h3>More Help</h3>
+
+<ul>
+<li><a href="https://couchdb.apache.org/">Homepage</a></li>
+<li><a href="https://cwiki.apache.org/confluence/display/COUCHDB/">Wiki</a></li>
+<li><a href="https://couchdb.apache.org/#mailing-list">Mailing Lists</a></li>
+<li><a href="http://webchat.freenode.net/?channels=couchdb">IRC</a></li>
+<li><a href="https://issues.apache.org/jira/browse/CouchDB">Issues</a></li>
+<li><a href="../download.html">Download</a></li>
+<li><a href="https://github.com/apache/couchdb-documentation/blob/master/src/fauxton/addons.rst"
+       rel="nofollow">Show on GitHub</a></li>
+<li><a href="https://github.com/apache/couchdb-documentation/edit/master/src/fauxton/addons.rst"
+       rel="nofollow">Edit on GitHub</a></li>
+</ul><!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../http-api.html" title="HTTP API Reference"
+             >API Reference</a></li>
+        <li class="right" >
+          <a href="../config-ref.html" title="Configuration Reference"
+             >Config Reference</a> |</li>
+        <li class="right" >
+          <a href="../api/index.html" title="10. API Reference"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="install.html" title="9.1. Installation"
+             >previous</a> |</li>
+  <li><a href="../index.html">Apache CouchDB 2.0 Documentation</a> &raquo;</li>
+          <li><a href="index.html" >9. Fauxton</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2016, Apache Software Foundation.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
+    </div>
+  </body>
+</html>

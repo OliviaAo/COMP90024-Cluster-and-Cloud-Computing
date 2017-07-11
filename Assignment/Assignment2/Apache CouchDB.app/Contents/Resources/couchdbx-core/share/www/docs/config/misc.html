@@ -1,0 +1,483 @@
+<!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>3.13. Miscellaneous Parameters &mdash; Apache CouchDB 2.0 Documentation</title>
+    
+    <link rel="stylesheet" href="../_static/rtd.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '2.0.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+    <link rel="author" title="About these documents" href="../about.html" />
+    <link rel="top" title="Apache CouchDB 2.0 Documentation" href="../index.html" />
+    <link rel="up" title="3. Configuring CouchDB" href="index.html" />
+    <link rel="next" title="3.14. Proxying Configuration" href="proxying.html" />
+    <link rel="prev" title="3.12. CouchDB Internal Services" href="services.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../http-api.html" title="HTTP API Reference"
+             >API Reference</a></li>
+        <li class="right" >
+          <a href="../config-ref.html" title="Configuration Reference"
+             >Config Reference</a> |</li>
+        <li class="right" >
+          <a href="proxying.html" title="3.14. Proxying Configuration"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="services.html" title="3.12. CouchDB Internal Services"
+             accesskey="P">previous</a> |</li>
+  <li><a href="../index.html">Apache CouchDB 2.0 Documentation</a> &raquo;</li>
+          <li><a href="index.html" accesskey="U">3. Configuring CouchDB</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="miscellaneous-parameters">
+<h1>3.13. Miscellaneous Parameters<a class="headerlink" href="#miscellaneous-parameters" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="configuration-of-attachment-storage">
+<span id="config-attachments"></span><h2>3.13.1. Configuration of Attachment Storage<a class="headerlink" href="#configuration-of-attachment-storage" title="Permalink to this headline">¶</a></h2>
+<dl class="section">
+<dt id="attachments">
+<tt class="descname">[attachments]</tt><a class="headerlink" href="#attachments" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="option">
+<dt id="attachments/compression_level">
+<tt class="descname">compression_level</tt><a class="headerlink" href="#attachments/compression_level" title="Permalink to this definition">¶</a></dt>
+<dd><p>Defines zlib compression level for the attachments from <tt class="docutils literal"><span class="pre">1</span></tt> (lowest,
+fastest) to <tt class="docutils literal"><span class="pre">9</span></tt> (highest, slowest). A value of <tt class="docutils literal"><span class="pre">0</span></tt> disables
+compression:</p>
+<div class="highlight-ini"><div class="highlight"><pre><span class="k">[attachments]</span>
+<span class="na">compression_level</span> <span class="o">=</span> <span class="s">8</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="option">
+<dt id="attachments/compressible_types">
+<tt class="descname">compressible_types</tt><a class="headerlink" href="#attachments/compressible_types" title="Permalink to this definition">¶</a></dt>
+<dd><p>Since compression is ineffective for some types of files, it is
+possible to let CouchDB compress only some types of attachments,
+specified by their MIME type:</p>
+<div class="highlight-ini"><div class="highlight"><pre><span class="k">[attachments]</span>
+<span class="na">compressible_types</span> <span class="o">=</span> <span class="s">text/*, application/javascript, application/json, application/xml</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="statistic-calculation">
+<span id="config-stats"></span><h2>3.13.2. Statistic Calculation<a class="headerlink" href="#statistic-calculation" title="Permalink to this headline">¶</a></h2>
+<dl class="section">
+<dt id="stats">
+<tt class="descname">[stats]</tt><a class="headerlink" href="#stats" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="option">
+<dt id="stats/rate">
+<tt class="descname">rate</tt><a class="headerlink" href="#stats/rate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Rate of statistics gathering in milliseconds:</p>
+<div class="highlight-ini"><div class="highlight"><pre><span class="k">[stats]</span>
+<span class="na">rate</span> <span class="o">=</span> <span class="s">1000</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="option">
+<dt id="stats/samples">
+<tt class="descname">samples</tt><a class="headerlink" href="#stats/samples" title="Permalink to this definition">¶</a></dt>
+<dd><p>Samples are used to track the mean and standard value deviation within
+specified intervals (in seconds):</p>
+<div class="highlight-ini"><div class="highlight"><pre><span class="k">[stats]</span>
+<span class="na">samples</span> <span class="o">=</span> <span class="s">[0, 60, 300, 900]</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="uuids-configuration">
+<span id="config-uuids"></span><h2>3.13.3. UUIDs Configuration<a class="headerlink" href="#uuids-configuration" title="Permalink to this headline">¶</a></h2>
+<dl class="section">
+<dt id="uuids">
+<tt class="descname">[uuids]</tt><a class="headerlink" href="#uuids" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="option">
+<dt id="uuids/algorithm">
+<tt class="descname">algorithm</tt><a class="headerlink" href="#uuids/algorithm" title="Permalink to this definition">¶</a></dt>
+<dd><div class="versionchanged">
+<p><span class="versionmodified">Changed in version 1.3: </span>Added <tt class="docutils literal"><span class="pre">utc_id</span></tt> algorithm.</p>
+</div>
+<p>CouchDB provides various algorithms to generate the UUID values that
+are  used for document <cite>_id</cite>&#8216;s by default:</p>
+<div class="highlight-ini"><div class="highlight"><pre><span class="k">[uuids]</span>
+<span class="na">algorithm</span> <span class="o">=</span> <span class="s">sequential</span>
+</pre></div>
+</div>
+<p>Available algorithms:</p>
+<ul>
+<li><p class="first"><tt class="docutils literal"><span class="pre">random</span></tt>: 128 bits of random awesome. All awesome, all the time:</p>
+<div class="highlight-javascript"><div class="highlight"><pre><span class="p">{</span>
+    <span class="s2">&quot;uuids&quot;</span><span class="o">:</span> <span class="p">[</span>
+        <span class="s2">&quot;5fcbbf2cb171b1d5c3bc6df3d4affb32&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;9115e0942372a87a977f1caf30b2ac29&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;3840b51b0b81b46cab99384d5cd106e3&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;b848dbdeb422164babf2705ac18173e1&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;b7a8566af7e0fc02404bb676b47c3bf7&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;a006879afdcae324d70e925c420c860d&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;5f7716ee487cc4083545d4ca02cd45d4&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;35fdd1c8346c22ccc43cc45cd632e6d6&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;97bbdb4a1c7166682dc026e1ac97a64c&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;eb242b506a6ae330bda6969bb2677079&quot;</span>
+    <span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</li>
+<li><p class="first"><tt class="docutils literal"><span class="pre">sequential</span></tt>: Monotonically increasing ids with random increments.
+The first 26 hex characters are random, the last 6 increment in
+random amounts until an overflow occurs. On overflow, the random
+prefix is regenerated and the process starts over.</p>
+<div class="highlight-javascript"><div class="highlight"><pre><span class="p">{</span>
+    <span class="s2">&quot;uuids&quot;</span><span class="o">:</span> <span class="p">[</span>
+        <span class="s2">&quot;4e17c12963f4bee0e6ec90da54804894&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;4e17c12963f4bee0e6ec90da5480512f&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;4e17c12963f4bee0e6ec90da54805c25&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;4e17c12963f4bee0e6ec90da54806ba1&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;4e17c12963f4bee0e6ec90da548072b3&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;4e17c12963f4bee0e6ec90da54807609&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;4e17c12963f4bee0e6ec90da54807718&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;4e17c12963f4bee0e6ec90da54807754&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;4e17c12963f4bee0e6ec90da54807e5d&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;4e17c12963f4bee0e6ec90da54808d28&quot;</span>
+    <span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</li>
+<li><p class="first"><tt class="docutils literal"><span class="pre">utc_random</span></tt>: The time since Jan 1, 1970 UTC, in microseconds. The
+first 14 characters are the time in hex. The last 18 are random.</p>
+<div class="highlight-javascript"><div class="highlight"><pre><span class="p">{</span>
+    <span class="s2">&quot;uuids&quot;</span><span class="o">:</span> <span class="p">[</span>
+        <span class="s2">&quot;04dd32b3af699659b6db9486a9c58c62&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;04dd32b3af69bb1c2ac7ebfee0a50d88&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;04dd32b3af69d8591b99a8e86a76e0fb&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;04dd32b3af69f4a18a76efd89867f4f4&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;04dd32b3af6a1f7925001274bbfde952&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;04dd32b3af6a3fe8ea9b120ed906a57f&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;04dd32b3af6a5b5c518809d3d4b76654&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;04dd32b3af6a78f6ab32f1e928593c73&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;04dd32b3af6a99916c665d6bbf857475&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;04dd32b3af6ab558dd3f2c0afacb7d66&quot;</span>
+    <span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</li>
+<li><p class="first"><tt class="docutils literal"><span class="pre">utc_id</span></tt>: The time since Jan 1, 1970 UTC, in microseconds, plus the
+<tt class="docutils literal"><span class="pre">utc_id_suffix</span></tt> string. The first 14 characters are the time in
+hex. The <a class="reference internal" href="#uuids/utc_id_suffix" title="utc_id_suffix"><tt class="xref config config-option docutils literal"><span class="pre">uuids/utc_id_suffix</span></tt></a> string value is appended to
+these.</p>
+<div class="highlight-javascript"><div class="highlight"><pre><span class="p">{</span>
+    <span class="s2">&quot;uuids&quot;</span><span class="o">:</span> <span class="p">[</span>
+        <span class="s2">&quot;04dd32bd5eabcc@mycouch&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;04dd32bd5eabee@mycouch&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;04dd32bd5eac05@mycouch&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;04dd32bd5eac28@mycouch&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;04dd32bd5eac43@mycouch&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;04dd32bd5eac58@mycouch&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;04dd32bd5eac6e@mycouch&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;04dd32bd5eac84@mycouch&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;04dd32bd5eac98@mycouch&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;04dd32bd5eacad@mycouch&quot;</span>
+    <span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</li>
+</ul>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p><strong>Impact of UUID choices:</strong> the choice of UUID has a significant
+impact on the layout of the B-tree, prior to compaction.</p>
+<p>For example, using a sequential UUID algorithm while uploading a
+large batch of documents will avoid the need to rewrite many
+intermediate B-tree nodes. A random UUID algorithm may require
+rewriting intermediate nodes on a regular basis, resulting in
+significantly decreased throughput and wasted disk space space due to
+the append-only B-tree design.</p>
+<p class="last">It is generally recommended to set your own UUIDs, or use the
+sequential algorithm unless you have a specific need and take into
+account the likely need for compaction to re-balance the B-tree and
+reclaim wasted space.</p>
+</div>
+</dd></dl>
+
+<dl class="option">
+<dt id="uuids/utc_id_suffix">
+<tt class="descname">utc_id_suffix</tt><a class="headerlink" href="#uuids/utc_id_suffix" title="Permalink to this definition">¶</a></dt>
+<dd><div class="versionadded">
+<p><span class="versionmodified">New in version 1.3.</span></p>
+</div>
+<p>The <tt class="docutils literal"><span class="pre">utc_id_suffix</span></tt> value will be appended to UUIDs generated by the
+<tt class="docutils literal"><span class="pre">utc_id</span></tt> algorithm. Replicating instances should have unique
+<tt class="docutils literal"><span class="pre">utc_id_suffix</span></tt> values to ensure uniqueness of <tt class="docutils literal"><span class="pre">utc_id</span></tt> ids.</p>
+<div class="highlight-ini"><div class="highlight"><pre><span class="k">[uuid]</span>
+<span class="na">utc_id_suffix</span> <span class="o">=</span> <span class="s">my-awesome-suffix</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="option">
+<dt id="uuids/max_count">
+<tt class="descname">max_count</tt><a class="headerlink" href="#uuids/max_count" title="Permalink to this definition">¶</a></dt>
+<dd><div class="versionadded">
+<p><span class="versionmodified">New in version 1.5.1.</span></p>
+</div>
+<p>No more than this number of UUIDs will be sent in a single request. If
+more UUIDs are requested, an HTTP error response will be thrown.</p>
+<div class="highlight-ini"><div class="highlight"><pre><span class="k">[uuid]</span>
+<span class="na">max_count</span> <span class="o">=</span> <span class="s">1000</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="vendor-information">
+<span id="config-vendor"></span><h2>3.13.4. Vendor information<a class="headerlink" href="#vendor-information" title="Permalink to this headline">¶</a></h2>
+<dl class="section">
+<dt id="vendor">
+<tt class="descname">[vendor]</tt><a class="headerlink" href="#vendor" title="Permalink to this definition">¶</a></dt>
+<dd><div class="versionadded">
+<p><span class="versionmodified">New in version 1.3.</span></p>
+</div>
+<p>CouchDB distributors have the option of customizing CouchDB&#8217;s welcome
+message. This is returned when requesting <tt class="docutils literal"><span class="pre">GET</span> <span class="pre">/</span></tt>.</p>
+<div class="highlight-ini"><div class="highlight"><pre><span class="k">[vendor]</span>
+<span class="na">name</span> <span class="o">=</span> <span class="s">The Apache Software Foundation</span>
+<span class="na">version</span> <span class="o">=</span> <span class="s">1.5.0</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</div>
+<div class="section" id="content-security-policy">
+<span id="config-csp"></span><h2>3.13.5. Content-Security-Policy<a class="headerlink" href="#content-security-policy" title="Permalink to this headline">¶</a></h2>
+<dl class="section">
+<dt id="csp">
+<tt class="descname">[csp]</tt><a class="headerlink" href="#csp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Experimental support of CSP Headers for <tt class="docutils literal"><span class="pre">/_utils</span></tt> (Fauxton).</p>
+<dl class="option">
+<dt id="csp/enable">
+<tt class="descname">enable</tt><a class="headerlink" href="#csp/enable" title="Permalink to this definition">¶</a></dt>
+<dd><p>Enable the sending of the Header <tt class="docutils literal"><span class="pre">Content-Security-Policy</span></tt>:</p>
+<div class="highlight-ini"><div class="highlight"><pre><span class="k">[csp]</span>
+<span class="na">enable</span> <span class="o">=</span> <span class="s">true</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="option">
+<dt id="csp/header_value">
+<tt class="descname">header_value</tt><a class="headerlink" href="#csp/header_value" title="Permalink to this definition">¶</a></dt>
+<dd><p>You can change the default value for the Header which is sent:</p>
+<div class="highlight-ini"><div class="highlight"><pre><span class="k">[csp]</span>
+<span class="na">header_value</span> <span class="o">=</span> <span class="s">default-src &#39;self&#39;; img-src *; font-src *;</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+    <p class="logo"><a href="../index.html">
+      <img class="logo" src="../_static/logo.png" alt="Logo"/>
+    </a></p><!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+<div id="searchbox" style="display: none">
+
+<h3>Quick Search</h3>
+
+<form class="search" action="../search.html" method="get">
+<input type="text" name="q" style="width:115px">
+<input type="submit" value="Go">
+<input type="hidden" name="check_keywords" value="yes">
+<input type="hidden" name="area" value="default">
+</form>
+
+<br>
+
+</div>
+
+<script type="text/javascript">$('#searchbox').show(0);</script>
+  <h3><a href="../contents.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">3.13. Miscellaneous Parameters</a><ul>
+<li><a class="reference internal" href="#configuration-of-attachment-storage">3.13.1. Configuration of Attachment Storage</a></li>
+<li><a class="reference internal" href="#statistic-calculation">3.13.2. Statistic Calculation</a></li>
+<li><a class="reference internal" href="#uuids-configuration">3.13.3. UUIDs Configuration</a></li>
+<li><a class="reference internal" href="#vendor-information">3.13.4. Vendor information</a></li>
+<li><a class="reference internal" href="#content-security-policy">3.13.5. Content-Security-Policy</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="services.html"
+                        title="previous chapter">3.12. CouchDB Internal Services</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="proxying.html"
+                        title="next chapter">3.14. Proxying Configuration</a></p><!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+
+<h3>Utilities</h3>
+
+<ul>
+<li><a href="../">Fauxton</a></li>
+</ul>
+<!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+<h3>More Help</h3>
+
+<ul>
+<li><a href="https://couchdb.apache.org/">Homepage</a></li>
+<li><a href="https://cwiki.apache.org/confluence/display/COUCHDB/">Wiki</a></li>
+<li><a href="https://couchdb.apache.org/#mailing-list">Mailing Lists</a></li>
+<li><a href="http://webchat.freenode.net/?channels=couchdb">IRC</a></li>
+<li><a href="https://issues.apache.org/jira/browse/CouchDB">Issues</a></li>
+<li><a href="../download.html">Download</a></li>
+<li><a href="https://github.com/apache/couchdb-documentation/blob/master/src/config/misc.rst"
+       rel="nofollow">Show on GitHub</a></li>
+<li><a href="https://github.com/apache/couchdb-documentation/edit/master/src/config/misc.rst"
+       rel="nofollow">Edit on GitHub</a></li>
+</ul><!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../http-api.html" title="HTTP API Reference"
+             >API Reference</a></li>
+        <li class="right" >
+          <a href="../config-ref.html" title="Configuration Reference"
+             >Config Reference</a> |</li>
+        <li class="right" >
+          <a href="proxying.html" title="3.14. Proxying Configuration"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="services.html" title="3.12. CouchDB Internal Services"
+             >previous</a> |</li>
+  <li><a href="../index.html">Apache CouchDB 2.0 Documentation</a> &raquo;</li>
+          <li><a href="index.html" >3. Configuring CouchDB</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2016, Apache Software Foundation.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
+    </div>
+  </body>
+</html>

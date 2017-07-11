@@ -1,0 +1,265 @@
+<!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>4. Replication &mdash; Apache CouchDB 2.0 Documentation</title>
+    
+    <link rel="stylesheet" href="../_static/rtd.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '2.0.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+    <link rel="author" title="About these documents" href="../about.html" />
+    <link rel="top" title="Apache CouchDB 2.0 Documentation" href="../index.html" />
+    <link rel="next" title="4.1. Introduction to Replication" href="intro.html" />
+    <link rel="prev" title="3.14. Proxying Configuration" href="../config/proxying.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../http-api.html" title="HTTP API Reference"
+             >API Reference</a></li>
+        <li class="right" >
+          <a href="../config-ref.html" title="Configuration Reference"
+             >Config Reference</a> |</li>
+        <li class="right" >
+          <a href="intro.html" title="4.1. Introduction to Replication"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="../config/proxying.html" title="3.14. Proxying Configuration"
+             accesskey="P">previous</a> |</li>
+  <li><a href="../index.html">Apache CouchDB 2.0 Documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="replication">
+<span id="id1"></span><h1>4. Replication<a class="headerlink" href="#replication" title="Permalink to this headline">¶</a></h1>
+<p>The replication is an incremental one way process involving two databases
+(a source and a destination).</p>
+<p>The aim of the replication is that at the end of the process, all active
+documents on the source database are also in the destination database and all
+documents that were deleted in the source databases are also deleted (if exists)
+on the destination database.</p>
+<p>The replication process only copies the last revision of a document, so all
+previous revisions that were only on the source database are not copied to the
+destination database.</p>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="intro.html">4.1. Introduction to Replication</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="intro.html#triggering-replication">4.1.1. Triggering Replication</a></li>
+<li class="toctree-l2"><a class="reference internal" href="intro.html#replication-procedure">4.1.2. Replication Procedure</a></li>
+<li class="toctree-l2"><a class="reference internal" href="intro.html#master-master-replication">4.1.3. Master - Master replication</a></li>
+<li class="toctree-l2"><a class="reference internal" href="intro.html#controlling-which-documents-to-replicate">4.1.4. Controlling which Documents to Replicate</a></li>
+<li class="toctree-l2"><a class="reference internal" href="intro.html#migrating-data-to-clients">4.1.5. Migrating Data to Clients</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="protocol.html">4.2. CouchDB Replication Protocol</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="protocol.html#preface">4.2.1. Preface</a></li>
+<li class="toctree-l2"><a class="reference internal" href="protocol.html#replication-protocol-algorithm">4.2.2. Replication Protocol Algorithm</a></li>
+<li class="toctree-l2"><a class="reference internal" href="protocol.html#protocol-robustness">4.2.3. Protocol Robustness</a></li>
+<li class="toctree-l2"><a class="reference internal" href="protocol.html#error-responses">4.2.4. Error Responses</a></li>
+<li class="toctree-l2"><a class="reference internal" href="protocol.html#optimisations">4.2.5. Optimisations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="protocol.html#api-reference">4.2.6. API Reference</a></li>
+<li class="toctree-l2"><a class="reference internal" href="protocol.html#reference">4.2.7. Reference</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="replicator.html">4.3. Replicator Database</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="replicator.html#basics">4.3.1. Basics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="replicator.html#documents-describing-the-same-replication">4.3.2. Documents describing the same replication</a></li>
+<li class="toctree-l2"><a class="reference internal" href="replicator.html#canceling-replications">4.3.3. Canceling replications</a></li>
+<li class="toctree-l2"><a class="reference internal" href="replicator.html#server-restart">4.3.4. Server restart</a></li>
+<li class="toctree-l2"><a class="reference internal" href="replicator.html#updating-documents-in-the-replicator-database">4.3.5. Updating Documents in the Replicator Database</a></li>
+<li class="toctree-l2"><a class="reference internal" href="replicator.html#additional-replicator-databases">4.3.6. Additional Replicator Databases</a></li>
+<li class="toctree-l2"><a class="reference internal" href="replicator.html#replicating-the-replicator-database">4.3.7. Replicating the replicator database</a></li>
+<li class="toctree-l2"><a class="reference internal" href="replicator.html#delegations">4.3.8. Delegations</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="conflicts.html">4.4. Replication and conflict model</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="conflicts.html#couchdb-replication">4.4.1. CouchDB replication</a></li>
+<li class="toctree-l2"><a class="reference internal" href="conflicts.html#conflict-avoidance">4.4.2. Conflict avoidance</a></li>
+<li class="toctree-l2"><a class="reference internal" href="conflicts.html#revision-tree">4.4.3. Revision tree</a></li>
+<li class="toctree-l2"><a class="reference internal" href="conflicts.html#working-with-conflicting-documents">4.4.4. Working with conflicting documents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="conflicts.html#multiple-document-api">4.4.5. Multiple document API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="conflicts.html#view-map-functions">4.4.6. View map functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="conflicts.html#merging-and-revision-history">4.4.7. Merging and revision history</a></li>
+<li class="toctree-l2"><a class="reference internal" href="conflicts.html#comparison-with-other-replicating-data-stores">4.4.8. Comparison with other replicating data stores</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+    <p class="logo"><a href="../index.html">
+      <img class="logo" src="../_static/logo.png" alt="Logo"/>
+    </a></p><!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+<div id="searchbox" style="display: none">
+
+<h3>Quick Search</h3>
+
+<form class="search" action="../search.html" method="get">
+<input type="text" name="q" style="width:115px">
+<input type="submit" value="Go">
+<input type="hidden" name="check_keywords" value="yes">
+<input type="hidden" name="area" value="default">
+</form>
+
+<br>
+
+</div>
+
+<script type="text/javascript">$('#searchbox').show(0);</script>
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="../config/proxying.html"
+                        title="previous chapter">3.14. Proxying Configuration</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="intro.html"
+                        title="next chapter">4.1. Introduction to Replication</a></p><!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+
+<h3>Utilities</h3>
+
+<ul>
+<li><a href="../">Fauxton</a></li>
+</ul>
+<!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+<h3>More Help</h3>
+
+<ul>
+<li><a href="https://couchdb.apache.org/">Homepage</a></li>
+<li><a href="https://cwiki.apache.org/confluence/display/COUCHDB/">Wiki</a></li>
+<li><a href="https://couchdb.apache.org/#mailing-list">Mailing Lists</a></li>
+<li><a href="http://webchat.freenode.net/?channels=couchdb">IRC</a></li>
+<li><a href="https://issues.apache.org/jira/browse/CouchDB">Issues</a></li>
+<li><a href="../download.html">Download</a></li>
+<li><a href="https://github.com/apache/couchdb-documentation/blob/master/src/replication/index.rst"
+       rel="nofollow">Show on GitHub</a></li>
+<li><a href="https://github.com/apache/couchdb-documentation/edit/master/src/replication/index.rst"
+       rel="nofollow">Edit on GitHub</a></li>
+</ul><!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../http-api.html" title="HTTP API Reference"
+             >API Reference</a></li>
+        <li class="right" >
+          <a href="../config-ref.html" title="Configuration Reference"
+             >Config Reference</a> |</li>
+        <li class="right" >
+          <a href="intro.html" title="4.1. Introduction to Replication"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="../config/proxying.html" title="3.14. Proxying Configuration"
+             >previous</a> |</li>
+  <li><a href="../index.html">Apache CouchDB 2.0 Documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2016, Apache Software Foundation.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,477 @@
+<!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>11.5. Sharding &mdash; Apache CouchDB 2.0 Documentation</title>
+    
+    <link rel="stylesheet" href="../_static/rtd.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '2.0.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+    <link rel="author" title="About these documents" href="../about.html" />
+    <link rel="top" title="Apache CouchDB 2.0 Documentation" href="../index.html" />
+    <link rel="up" title="11. Cluster Reference" href="index.html" />
+    <link rel="next" title="12. JSON Structure Reference" href="../json-structure.html" />
+    <link rel="prev" title="11.4. Database Management" href="databases.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../http-api.html" title="HTTP API Reference"
+             >API Reference</a></li>
+        <li class="right" >
+          <a href="../config-ref.html" title="Configuration Reference"
+             >Config Reference</a> |</li>
+        <li class="right" >
+          <a href="../json-structure.html" title="12. JSON Structure Reference"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="databases.html" title="11.4. Database Management"
+             accesskey="P">previous</a> |</li>
+  <li><a href="../index.html">Apache CouchDB 2.0 Documentation</a> &raquo;</li>
+          <li><a href="index.html" accesskey="U">11. Cluster Reference</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="sharding">
+<span id="cluster-sharding"></span><h1>11.5. Sharding<a class="headerlink" href="#sharding" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="scaling-out">
+<span id="cluster-sharding-scaling-out"></span><h2>11.5.1. Scaling out<a class="headerlink" href="#scaling-out" title="Permalink to this headline">¶</a></h2>
+<p>Normally you start small and grow over time. In the beginning you might do just
+fine with one node, but as your data and number of clients grows, you need to
+scale out.</p>
+<p>For simplicity we will start fresh and small.</p>
+<p>Start node1 and add a database to it. To keep it simple we will have 2 shards
+and no replicas.</p>
+<div class="highlight-bash"><div class="highlight"><pre>curl -X PUT <span class="s2">&quot;http://xxx.xxx.xxx.xxx:5984/small?n=1&amp;q=2&quot;</span> --user daboss
+</pre></div>
+</div>
+<p>If you look in the directory <tt class="docutils literal"><span class="pre">data/shards</span></tt> you will find the 2 shards.</p>
+<div class="highlight-text"><div class="highlight"><pre>data/
++-- shards/
+|   +-- 00000000-7fffffff/
+|   |    -- small.1425202577.couch
+|   +-- 80000000-ffffffff/
+|        -- small.1425202577.couch
+</pre></div>
+</div>
+<p>Now, go to the admin panel</p>
+<div class="highlight-text"><div class="highlight"><pre>http://xxx.xxx.xxx.xxx:5986/_utils
+</pre></div>
+</div>
+<p>and look in the database <tt class="docutils literal"><span class="pre">_dbs</span></tt>, it is here that the metadata for each
+database is stored. As the database is called small, there is a document called
+small there. Let us look in it. Yes, you can get it with curl too:</p>
+<div class="highlight-javascript"><div class="highlight"><pre><span class="nx">curl</span> <span class="o">-</span><span class="nx">X</span> <span class="nx">GET</span> <span class="s2">&quot;http://xxx.xxx.xxx.xxx:5986/_dbs/small&quot;</span>
+
+<span class="p">{</span>
+    <span class="s2">&quot;_id&quot;</span><span class="o">:</span> <span class="s2">&quot;small&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;_rev&quot;</span><span class="o">:</span> <span class="s2">&quot;1-5e2d10c29c70d3869fb7a1fd3a827a64&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;shard_suffix&quot;</span><span class="o">:</span> <span class="p">[</span>
+        <span class="mi">46</span><span class="p">,</span>
+        <span class="mi">49</span><span class="p">,</span>
+        <span class="mi">52</span><span class="p">,</span>
+        <span class="mi">50</span><span class="p">,</span>
+        <span class="mi">53</span><span class="p">,</span>
+        <span class="mi">50</span><span class="p">,</span>
+        <span class="mi">48</span><span class="p">,</span>
+        <span class="mi">50</span><span class="p">,</span>
+        <span class="mi">53</span><span class="p">,</span>
+        <span class="mi">55</span><span class="p">,</span>
+        <span class="mi">55</span>
+    <span class="p">],</span>
+    <span class="s2">&quot;changelog&quot;</span><span class="o">:</span> <span class="p">[</span>
+    <span class="p">[</span>
+        <span class="s2">&quot;add&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;00000000-7fffffff&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;node1@xxx.xxx.xxx.xxx&quot;</span>
+    <span class="p">],</span>
+    <span class="p">[</span>
+        <span class="s2">&quot;add&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;80000000-ffffffff&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;node1@xxx.xxx.xxx.xxx&quot;</span>
+    <span class="p">]</span>
+    <span class="p">],</span>
+    <span class="s2">&quot;by_node&quot;</span><span class="o">:</span> <span class="p">{</span>
+        <span class="s2">&quot;node1@xxx.xxx.xxx.xxx&quot;</span><span class="o">:</span> <span class="p">[</span>
+            <span class="s2">&quot;00000000-7fffffff&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;80000000-ffffffff&quot;</span>
+        <span class="p">]</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;by_range&quot;</span><span class="o">:</span> <span class="p">{</span>
+        <span class="s2">&quot;00000000-7fffffff&quot;</span><span class="o">:</span> <span class="p">[</span>
+            <span class="s2">&quot;node1@xxx.xxx.xxx.xxx&quot;</span>
+        <span class="p">],</span>
+        <span class="s2">&quot;80000000-ffffffff&quot;</span><span class="o">:</span> <span class="p">[</span>
+            <span class="s2">&quot;node1@xxx.xxx.xxx.xxx&quot;</span>
+        <span class="p">]</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><tt class="docutils literal"><span class="pre">_id</span></tt> The name of the database.</li>
+<li><tt class="docutils literal"><span class="pre">_rev</span></tt> The current revision of the metadata.</li>
+<li><tt class="docutils literal"><span class="pre">shard_suffix</span></tt> The numbers after small and before .couch. The number of
+seconds after UNIX epoch that the database was created. Stored in ASCII.</li>
+<li><tt class="docutils literal"><span class="pre">changelog</span></tt> Self explaining. Only for admins to read.</li>
+<li><tt class="docutils literal"><span class="pre">by_node</span></tt> Which shards each node have.</li>
+<li><tt class="docutils literal"><span class="pre">by_rage</span></tt> On which nodes each shard is.</li>
+</ul>
+<div class="section" id="nothing-here-nothing-there-a-shard-in-my-sleeve">
+<h3>Nothing here, nothing there, a shard in my sleeve<a class="headerlink" href="#nothing-here-nothing-there-a-shard-in-my-sleeve" title="Permalink to this headline">¶</a></h3>
+<p>Start node2 and add it to the cluster. Check in <tt class="docutils literal"><span class="pre">/_membership</span></tt> that the
+nodes are talking with each other.</p>
+<p>If you look in the directory <tt class="docutils literal"><span class="pre">data</span></tt> on node2, you will see that there is no
+directory called shards.</p>
+<p>Go to Fauxton and edit the metadata for small, so it looks like this:</p>
+<div class="highlight-javascript"><div class="highlight"><pre><span class="p">{</span>
+    <span class="s2">&quot;_id&quot;</span><span class="o">:</span> <span class="s2">&quot;small&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;_rev&quot;</span><span class="o">:</span> <span class="s2">&quot;1-5e2d10c29c70d3869fb7a1fd3a827a64&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;shard_suffix&quot;</span><span class="o">:</span> <span class="p">[</span>
+        <span class="mi">46</span><span class="p">,</span>
+        <span class="mi">49</span><span class="p">,</span>
+        <span class="mi">52</span><span class="p">,</span>
+        <span class="mi">50</span><span class="p">,</span>
+        <span class="mi">53</span><span class="p">,</span>
+        <span class="mi">50</span><span class="p">,</span>
+        <span class="mi">48</span><span class="p">,</span>
+        <span class="mi">50</span><span class="p">,</span>
+        <span class="mi">53</span><span class="p">,</span>
+        <span class="mi">55</span><span class="p">,</span>
+        <span class="mi">55</span>
+    <span class="p">],</span>
+    <span class="s2">&quot;changelog&quot;</span><span class="o">:</span> <span class="p">[</span>
+    <span class="p">[</span>
+        <span class="s2">&quot;add&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;00000000-7fffffff&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;node1@xxx.xxx.xxx.xxx&quot;</span>
+    <span class="p">],</span>
+    <span class="p">[</span>
+        <span class="s2">&quot;add&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;80000000-ffffffff&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;node1@xxx.xxx.xxx.xxx&quot;</span>
+    <span class="p">],</span>
+    <span class="p">[</span>
+        <span class="s2">&quot;add&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;00000000-7fffffff&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;node2@yyy.yyy.yyy.yyy&quot;</span>
+    <span class="p">],</span>
+    <span class="p">[</span>
+        <span class="s2">&quot;add&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;80000000-ffffffff&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;node2@yyy.yyy.yyy.yyy&quot;</span>
+    <span class="p">]</span>
+    <span class="p">],</span>
+    <span class="s2">&quot;by_node&quot;</span><span class="o">:</span> <span class="p">{</span>
+        <span class="s2">&quot;node1@xxx.xxx.xxx.xxx&quot;</span><span class="o">:</span> <span class="p">[</span>
+            <span class="s2">&quot;00000000-7fffffff&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;80000000-ffffffff&quot;</span>
+        <span class="p">],</span>
+        <span class="s2">&quot;node2@yyy.yyy.yyy.yyy&quot;</span><span class="o">:</span> <span class="p">[</span>
+            <span class="s2">&quot;00000000-7fffffff&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;80000000-ffffffff&quot;</span>
+        <span class="p">]</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;by_range&quot;</span><span class="o">:</span> <span class="p">{</span>
+        <span class="s2">&quot;00000000-7fffffff&quot;</span><span class="o">:</span> <span class="p">[</span>
+            <span class="s2">&quot;node1@xxx.xxx.xxx.xxx&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;node2@yyy.yyy.yyy.yyy&quot;</span>
+        <span class="p">],</span>
+        <span class="s2">&quot;80000000-ffffffff&quot;</span><span class="o">:</span> <span class="p">[</span>
+            <span class="s2">&quot;node1@xxx.xxx.xxx.xxx&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;node2@yyy.yyy.yyy.yyy&quot;</span>
+        <span class="p">]</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Then press Save and marvel at the magic. The shards are now on node2 too! We
+now have <tt class="docutils literal"><span class="pre">n=2</span></tt>!</p>
+<p>If the shards are large, then you can copy them over manually and only have
+CouchDB syncing the changes from the last minutes instead.</p>
+</div>
+</div>
+<div class="section" id="moving-shards">
+<span id="cluster-sharding-move"></span><h2>11.5.2. Moving Shards<a class="headerlink" href="#moving-shards" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="add-then-delete">
+<h3>Add, then delete<a class="headerlink" href="#add-then-delete" title="Permalink to this headline">¶</a></h3>
+<p>In the world of CouchDB there is no such thing as moving. You can add a new
+replica to a shard and then remove the old replica, thereby creating the
+illusion of moving. If you try to uphold this illusion with a database that have
+<tt class="docutils literal"><span class="pre">n=1</span></tt>, you might find yourself in the following scenario:</p>
+<ol class="arabic simple">
+<li>Copy the shard to a new node.</li>
+<li>Update the metadata to use the new node.</li>
+<li>Delete the shard on the old node.</li>
+<li>Lose all writes made between 1 and 2.</li>
+</ol>
+<p>As the realty &#8220;I added a new replica of the shard X on node Y and then I waited
+for them to sync, before I removed the replica of shard X from node Z.&#8221; is a bit
+tedious, people and this documentation tend to use the illusion of moving.</p>
+</div>
+<div class="section" id="moving">
+<h3>Moving<a class="headerlink" href="#moving" title="Permalink to this headline">¶</a></h3>
+<p>When you get to <tt class="docutils literal"><span class="pre">n=3</span></tt> you should start moving the shards instead of adding
+more replicas.</p>
+<p>We will stop on <tt class="docutils literal"><span class="pre">n=2</span></tt> to keep things simple. Start node number 3 and add it to
+the cluster. Then create the directories for the shard on node3:</p>
+<div class="highlight-bash"><div class="highlight"><pre>mkdir -p data/shards/00000000-7fffffff
+</pre></div>
+</div>
+<p>And copy over <tt class="docutils literal"><span class="pre">data/shards/00000000-7fffffff/small.1425202577.couch</span></tt> from
+node1 to node3. Do not move files between the shard directories as that will
+confuse CouchDB!</p>
+<p>Edit the database document in <tt class="docutils literal"><span class="pre">_dbs</span></tt> again. Make it so that node3 have a
+replica of the shard <tt class="docutils literal"><span class="pre">00000000-7fffffff</span></tt>. Save the document and let CouchDB
+sync. If we do not do this, then writes made during the copy of the shard and
+the updating of the metadata will only have <tt class="docutils literal"><span class="pre">n=1</span></tt> until CouchDB has synced.</p>
+<p>Then update the metadata document so that node2 no longer have the shard
+<tt class="docutils literal"><span class="pre">00000000-7fffffff</span></tt>. You can now safely delete
+<tt class="docutils literal"><span class="pre">data/shards/00000000-7fffffff/small.1425202577.couch</span></tt> on node 2.</p>
+<p>The changelog is nothing that CouchDB cares about, it is only for the admins.
+But for the sake of completeness, we will update it again. Use <tt class="docutils literal"><span class="pre">delete</span></tt> for
+recording the removal of the shard <tt class="docutils literal"><span class="pre">00000000-7fffffff</span></tt> from node2.</p>
+<p>Start node4, add it to the cluster and do the same as above with shard
+<tt class="docutils literal"><span class="pre">80000000-ffffffff</span></tt>.</p>
+<p>All documents added during this operation was saved and all reads responded to
+without the users noticing anything.</p>
+</div>
+</div>
+<div class="section" id="views">
+<span id="cluster-sharding-views"></span><h2>11.5.3. Views<a class="headerlink" href="#views" title="Permalink to this headline">¶</a></h2>
+<p>The views needs to be moved together with the shards. If you do not, then
+CouchDB will rebuild them and this will take time if you have a lot of
+documents.</p>
+<p>The views are stored in <tt class="docutils literal"><span class="pre">data/.shards</span></tt>.</p>
+<p>It is possible to not move the views and let CouchDB rebuild the view every
+time you move a shard. As this can take quite some time, it is not recommended.</p>
+</div>
+<div class="section" id="reshard-no-preshard">
+<span id="cluster-sharding-preshard"></span><h2>11.5.4. Reshard? No, Preshard!<a class="headerlink" href="#reshard-no-preshard" title="Permalink to this headline">¶</a></h2>
+<p>Reshard? Nope. It can not be done. So do not create databases with to few
+shards.</p>
+<p>If you can not scale out more because you set the number of shards to low, then
+you need to create a new cluster and migrate over.</p>
+<ol class="arabic simple">
+<li>Build a cluster with enough nodes to handle one copy of your data.</li>
+<li>Create a database with the same name, n=1 and with enough shards so you do
+not have to do this again.</li>
+<li>Set up 2 way replication between the 2 clusters.</li>
+<li>Let it sync.</li>
+<li>Tell clients to use both the clusters.</li>
+<li>Add some nodes to the new cluster and add them as replicas.</li>
+<li>Remove some nodes from the old cluster.</li>
+<li>Repeat 6 and 7 until you have enough nodes in the new cluster to have 3
+replicas of every shard.</li>
+<li>Redirect all clients to the new cluster</li>
+<li>Turn off the 2 way replication between the clusters.</li>
+<li>Shut down the old cluster and add the servers as new nodes to the new
+cluster.</li>
+<li>Relax!</li>
+</ol>
+<p>Creating more shards than you need and then move the shards around is called
+presharding. The number of shards you need depends on how much data you are
+going to store. But creating to many shards increases the complexity without any
+real gain. You might even get lower performance. As an example of this, we can
+take the author&#8217;s (15 year) old lab server. It gets noticeably slower with more
+than one shard and high load, as the hard drive must seek more.</p>
+<p>How many shards you should have depends, as always, on your use case and your
+hardware. If you do not know what to do, use the default of 8 shards.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+    <p class="logo"><a href="../index.html">
+      <img class="logo" src="../_static/logo.png" alt="Logo"/>
+    </a></p><!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+<div id="searchbox" style="display: none">
+
+<h3>Quick Search</h3>
+
+<form class="search" action="../search.html" method="get">
+<input type="text" name="q" style="width:115px">
+<input type="submit" value="Go">
+<input type="hidden" name="check_keywords" value="yes">
+<input type="hidden" name="area" value="default">
+</form>
+
+<br>
+
+</div>
+
+<script type="text/javascript">$('#searchbox').show(0);</script>
+  <h3><a href="../contents.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">11.5. Sharding</a><ul>
+<li><a class="reference internal" href="#scaling-out">11.5.1. Scaling out</a><ul>
+<li><a class="reference internal" href="#nothing-here-nothing-there-a-shard-in-my-sleeve">Nothing here, nothing there, a shard in my sleeve</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#moving-shards">11.5.2. Moving Shards</a><ul>
+<li><a class="reference internal" href="#add-then-delete">Add, then delete</a></li>
+<li><a class="reference internal" href="#moving">Moving</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#views">11.5.3. Views</a></li>
+<li><a class="reference internal" href="#reshard-no-preshard">11.5.4. Reshard? No, Preshard!</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="databases.html"
+                        title="previous chapter">11.4. Database Management</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="../json-structure.html"
+                        title="next chapter">12. JSON Structure Reference</a></p><!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+
+<h3>Utilities</h3>
+
+<ul>
+<li><a href="../">Fauxton</a></li>
+</ul>
+<!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+<h3>More Help</h3>
+
+<ul>
+<li><a href="https://couchdb.apache.org/">Homepage</a></li>
+<li><a href="https://cwiki.apache.org/confluence/display/COUCHDB/">Wiki</a></li>
+<li><a href="https://couchdb.apache.org/#mailing-list">Mailing Lists</a></li>
+<li><a href="http://webchat.freenode.net/?channels=couchdb">IRC</a></li>
+<li><a href="https://issues.apache.org/jira/browse/CouchDB">Issues</a></li>
+<li><a href="../download.html">Download</a></li>
+<li><a href="https://github.com/apache/couchdb-documentation/blob/master/src/cluster/sharding.rst"
+       rel="nofollow">Show on GitHub</a></li>
+<li><a href="https://github.com/apache/couchdb-documentation/edit/master/src/cluster/sharding.rst"
+       rel="nofollow">Edit on GitHub</a></li>
+</ul><!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../http-api.html" title="HTTP API Reference"
+             >API Reference</a></li>
+        <li class="right" >
+          <a href="../config-ref.html" title="Configuration Reference"
+             >Config Reference</a> |</li>
+        <li class="right" >
+          <a href="../json-structure.html" title="12. JSON Structure Reference"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="databases.html" title="11.4. Database Management"
+             >previous</a> |</li>
+  <li><a href="../index.html">Apache CouchDB 2.0 Documentation</a> &raquo;</li>
+          <li><a href="index.html" >11. Cluster Reference</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2016, Apache Software Foundation.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
+    </div>
+  </body>
+</html>

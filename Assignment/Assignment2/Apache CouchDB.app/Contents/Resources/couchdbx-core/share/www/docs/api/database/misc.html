@@ -1,0 +1,709 @@
+<!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>10.3.13. /db/_purge &mdash; Apache CouchDB 2.0 Documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/rtd.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '2.0.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <link rel="author" title="About these documents" href="../../about.html" />
+    <link rel="top" title="Apache CouchDB 2.0 Documentation" href="../../index.html" />
+    <link rel="up" title="10.3. Databases" href="index.html" />
+    <link rel="next" title="10.4. Documents" href="../document/index.html" />
+    <link rel="prev" title="10.3.12. /db/_security" href="security.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../http-api.html" title="HTTP API Reference"
+             >API Reference</a></li>
+        <li class="right" >
+          <a href="../../config-ref.html" title="Configuration Reference"
+             >Config Reference</a> |</li>
+        <li class="right" >
+          <a href="../document/index.html" title="10.4. Documents"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="security.html" title="10.3.12. /db/_security"
+             accesskey="P">previous</a> |</li>
+  <li><a href="../../index.html">Apache CouchDB 2.0 Documentation</a> &raquo;</li>
+          <li><a href="../index.html" >10. API Reference</a> &raquo;</li>
+          <li><a href="index.html" accesskey="U">10.3. Databases</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="db-purge">
+<span id="api-db-purge"></span><h1>10.3.13. <tt class="docutils literal"><span class="pre">/db/_purge</span></tt><a class="headerlink" href="#db-purge" title="Permalink to this headline">¶</a></h1>
+<dl class="post">
+<dt id="post--db-_purge">
+<tt class="descname">POST </tt><tt class="descname">/{db}/_purge</tt><a class="headerlink" href="#post--db-_purge" title="Permalink to this definition">¶</a></dt>
+<dd><p>A database purge permanently removes the references to deleted documents
+from the database. Normal deletion of a document within CouchDB does not
+remove the document from the database, instead, the document is marked as
+<tt class="docutils literal"><span class="pre">_deleted=true</span></tt> (and a new revision is created). This is to ensure that
+deleted documents can be replicated to other databases as having been
+deleted. This also means that you can check the status of a document and
+identify that the document has been deleted by its absence.</p>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">Purging a document from a database should only be done as a last resort
+when sensitive information has been introduced inadvertently into a
+database. In clustered or replicated environments it is very difficult
+to guarantee that a particular purged document has been removed from
+all replicas. Do not rely on this API as a way of doing secure
+deletion.</p>
+</div>
+<p>The purge operation removes the references to the deleted documents from
+the database. The purging of old documents is not replicated to other
+databases. If you are replicating between databases and have deleted a
+large number of documents you should run purge on each database.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Purging documents does not remove the space used by them on disk. To
+reclaim disk space, you should run a database compact (see
+<a class="reference internal" href="compact.html#api-db-compact"><em>/db/_compact</em></a>), and compact views
+(see <a class="reference internal" href="compact.html#api-db-compact-ddoc"><em>/db/_compact/design-doc</em></a>).</p>
+</div>
+<p>The format of the request must include the document ID and one or more
+revisions that must be purged.</p>
+<p>The response will contain the purge sequence number, and a list of the
+document IDs and revisions successfully purged.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>db</strong> &#8211; Database name</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name" colspan="2">Request Headers:</th></tr>
+<tr class="field-even field"><td>&nbsp;</td><td class="field-body"><ul class="first simple">
+<li><a class="reference external" href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.1">Accept</a> &#8211; <ul>
+<li><em class="mimetype">application/json</em></li>
+<li><em class="mimetype">text/plain</em></li>
+</ul>
+</li>
+<li><a class="reference external" href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.17">Content-Type</a> &#8211; <em class="mimetype">application/json</em></li>
+</ul>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name" colspan="2">Request JSON Object:</th></tr>
+<tr class="field-odd field"><td>&nbsp;</td><td class="field-body"><ul class="first simple">
+<li><strong>object</strong> &#8211; Mapping of document ID to list of revisions to purge</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name" colspan="2">Response Headers:</th></tr>
+<tr class="field-even field"><td>&nbsp;</td><td class="field-body"><ul class="first simple">
+<li><a class="reference external" href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.17">Content-Type</a> &#8211; <ul>
+<li><em class="mimetype">application/json</em></li>
+<li><em class="mimetype">text/plain; charset=utf-8</em></li>
+</ul>
+</li>
+</ul>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name" colspan="2">Response JSON Object:</th></tr>
+<tr class="field-odd field"><td>&nbsp;</td><td class="field-body"><ul class="first simple">
+<li><strong>purge_seq</strong> (<em>number</em>) &#8211; Purge sequence number</li>
+<li><strong>purged</strong> (<em>object</em>) &#8211; Mapping of document ID to list of purged revisions</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Status Codes:</th><td class="field-body"><ul class="first last simple">
+<li><a class="reference external" href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.2.1">200 OK</a> &#8211; Request completed successfully</li>
+<li><a class="reference external" href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.4.1">400 Bad Request</a> &#8211; Invalid database name or JSON payload</li>
+<li><a class="reference external" href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.4.16">415 Unsupported Media Type</a> &#8211; Bad <a class="reference external" href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.17">Content-Type</a> value</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Request</strong>:</p>
+<div class="highlight-http"><div class="highlight"><pre><span class="nf">POST</span> <span class="nn">/db/_purge</span> <span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span>
+<span class="na">Accept</span><span class="o">:</span> <span class="l">application/json</span>
+<span class="na">Content-Length</span><span class="o">:</span> <span class="l">76</span>
+<span class="na">Content-Type</span><span class="o">:</span> <span class="l">application/json</span>
+<span class="na">Host</span><span class="o">:</span> <span class="l">localhost:5984</span>
+
+<span class="p">{</span>
+    <span class="nt">&quot;c6114c65e295552ab1019e2b046b10e&quot;</span><span class="p">:</span> <span class="p">[</span>
+        <span class="s2">&quot;3-b06fcd1c1c9e0ec7c480ee8aa467bf3b&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;3-0e871ef78849b0c206091f1a7af6ec41&quot;</span>
+    <span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p><strong>Response</strong>:</p>
+<div class="highlight-http"><div class="highlight"><pre><span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span> <span class="m">200</span> <span class="ne">OK</span>
+<span class="na">Cache-Control</span><span class="o">:</span> <span class="l">must-revalidate</span>
+<span class="na">Content-Length</span><span class="o">:</span> <span class="l">103</span>
+<span class="na">Content-Type</span><span class="o">:</span> <span class="l">application/json</span>
+<span class="na">Date</span><span class="o">:</span> <span class="l">Mon, 12 Aug 2013 10:53:24 GMT</span>
+<span class="na">Server</span><span class="o">:</span> <span class="l">CouchDB (Erlang/OTP)</span>
+
+<span class="p">{</span>
+    <span class="nt">&quot;purge_seq&quot;</span><span class="p">:</span><span class="mi">3</span><span class="p">,</span>
+    <span class="nt">&quot;purged&quot;</span><span class="p">:{</span>
+        <span class="nt">&quot;c6114c65e295552ab1019e2b046b10e&quot;</span><span class="p">:</span> <span class="p">[</span>
+            <span class="s2">&quot;3-b06fcd1c1c9e0ec7c480ee8aa467bf3b&quot;</span>
+        <span class="p">]</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<div class="section" id="updating-indexes">
+<h2>Updating Indexes<a class="headerlink" href="#updating-indexes" title="Permalink to this headline">¶</a></h2>
+<p>The number of purges on a database is tracked using a purge sequence. This is
+used by the view indexer to optimize the updating of views that contain the
+purged documents.</p>
+<p>When the indexer identifies that the purge sequence on a database has changed,
+it compares the purge sequence of the database with that stored in the view
+index. If the difference between the stored sequence and database is sequence
+is only 1, then the indexer uses a cached list of the most recently purged
+documents, and then removes these documents from the index individually. This
+prevents completely rebuilding the index from scratch.</p>
+<p>If the difference between the stored sequence number and current database
+sequence is greater than 1, then the view index is entirely rebuilt. This is
+an expensive operation as every document in the database must be examined.</p>
+</div>
+</div>
+<div class="section" id="db-missing-revs">
+<span id="api-db-missing-revs"></span><h1>10.3.14. <tt class="docutils literal"><span class="pre">/db/_missing_revs</span></tt><a class="headerlink" href="#db-missing-revs" title="Permalink to this headline">¶</a></h1>
+<dl class="post">
+<dt id="post--db-_missing_revs">
+<tt class="descname">POST </tt><tt class="descname">/{db}/_missing_revs</tt><a class="headerlink" href="#post--db-_missing_revs" title="Permalink to this definition">¶</a></dt>
+<dd><p>With given a list of document revisions, returns the document revisions
+that do not exist in the database.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>db</strong> &#8211; Database name</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name" colspan="2">Request Headers:</th></tr>
+<tr class="field-even field"><td>&nbsp;</td><td class="field-body"><ul class="first simple">
+<li><a class="reference external" href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.1">Accept</a> &#8211; <ul>
+<li><em class="mimetype">application/json</em></li>
+<li><em class="mimetype">text/plain</em></li>
+</ul>
+</li>
+<li><a class="reference external" href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.17">Content-Type</a> &#8211; <em class="mimetype">application/json</em></li>
+</ul>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name" colspan="2">Request JSON Object:</th></tr>
+<tr class="field-odd field"><td>&nbsp;</td><td class="field-body"><ul class="first simple">
+<li><strong>object</strong> &#8211; Mapping of document ID to list of revisions to lookup</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name" colspan="2">Response Headers:</th></tr>
+<tr class="field-even field"><td>&nbsp;</td><td class="field-body"><ul class="first simple">
+<li><a class="reference external" href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.17">Content-Type</a> &#8211; <ul>
+<li><em class="mimetype">application/json</em></li>
+<li><em class="mimetype">text/plain; charset=utf-8</em></li>
+</ul>
+</li>
+</ul>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name" colspan="2">Response JSON Object:</th></tr>
+<tr class="field-odd field"><td>&nbsp;</td><td class="field-body"><ul class="first simple">
+<li><strong>missing_revs</strong> (<em>object</em>) &#8211; Mapping of document ID to list of missed
+revisions</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Status Codes:</th><td class="field-body"><ul class="first last simple">
+<li><a class="reference external" href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.2.1">200 OK</a> &#8211; Request completed successfully</li>
+<li><a class="reference external" href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.4.1">400 Bad Request</a> &#8211; Invalid database name or JSON payload</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Request</strong>:</p>
+<div class="highlight-http"><div class="highlight"><pre><span class="nf">POST</span> <span class="nn">/db/_missing_revs</span> <span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span>
+<span class="na">Accept</span><span class="o">:</span> <span class="l">application/json</span>
+<span class="na">Content-Length</span><span class="o">:</span> <span class="l">76</span>
+<span class="na">Content-Type</span><span class="o">:</span> <span class="l">application/json</span>
+<span class="na">Host</span><span class="o">:</span> <span class="l">localhost:5984</span>
+
+<span class="p">{</span>
+    <span class="nt">&quot;c6114c65e295552ab1019e2b046b10e&quot;</span><span class="p">:</span> <span class="p">[</span>
+        <span class="s2">&quot;3-b06fcd1c1c9e0ec7c480ee8aa467bf3b&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;3-0e871ef78849b0c206091f1a7af6ec41&quot;</span>
+    <span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p><strong>Response</strong>:</p>
+<div class="highlight-http"><div class="highlight"><pre><span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span> <span class="m">200</span> <span class="ne">OK</span>
+<span class="na">Cache-Control</span><span class="o">:</span> <span class="l">must-revalidate</span>
+<span class="na">Content-Length</span><span class="o">:</span> <span class="l">64</span>
+<span class="na">Content-Type</span><span class="o">:</span> <span class="l">application/json</span>
+<span class="na">Date</span><span class="o">:</span> <span class="l">Mon, 12 Aug 2013 10:53:24 GMT</span>
+<span class="na">Server</span><span class="o">:</span> <span class="l">CouchDB (Erlang/OTP)</span>
+
+<span class="p">{</span>
+    <span class="nt">&quot;missed_revs&quot;</span><span class="p">:{</span>
+        <span class="nt">&quot;c6114c65e295552ab1019e2b046b10e&quot;</span><span class="p">:</span> <span class="p">[</span>
+            <span class="s2">&quot;3-b06fcd1c1c9e0ec7c480ee8aa467bf3b&quot;</span>
+        <span class="p">]</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</div>
+<div class="section" id="db-revs-diff">
+<span id="api-db-revs-diff"></span><h1>10.3.15. <tt class="docutils literal"><span class="pre">/db/_revs_diff</span></tt><a class="headerlink" href="#db-revs-diff" title="Permalink to this headline">¶</a></h1>
+<dl class="post">
+<dt id="post--db-_revs_diff">
+<tt class="descname">POST </tt><tt class="descname">/{db}/_revs_diff</tt><a class="headerlink" href="#post--db-_revs_diff" title="Permalink to this definition">¶</a></dt>
+<dd><p>Given a set of document/revision IDs, returns the subset of those that do
+not correspond to revisions stored in the database.</p>
+<p>Its primary use is by the replicator, as an important optimization: after
+receiving a set of new revision IDs from the source database, the
+replicator sends this set to the destination database&#8217;s <tt class="docutils literal"><span class="pre">_revs_diff</span></tt> to
+find out which of them already exist there. It can then avoid fetching and
+sending already-known document bodies.</p>
+<p>Both the request and response bodies are JSON objects whose keys are
+document IDs; but the values are structured differently:</p>
+<ul class="simple">
+<li>In the request, a value is an array of revision IDs for that document.</li>
+<li>In the response, a value is an object with a <tt class="docutils literal"><span class="pre">missing</span></tt>: key, whose
+value is a list of revision IDs for that document (the ones that are not
+stored in the database) and optionally a <tt class="docutils literal"><span class="pre">possible_ancestors</span></tt> key,
+whose value is an array of revision IDs that are known that might be
+ancestors of the missing revisions.</li>
+</ul>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>db</strong> &#8211; Database name</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name" colspan="2">Request Headers:</th></tr>
+<tr class="field-even field"><td>&nbsp;</td><td class="field-body"><ul class="first simple">
+<li><a class="reference external" href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.1">Accept</a> &#8211; <ul>
+<li><em class="mimetype">application/json</em></li>
+<li><em class="mimetype">text/plain</em></li>
+</ul>
+</li>
+<li><a class="reference external" href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.17">Content-Type</a> &#8211; <em class="mimetype">application/json</em></li>
+</ul>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name" colspan="2">Request JSON Object:</th></tr>
+<tr class="field-odd field"><td>&nbsp;</td><td class="field-body"><ul class="first simple">
+<li><strong>object</strong> &#8211; Mapping of document ID to list of revisions to lookup</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name" colspan="2">Response Headers:</th></tr>
+<tr class="field-even field"><td>&nbsp;</td><td class="field-body"><ul class="first simple">
+<li><a class="reference external" href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.17">Content-Type</a> &#8211; <ul>
+<li><em class="mimetype">application/json</em></li>
+<li><em class="mimetype">text/plain; charset=utf-8</em></li>
+</ul>
+</li>
+</ul>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name" colspan="2">Response JSON Object:</th></tr>
+<tr class="field-odd field"><td>&nbsp;</td><td class="field-body"><ul class="first simple">
+<li><strong>missing</strong> (<em>array</em>) &#8211; List of missed revisions for specified document</li>
+<li><strong>possible_ancestors</strong> (<em>array</em>) &#8211; List of revisions that <em>may be</em> ancestors
+for specified document and its current revision in requested database</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Status Codes:</th><td class="field-body"><ul class="first last simple">
+<li><a class="reference external" href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.2.1">200 OK</a> &#8211; Request completed successfully</li>
+<li><a class="reference external" href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.4.1">400 Bad Request</a> &#8211; Invalid database name or JSON payload</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Request</strong>:</p>
+<div class="highlight-http"><div class="highlight"><pre><span class="nf">POST</span> <span class="nn">/db/_revs_diff</span> <span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span>
+<span class="na">Accept</span><span class="o">:</span> <span class="l">application/json</span>
+<span class="na">Content-Length</span><span class="o">:</span> <span class="l">113</span>
+<span class="na">Content-Type</span><span class="o">:</span> <span class="l">application/json</span>
+<span class="na">Host</span><span class="o">:</span> <span class="l">localhost:5984</span>
+
+<span class="p">{</span>
+    <span class="nt">&quot;190f721ca3411be7aa9477db5f948bbb&quot;</span><span class="p">:</span> <span class="p">[</span>
+        <span class="s2">&quot;3-bb72a7682290f94a985f7afac8b27137&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;4-10265e5a26d807a3cfa459cf1a82ef2e&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;5-067a00dff5e02add41819138abb3284d&quot;</span>
+    <span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p><strong>Response</strong>:</p>
+<div class="highlight-http"><div class="highlight"><pre><span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span> <span class="m">200</span> <span class="ne">OK</span>
+<span class="na">Cache-Control</span><span class="o">:</span> <span class="l">must-revalidate</span>
+<span class="na">Content-Length</span><span class="o">:</span> <span class="l">88</span>
+<span class="na">Content-Type</span><span class="o">:</span> <span class="l">application/json</span>
+<span class="na">Date</span><span class="o">:</span> <span class="l">Mon, 12 Aug 2013 16:56:02 GMT</span>
+<span class="na">Server</span><span class="o">:</span> <span class="l">CouchDB (Erlang/OTP)</span>
+
+<span class="p">{</span>
+    <span class="nt">&quot;190f721ca3411be7aa9477db5f948bbb&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;missing&quot;</span><span class="p">:</span> <span class="p">[</span>
+            <span class="s2">&quot;3-bb72a7682290f94a985f7afac8b27137&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;5-067a00dff5e02add41819138abb3284d&quot;</span>
+        <span class="p">],</span>
+        <span class="nt">&quot;possible_ancestors&quot;</span><span class="p">:</span> <span class="p">[</span>
+            <span class="s2">&quot;4-10265e5a26d807a3cfa459cf1a82ef2e&quot;</span>
+        <span class="p">]</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</div>
+<div class="section" id="db-revs-limit">
+<span id="api-db-revs-limit"></span><h1>10.3.16. <tt class="docutils literal"><span class="pre">/db/_revs_limit</span></tt><a class="headerlink" href="#db-revs-limit" title="Permalink to this headline">¶</a></h1>
+<dl class="get">
+<dt id="get--db-_revs_limit">
+<tt class="descname">GET </tt><tt class="descname">/{db}/_revs_limit</tt><a class="headerlink" href="#get--db-_revs_limit" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets the current <tt class="docutils literal"><span class="pre">revs_limit</span></tt> (revision limit) setting.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>db</strong> &#8211; Database name</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name" colspan="2">Request Headers:</th></tr>
+<tr class="field-even field"><td>&nbsp;</td><td class="field-body"><ul class="first simple">
+<li><a class="reference external" href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.1">Accept</a> &#8211; <ul>
+<li><em class="mimetype">application/json</em></li>
+<li><em class="mimetype">text/plain</em></li>
+</ul>
+</li>
+</ul>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name" colspan="2">Response Headers:</th></tr>
+<tr class="field-odd field"><td>&nbsp;</td><td class="field-body"><ul class="first simple">
+<li><a class="reference external" href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.17">Content-Type</a> &#8211; <ul>
+<li><em class="mimetype">application/json</em></li>
+<li><em class="mimetype">text/plain; charset=utf-8</em></li>
+</ul>
+</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Status Codes:</th><td class="field-body"><ul class="first last simple">
+<li><a class="reference external" href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.2.1">200 OK</a> &#8211; Request completed successfully</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Request</strong>:</p>
+<div class="highlight-http"><div class="highlight"><pre><span class="nf">GET</span> <span class="nn">/db/_revs_limit</span> <span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span>
+<span class="na">Accept</span><span class="o">:</span> <span class="l">application/json</span>
+<span class="na">Host</span><span class="o">:</span> <span class="l">localhost:5984</span>
+</pre></div>
+</div>
+<p><strong>Response</strong>:</p>
+<div class="highlight-http"><div class="highlight"><pre><span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span> <span class="m">200</span> <span class="ne">OK</span>
+<span class="na">Cache-Control</span><span class="o">:</span> <span class="l">must-revalidate</span>
+<span class="na">Content-Length</span><span class="o">:</span> <span class="l">5</span>
+<span class="na">Content-Type</span><span class="o">:</span> <span class="l">application/json</span>
+<span class="na">Date</span><span class="o">:</span> <span class="l">Mon, 12 Aug 2013 17:27:30 GMT</span>
+<span class="na">Server</span><span class="o">:</span> <span class="l">CouchDB (Erlang/OTP)</span>
+
+<span class="mi">1000</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="put">
+<dt id="put--db-_revs_limit">
+<tt class="descname">PUT </tt><tt class="descname">/{db}/_revs_limit</tt><a class="headerlink" href="#put--db-_revs_limit" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the maximum number of document revisions that will be tracked by
+CouchDB, even after compaction has occurred. You can set the revision limit
+on a database with a scalar integer of the limit that you want to set as
+the request body.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>db</strong> &#8211; Database name</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name" colspan="2">Request Headers:</th></tr>
+<tr class="field-even field"><td>&nbsp;</td><td class="field-body"><ul class="first simple">
+<li><a class="reference external" href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.1">Accept</a> &#8211; <ul>
+<li><em class="mimetype">application/json</em></li>
+<li><em class="mimetype">text/plain</em></li>
+</ul>
+</li>
+<li><a class="reference external" href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.17">Content-Type</a> &#8211; <em class="mimetype">application/json</em></li>
+</ul>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name" colspan="2">Response Headers:</th></tr>
+<tr class="field-odd field"><td>&nbsp;</td><td class="field-body"><ul class="first simple">
+<li><a class="reference external" href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.17">Content-Type</a> &#8211; <ul>
+<li><em class="mimetype">application/json</em></li>
+<li><em class="mimetype">text/plain; charset=utf-8</em></li>
+</ul>
+</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name" colspan="2">Response JSON Object:</th></tr>
+<tr class="field-even field"><td>&nbsp;</td><td class="field-body"><ul class="first simple">
+<li><strong>ok</strong> (<em>boolean</em>) &#8211; Operation status</li>
+</ul>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Status Codes:</th><td class="field-body"><ul class="first last simple">
+<li><a class="reference external" href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.2.1">200 OK</a> &#8211; Request completed successfully</li>
+<li><a class="reference external" href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.4.1">400 Bad Request</a> &#8211; Invalid JSON data</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Request</strong>:</p>
+<div class="highlight-http"><div class="highlight"><pre><span class="nf">PUT</span> <span class="nn">/db/_revs_limit</span> <span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span>
+<span class="na">Accept</span><span class="o">:</span> <span class="l">application/json</span>
+<span class="na">Content-Length</span><span class="o">:</span> <span class="l">5</span>
+<span class="na">Content-Type</span><span class="o">:</span> <span class="l">application/json</span>
+<span class="na">Host</span><span class="o">:</span> <span class="l">localhost:5984</span>
+
+<span class="mi">1000</span>
+</pre></div>
+</div>
+<p><strong>Response</strong>:</p>
+<div class="highlight-http"><div class="highlight"><pre><span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span> <span class="m">200</span> <span class="ne">OK</span>
+<span class="na">Cache-Control</span><span class="o">:</span> <span class="l">must-revalidate</span>
+<span class="na">Content-Length</span><span class="o">:</span> <span class="l">12</span>
+<span class="na">Content-Type</span><span class="o">:</span> <span class="l">application/json</span>
+<span class="na">Date</span><span class="o">:</span> <span class="l">Mon, 12 Aug 2013 17:47:52 GMT</span>
+<span class="na">Server</span><span class="o">:</span> <span class="l">CouchDB (Erlang/OTP)</span>
+
+<span class="p">{</span>
+    <span class="nt">&quot;ok&quot;</span><span class="p">:</span> <span class="kc">true</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+    <p class="logo"><a href="../../index.html">
+      <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+    </a></p><!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+<div id="searchbox" style="display: none">
+
+<h3>Quick Search</h3>
+
+<form class="search" action="../../search.html" method="get">
+<input type="text" name="q" style="width:115px">
+<input type="submit" value="Go">
+<input type="hidden" name="check_keywords" value="yes">
+<input type="hidden" name="area" value="default">
+</form>
+
+<br>
+
+</div>
+
+<script type="text/javascript">$('#searchbox').show(0);</script>
+  <h3><a href="../../contents.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">10.3.13. <tt class="docutils literal"><span class="pre">/db/_purge</span></tt></a><ul>
+<li><a class="reference internal" href="#updating-indexes">Updating Indexes</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#db-missing-revs">10.3.14. <tt class="docutils literal"><span class="pre">/db/_missing_revs</span></tt></a></li>
+<li><a class="reference internal" href="#db-revs-diff">10.3.15. <tt class="docutils literal"><span class="pre">/db/_revs_diff</span></tt></a></li>
+<li><a class="reference internal" href="#db-revs-limit">10.3.16. <tt class="docutils literal"><span class="pre">/db/_revs_limit</span></tt></a></li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="security.html"
+                        title="previous chapter">10.3.12. <tt class="docutils literal"><span class="pre">/db/_security</span></tt></a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="../document/index.html"
+                        title="next chapter">10.4. Documents</a></p><!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+
+<h3>Utilities</h3>
+
+<ul>
+<li><a href="../">Fauxton</a></li>
+</ul>
+<!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+<h3>More Help</h3>
+
+<ul>
+<li><a href="https://couchdb.apache.org/">Homepage</a></li>
+<li><a href="https://cwiki.apache.org/confluence/display/COUCHDB/">Wiki</a></li>
+<li><a href="https://couchdb.apache.org/#mailing-list">Mailing Lists</a></li>
+<li><a href="http://webchat.freenode.net/?channels=couchdb">IRC</a></li>
+<li><a href="https://issues.apache.org/jira/browse/CouchDB">Issues</a></li>
+<li><a href="../../download.html">Download</a></li>
+<li><a href="https://github.com/apache/couchdb-documentation/blob/master/src/api/database/misc.rst"
+       rel="nofollow">Show on GitHub</a></li>
+<li><a href="https://github.com/apache/couchdb-documentation/edit/master/src/api/database/misc.rst"
+       rel="nofollow">Edit on GitHub</a></li>
+</ul><!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../http-api.html" title="HTTP API Reference"
+             >API Reference</a></li>
+        <li class="right" >
+          <a href="../../config-ref.html" title="Configuration Reference"
+             >Config Reference</a> |</li>
+        <li class="right" >
+          <a href="../document/index.html" title="10.4. Documents"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="security.html" title="10.3.12. /db/_security"
+             >previous</a> |</li>
+  <li><a href="../../index.html">Apache CouchDB 2.0 Documentation</a> &raquo;</li>
+          <li><a href="../index.html" >10. API Reference</a> &raquo;</li>
+          <li><a href="index.html" >10.3. Databases</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2016, Apache Software Foundation.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
+    </div>
+  </body>
+</html>

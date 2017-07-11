@@ -1,0 +1,365 @@
+<!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>3.1. Introduction Into Configuring &mdash; Apache CouchDB 2.0 Documentation</title>
+    
+    <link rel="stylesheet" href="../_static/rtd.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '2.0.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+    <link rel="author" title="About these documents" href="../about.html" />
+    <link rel="top" title="Apache CouchDB 2.0 Documentation" href="../index.html" />
+    <link rel="up" title="3. Configuring CouchDB" href="index.html" />
+    <link rel="next" title="3.2. Base Configuration" href="couchdb.html" />
+    <link rel="prev" title="3. Configuring CouchDB" href="index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../http-api.html" title="HTTP API Reference"
+             >API Reference</a></li>
+        <li class="right" >
+          <a href="../config-ref.html" title="Configuration Reference"
+             >Config Reference</a> |</li>
+        <li class="right" >
+          <a href="couchdb.html" title="3.2. Base Configuration"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="3. Configuring CouchDB"
+             accesskey="P">previous</a> |</li>
+  <li><a href="../index.html">Apache CouchDB 2.0 Documentation</a> &raquo;</li>
+          <li><a href="index.html" accesskey="U">3. Configuring CouchDB</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="introduction-into-configuring">
+<span id="config-intro"></span><h1>3.1. Introduction Into Configuring<a class="headerlink" href="#introduction-into-configuring" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="configuration-files">
+<h2>3.1.1. Configuration files<a class="headerlink" href="#configuration-files" title="Permalink to this headline">¶</a></h2>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">The following section covering load order of config files applies only to
+UNIX-ish systems. For Windows, only the provided <tt class="docutils literal"><span class="pre">default.ini</span></tt> and
+<tt class="docutils literal"><span class="pre">local.ini</span></tt> files are relevant. These can of course have content
+appended, which achieves the same type of functionality as outlined for
+UNIX-ish systems below.</p>
+</div>
+<p>By default, CouchDB reads configuration files from the following locations,
+in the following order:</p>
+<ol class="arabic simple">
+<li><tt class="docutils literal"><span class="pre">LOCALCONFDIR/default.ini</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">LOCALCONFDIR/default.d/*.ini</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">PLUGINS_DIR/*/priv/default.d/*.ini</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">LOCALCONFDIR/local.ini</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">LOCALCONFDIR/local.d/*.ini</span></tt></li>
+</ol>
+<p>The <tt class="docutils literal"><span class="pre">LOCALCONFDIR</span></tt> points to the directory that contains configuration files
+(<tt class="docutils literal"><span class="pre">/usr/local/etc/couchdb</span></tt> by default). This variable may vary from the
+target operation system and may be changed during building from the source
+code. For binary distributions, it mostly points to the installation path
+(e.g. <tt class="docutils literal"><span class="pre">C:\Program</span> <span class="pre">Files\CouchDB\etc\couchdb</span></tt> for Windows).</p>
+<p>To see the actual configuration files chain run in shell:</p>
+<div class="highlight-shell"><div class="highlight"><pre>couchdb -c
+</pre></div>
+</div>
+<p>This will print out all <em>actual</em> configuration files that will form the result
+CouchDB configuration:</p>
+<div class="highlight-shell"><div class="highlight"><pre>/etc/couchdb/default.ini
+/etc/couchdb/default.d/geocouch.ini
+/etc/couchdb/local.ini
+/etc/couchdb/local.d/geocouch.ini
+/etc/couchdb/local.d/vendor.ini
+</pre></div>
+</div>
+<p>Settings in successive documents override the settings in earlier entries.
+For example, setting the <a class="reference internal" href="http.html#httpd/bind_address" title="bind_address"><tt class="xref config config-option docutils literal"><span class="pre">httpd/bind_address</span></tt></a> parameter in
+<tt class="docutils literal"><span class="pre">local.ini</span></tt> would override any setting in <tt class="docutils literal"><span class="pre">default.ini</span></tt>.</p>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">The <tt class="docutils literal"><span class="pre">default.ini</span></tt> file may be overwritten during an upgrade or
+re-installation, so localised changes should be made to the <tt class="docutils literal"><span class="pre">local.ini</span></tt>
+file or files within the <tt class="docutils literal"><span class="pre">local.d</span></tt> directory.</p>
+</div>
+<p>The configuration files chain may be changed by specifying additional sources
+by using next command line options:</p>
+<ul class="simple">
+<li><tt class="docutils literal"><span class="pre">-a</span></tt>: adds configuration file to the chain</li>
+<li><tt class="docutils literal"><span class="pre">-A</span></tt>: adds configuration directory to the chain</li>
+</ul>
+<p>Let&#8217;s add these options and see how the configuration chain changes:</p>
+<div class="highlight-shell"><div class="highlight"><pre>shell&gt; couchdb -c -a /home/couchdb/custom.ini
+/etc/couchdb/default.ini
+/etc/couchdb/default.d/geocouch.ini
+/etc/couchdb/local.ini
+/etc/couchdb/local.d/geocouch.ini
+/etc/couchdb/local.d/vendor.ini
+/home/couchdb/custom.ini
+</pre></div>
+</div>
+<p>In case when <cite>/home/couchdb/custom.ini</cite> exists it will be added to
+the configuration chain.</p>
+</div>
+<div class="section" id="parameter-names-and-values">
+<h2>3.1.2. Parameter names and values<a class="headerlink" href="#parameter-names-and-values" title="Permalink to this headline">¶</a></h2>
+<p>All parameter names are <em>case-sensitive</em>. Every parameter takes a value of one
+of five types: <cite>boolean</cite>, <cite>integer</cite>, <cite>string</cite>, <a class="reference external" href="http://www.erlang.org/doc/reference_manual/data_types.html#id66049">tuple</a> and <a class="reference external" href="http://www.erlang.org/doc/man/proplists.html">proplist</a>.
+Boolean values can be written as <tt class="docutils literal"><span class="pre">true</span></tt> or <tt class="docutils literal"><span class="pre">false</span></tt>.</p>
+<p>Parameters with value type of <cite>tuple</cite> or <cite>proplist</cite> are following the Erlang
+requirement for style and naming.</p>
+</div>
+<div class="section" id="setting-parameters-via-the-configuration-file">
+<h2>3.1.3. Setting parameters via the configuration file<a class="headerlink" href="#setting-parameters-via-the-configuration-file" title="Permalink to this headline">¶</a></h2>
+<p>The common way to set some parameters is to edit the <cite>local.ini</cite> file which is
+mostly located in the <cite>etc/couchdb</cite> directory relative your installation path
+root.</p>
+<p>For example:</p>
+<div class="highlight-ini"><div class="highlight"><pre><span class="c1">; This is a comment</span>
+<span class="k">[section]</span>
+<span class="na">param</span> <span class="o">=</span> <span class="s">value ; inline comments are allowed</span>
+</pre></div>
+</div>
+<p>Each configuration file line may contains <cite>section</cite> definition, <cite>parameter</cite>
+specification, empty (space and newline characters only) or <cite>commented</cite> line.
+You can set up <cite>inline</cite> commentaries for <cite>sections</cite> or <cite>parameters</cite>.</p>
+<p>The <cite>section</cite> defines group of parameters that are belongs to some specific
+CouchDB subsystem. For instance, <a class="reference internal" href="http.html#httpd" title="[httpd]"><tt class="xref config config-section docutils literal"><span class="pre">httpd</span></tt></a> section holds not only HTTP
+server parameters, but also others that directly interacts with it.</p>
+<p>The <cite>parameter</cite> specification contains two parts divided by the <cite>equal</cite> sign
+(<tt class="docutils literal"><span class="pre">=</span></tt>): the parameter name on the left side and the parameter value on the
+right one. The leading and following whitespace for <tt class="docutils literal"><span class="pre">=</span></tt> is an optional to
+improve configuration readability.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p>In case when you&#8217;d like to remove some parameter from the <cite>default.ini</cite>
+without modifying that file, you may override in <cite>local.ini</cite>, but without
+any value:</p>
+<div class="highlight-ini"><div class="highlight"><pre><span class="k">[httpd_global_handlers]</span>
+<span class="na">_all_dbs</span> <span class="o">=</span>
+</pre></div>
+</div>
+<p class="last">This could be read as: &#8220;remove the <cite>_all_dbs</cite> parameter from the
+<cite>httpd_global_handlers</cite> section if it was ever set before&#8221;.</p>
+</div>
+<p>The semicolon (<tt class="docutils literal"><span class="pre">;</span></tt>) signs about <cite>commentary</cite> start: everything after this
+character is counted as commentary and doesn&#8217;t process by CouchDB.</p>
+<p>After editing of configuration file CouchDB server instance should be restarted
+to apply these changes.</p>
+</div>
+<div class="section" id="setting-parameters-via-the-http-api">
+<h2>3.1.4. Setting parameters via the HTTP API<a class="headerlink" href="#setting-parameters-via-the-http-api" title="Permalink to this headline">¶</a></h2>
+<p>Alternatively, configuration parameters could be set via the
+<a class="reference internal" href="../api/server/configuration.html#api-config"><em>HTTP API</em></a>. This API allows to change CouchDB configuration
+on-the-fly without requiring a server restart:</p>
+<div class="highlight-shell"><div class="highlight"><pre>curl -X PUT http://localhost:5984/_config/uuids/algorithm -d <span class="s1">&#39;&quot;random&quot;&#39;</span>
+</pre></div>
+</div>
+<p>In the response the old parameter&#8217;s value returns:</p>
+<div class="highlight-shell"><div class="highlight"><pre><span class="s2">&quot;sequential&quot;</span>
+</pre></div>
+</div>
+<p>You should be careful with changing configuration via the HTTP API since it&#8217;s
+easy to make CouchDB unavailable. For instance, if you&#8217;d like to change the
+<a class="reference internal" href="http.html#httpd/bind_address" title="bind_address"><tt class="xref config config-option docutils literal"><span class="pre">httpd/bind_address</span></tt></a> for a new one:</p>
+<div class="highlight-shell"><div class="highlight"><pre>curl -X PUT http://localhost:5984/_config/httpd/bind_address -d <span class="s1">&#39;&quot;10.10.0.128&quot;&#39;</span>
+</pre></div>
+</div>
+<p>However, if you make a typo, or the specified IP address is not available
+from your network, CouchDB will be unavailable for you in both cases and
+the only way to resolve this will be by remoting into the server, correcting
+the errant file, and restarting CouchDB. To protect yourself against such
+accidents you may set the <a class="reference internal" href="http.html#httpd/config_whitelist" title="config_whitelist"><tt class="xref config config-option docutils literal"><span class="pre">httpd/config_whitelist</span></tt></a> of permitted
+configuration parameters for updates via the HTTP API. Once this option is set,
+further changes to non-whitelisted parameters must take place via the
+configuration file, and in most cases, also requires a server restart before
+hand-edited options take effect.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+    <p class="logo"><a href="../index.html">
+      <img class="logo" src="../_static/logo.png" alt="Logo"/>
+    </a></p><!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+<div id="searchbox" style="display: none">
+
+<h3>Quick Search</h3>
+
+<form class="search" action="../search.html" method="get">
+<input type="text" name="q" style="width:115px">
+<input type="submit" value="Go">
+<input type="hidden" name="check_keywords" value="yes">
+<input type="hidden" name="area" value="default">
+</form>
+
+<br>
+
+</div>
+
+<script type="text/javascript">$('#searchbox').show(0);</script>
+  <h3><a href="../contents.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">3.1. Introduction Into Configuring</a><ul>
+<li><a class="reference internal" href="#configuration-files">3.1.1. Configuration files</a></li>
+<li><a class="reference internal" href="#parameter-names-and-values">3.1.2. Parameter names and values</a></li>
+<li><a class="reference internal" href="#setting-parameters-via-the-configuration-file">3.1.3. Setting parameters via the configuration file</a></li>
+<li><a class="reference internal" href="#setting-parameters-via-the-http-api">3.1.4. Setting parameters via the HTTP API</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="index.html"
+                        title="previous chapter">3. Configuring CouchDB</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="couchdb.html"
+                        title="next chapter">3.2. Base Configuration</a></p><!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+
+<h3>Utilities</h3>
+
+<ul>
+<li><a href="../">Fauxton</a></li>
+</ul>
+<!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+<h3>More Help</h3>
+
+<ul>
+<li><a href="https://couchdb.apache.org/">Homepage</a></li>
+<li><a href="https://cwiki.apache.org/confluence/display/COUCHDB/">Wiki</a></li>
+<li><a href="https://couchdb.apache.org/#mailing-list">Mailing Lists</a></li>
+<li><a href="http://webchat.freenode.net/?channels=couchdb">IRC</a></li>
+<li><a href="https://issues.apache.org/jira/browse/CouchDB">Issues</a></li>
+<li><a href="../download.html">Download</a></li>
+<li><a href="https://github.com/apache/couchdb-documentation/blob/master/src/config/intro.rst"
+       rel="nofollow">Show on GitHub</a></li>
+<li><a href="https://github.com/apache/couchdb-documentation/edit/master/src/config/intro.rst"
+       rel="nofollow">Edit on GitHub</a></li>
+</ul><!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../http-api.html" title="HTTP API Reference"
+             >API Reference</a></li>
+        <li class="right" >
+          <a href="../config-ref.html" title="Configuration Reference"
+             >Config Reference</a> |</li>
+        <li class="right" >
+          <a href="couchdb.html" title="3.2. Base Configuration"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="3. Configuring CouchDB"
+             >previous</a> |</li>
+  <li><a href="../index.html">Apache CouchDB 2.0 Documentation</a> &raquo;</li>
+          <li><a href="index.html" >3. Configuring CouchDB</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2016, Apache Software Foundation.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
+    </div>
+  </body>
+</html>

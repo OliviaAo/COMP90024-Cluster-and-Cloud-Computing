@@ -1,0 +1,289 @@
+<!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>16.4. CVE-2012-5641: Information disclosure via unescaped backslashes in URLs on Windows &mdash; Apache CouchDB 2.0 Documentation</title>
+    
+    <link rel="stylesheet" href="../_static/rtd.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '2.0.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+    <link rel="author" title="About these documents" href="../about.html" />
+    <link rel="top" title="Apache CouchDB 2.0 Documentation" href="../index.html" />
+    <link rel="up" title="16. Security Issues Information" href="index.html" />
+    <link rel="next" title="16.5. CVE-2012-5649: JSONP arbitrary code execution with Adobe Flash" href="2012-5649.html" />
+    <link rel="prev" title="16.3. CVE-2010-3854: Apache CouchDB Cross Site Scripting Issue" href="2010-3854.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../http-api.html" title="HTTP API Reference"
+             >API Reference</a></li>
+        <li class="right" >
+          <a href="../config-ref.html" title="Configuration Reference"
+             >Config Reference</a> |</li>
+        <li class="right" >
+          <a href="2012-5649.html" title="16.5. CVE-2012-5649: JSONP arbitrary code execution with Adobe Flash"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="2010-3854.html" title="16.3. CVE-2010-3854: Apache CouchDB Cross Site Scripting Issue"
+             accesskey="P">previous</a> |</li>
+  <li><a href="../index.html">Apache CouchDB 2.0 Documentation</a> &raquo;</li>
+          <li><a href="index.html" accesskey="U">16. Security Issues Information</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="cve-2012-5641-information-disclosure-via-unescaped-backslashes-in-urls-on-windows">
+<span id="cve-2012-5641"></span><h1>16.4. CVE-2012-5641: Information disclosure via unescaped backslashes in URLs on Windows<a class="headerlink" href="#cve-2012-5641-information-disclosure-via-unescaped-backslashes-in-urls-on-windows" title="Permalink to this headline">¶</a></h1>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Date:</th><td class="field-body">14.01.2013</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Affected:</th><td class="field-body">All Windows-based releases of Apache CouchDB, up to and including
+1.0.3, 1.1.1, and 1.2.0 are vulnerable.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Severity:</th><td class="field-body">Moderate</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Vendor:</th><td class="field-body">The Apache Software Foundation</td>
+</tr>
+</tbody>
+</table>
+<div class="section" id="description">
+<h2>16.4.1. Description<a class="headerlink" href="#description" title="Permalink to this headline">¶</a></h2>
+<p>A specially crafted request could be used to access content directly that
+would otherwise be protected by inbuilt CouchDB security mechanisms. This
+request could retrieve in binary form any CouchDB database, including the
+<cite>_users</cite> or <cite>_replication</cite> databases, or any other file that the user account
+used to run CouchDB might have read access to on the local filesystem. This
+exploit is due to a vulnerability in the included MochiWeb HTTP library.</p>
+</div>
+<div class="section" id="mitigation">
+<h2>16.4.2. Mitigation<a class="headerlink" href="#mitigation" title="Permalink to this headline">¶</a></h2>
+<p>Upgrade to a supported CouchDB release that includes this fix, such as:</p>
+<ul class="simple">
+<li><a class="reference internal" href="../whatsnew/1.0.html#release-1-0-4"><em>1.0.4</em></a></li>
+<li><a class="reference internal" href="../whatsnew/1.1.html#release-1-1-2"><em>1.1.2</em></a></li>
+<li><a class="reference internal" href="../whatsnew/1.2.html#release-1-2-1"><em>1.2.1</em></a></li>
+<li><a class="reference internal" href="../whatsnew/1.3.html#release-1-3-x"><em>1.3.x</em></a></li>
+</ul>
+<p>All listed releases have included a specific fix for the MochiWeb component.</p>
+</div>
+<div class="section" id="work-around">
+<h2>16.4.3. Work-Around<a class="headerlink" href="#work-around" title="Permalink to this headline">¶</a></h2>
+<p>Users may simply exclude any file-based web serving components directly
+within their configuration file, typically in <cite>local.ini</cite>. On a default
+CouchDB installation, this requires amending the
+<a class="reference internal" href="../config/http-handlers.html#httpd_global_handlers/favicon.ico" title="favicon.ico"><tt class="xref config config-option docutils literal"><span class="pre">httpd_global_handlers/favicon.ico</span></tt></a> and
+<a class="reference internal" href="../config/http-handlers.html#httpd_global_handlers/_utils" title="_utils"><tt class="xref config config-option docutils literal"><span class="pre">httpd_global_handlers/_utils</span></tt></a> lines within
+<a class="reference internal" href="../config/http-handlers.html#httpd_global_handlers" title="[httpd_global_handlers]"><tt class="xref config config-section docutils literal"><span class="pre">httpd_global_handlers</span></tt></a>:</p>
+<div class="highlight-python"><div class="highlight"><pre>[httpd_global_handlers]
+favicon.ico = {couch_httpd_misc_handlers, handle_welcome_req, &lt;&lt;&quot;Forbidden&quot;&gt;&gt;}
+_utils = {couch_httpd_misc_handlers, handle_welcome_req, &lt;&lt;&quot;Forbidden&quot;&gt;&gt;}
+</pre></div>
+</div>
+<p>If additional handlers have been added, such as to support Adobe&#8217;s Flash
+<cite>crossdomain.xml</cite> files, these would also need to be excluded.</p>
+</div>
+<div class="section" id="acknowledgement">
+<h2>16.4.4. Acknowledgement<a class="headerlink" href="#acknowledgement" title="Permalink to this headline">¶</a></h2>
+<p>The issue was found and reported by Sriram Melkote to the upstream MochiWeb
+project.</p>
+</div>
+<div class="section" id="references">
+<h2>16.4.5. References<a class="headerlink" href="#references" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><a class="reference external" href="https://github.com/melkote/mochiweb/commit/ac2bf">https://github.com/melkote/mochiweb/commit/ac2bf</a></li>
+</ul>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+    <p class="logo"><a href="../index.html">
+      <img class="logo" src="../_static/logo.png" alt="Logo"/>
+    </a></p><!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+<div id="searchbox" style="display: none">
+
+<h3>Quick Search</h3>
+
+<form class="search" action="../search.html" method="get">
+<input type="text" name="q" style="width:115px">
+<input type="submit" value="Go">
+<input type="hidden" name="check_keywords" value="yes">
+<input type="hidden" name="area" value="default">
+</form>
+
+<br>
+
+</div>
+
+<script type="text/javascript">$('#searchbox').show(0);</script>
+  <h3><a href="../contents.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">16.4. CVE-2012-5641: Information disclosure via unescaped backslashes in URLs on Windows</a><ul>
+<li><a class="reference internal" href="#description">16.4.1. Description</a></li>
+<li><a class="reference internal" href="#mitigation">16.4.2. Mitigation</a></li>
+<li><a class="reference internal" href="#work-around">16.4.3. Work-Around</a></li>
+<li><a class="reference internal" href="#acknowledgement">16.4.4. Acknowledgement</a></li>
+<li><a class="reference internal" href="#references">16.4.5. References</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="2010-3854.html"
+                        title="previous chapter">16.3. CVE-2010-3854: Apache CouchDB Cross Site Scripting Issue</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="2012-5649.html"
+                        title="next chapter">16.5. CVE-2012-5649: JSONP arbitrary code execution with Adobe Flash</a></p><!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+
+<h3>Utilities</h3>
+
+<ul>
+<li><a href="../">Fauxton</a></li>
+</ul>
+<!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+<h3>More Help</h3>
+
+<ul>
+<li><a href="https://couchdb.apache.org/">Homepage</a></li>
+<li><a href="https://cwiki.apache.org/confluence/display/COUCHDB/">Wiki</a></li>
+<li><a href="https://couchdb.apache.org/#mailing-list">Mailing Lists</a></li>
+<li><a href="http://webchat.freenode.net/?channels=couchdb">IRC</a></li>
+<li><a href="https://issues.apache.org/jira/browse/CouchDB">Issues</a></li>
+<li><a href="../download.html">Download</a></li>
+<li><a href="https://github.com/apache/couchdb-documentation/blob/master/src/cve/2012-5641.rst"
+       rel="nofollow">Show on GitHub</a></li>
+<li><a href="https://github.com/apache/couchdb-documentation/edit/master/src/cve/2012-5641.rst"
+       rel="nofollow">Edit on GitHub</a></li>
+</ul><!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../http-api.html" title="HTTP API Reference"
+             >API Reference</a></li>
+        <li class="right" >
+          <a href="../config-ref.html" title="Configuration Reference"
+             >Config Reference</a> |</li>
+        <li class="right" >
+          <a href="2012-5649.html" title="16.5. CVE-2012-5649: JSONP arbitrary code execution with Adobe Flash"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="2010-3854.html" title="16.3. CVE-2010-3854: Apache CouchDB Cross Site Scripting Issue"
+             >previous</a> |</li>
+  <li><a href="../index.html">Apache CouchDB 2.0 Documentation</a> &raquo;</li>
+          <li><a href="index.html" >16. Security Issues Information</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2016, Apache Software Foundation.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
+    </div>
+  </body>
+</html>

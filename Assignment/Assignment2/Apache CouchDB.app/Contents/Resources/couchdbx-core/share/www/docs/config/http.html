@@ -1,0 +1,867 @@
+<!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>3.4. CouchDB HTTP Server &mdash; Apache CouchDB 2.0 Documentation</title>
+    
+    <link rel="stylesheet" href="../_static/rtd.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '2.0.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+    <link rel="author" title="About these documents" href="../about.html" />
+    <link rel="top" title="Apache CouchDB 2.0 Documentation" href="../index.html" />
+    <link rel="up" title="3. Configuring CouchDB" href="index.html" />
+    <link rel="next" title="3.5. Authentication and Authorization" href="auth.html" />
+    <link rel="prev" title="3.3. couch_peruser" href="couch-peruser.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../http-api.html" title="HTTP API Reference"
+             >API Reference</a></li>
+        <li class="right" >
+          <a href="../config-ref.html" title="Configuration Reference"
+             >Config Reference</a> |</li>
+        <li class="right" >
+          <a href="auth.html" title="3.5. Authentication and Authorization"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="couch-peruser.html" title="3.3. couch_peruser"
+             accesskey="P">previous</a> |</li>
+  <li><a href="../index.html">Apache CouchDB 2.0 Documentation</a> &raquo;</li>
+          <li><a href="index.html" accesskey="U">3. Configuring CouchDB</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="couchdb-http-server">
+<h1>3.4. CouchDB HTTP Server<a class="headerlink" href="#couchdb-http-server" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="http-server-options">
+<span id="config-httpd"></span><h2>3.4.1. HTTP Server Options<a class="headerlink" href="#http-server-options" title="Permalink to this headline">¶</a></h2>
+<dl class="section">
+<dt id="httpd">
+<tt class="descname">[httpd]</tt><a class="headerlink" href="#httpd" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="option">
+<dt id="httpd/allow_jsonp">
+<tt class="descname">allow_jsonp</tt><a class="headerlink" href="#httpd/allow_jsonp" title="Permalink to this definition">¶</a></dt>
+<dd><p>The <tt class="docutils literal"><span class="pre">true</span></tt> value of this option enables <a class="reference external" href="http://www.json-p.org/">JSONP</a> support (it&#8217;s
+<tt class="docutils literal"><span class="pre">false</span></tt> by default):</p>
+<div class="highlight-ini"><div class="highlight"><pre><span class="k">[httpd]</span>
+<span class="na">allow_jsonp</span> <span class="o">=</span> <span class="s">false</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="option">
+<dt id="httpd/authentication_handlers">
+<tt class="descname">authentication_handlers</tt><a class="headerlink" href="#httpd/authentication_handlers" title="Permalink to this definition">¶</a></dt>
+<dd><p>List of used authentication handlers that used by CouchDB. You may
+extend them via third-party plugins or remove some of them if you won&#8217;t
+let users to use one of provided methods:</p>
+<div class="highlight-ini"><div class="highlight"><pre><span class="k">[httpd]</span>
+<span class="na">authentication_handlers</span> <span class="o">=</span> <span class="s">{couch_httpd_oauth, oauth_authentication_handler}, {couch_httpd_auth, cookie_authentication_handler}, {couch_httpd_auth, default_authentication_handler}</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><tt class="docutils literal"><span class="pre">{couch_httpd_oauth,</span> <span class="pre">oauth_authentication_handler}</span></tt>: handles OAuth;</li>
+<li><tt class="docutils literal"><span class="pre">{couch_httpd_auth,</span> <span class="pre">cookie_authentication_handler}</span></tt>: used for Cookie auth;</li>
+<li><tt class="docutils literal"><span class="pre">{couch_httpd_auth,</span> <span class="pre">proxy_authentication_handler}</span></tt>: used for Proxy auth;</li>
+<li><tt class="docutils literal"><span class="pre">{couch_httpd_auth,</span> <span class="pre">default_authentication_handler}</span></tt>: used for Basic auth;</li>
+<li><tt class="docutils literal"><span class="pre">{couch_httpd_auth,</span> <span class="pre">null_authentication_handler}</span></tt>: disables auth.
+Everlasting <cite>Admin Party</cite>!</li>
+</ul>
+</dd></dl>
+
+<dl class="option">
+<dt id="httpd/bind_address">
+<tt class="descname">bind_address</tt><a class="headerlink" href="#httpd/bind_address" title="Permalink to this definition">¶</a></dt>
+<dd><p>Defines the IP address by which CouchDB will be accessible:</p>
+<div class="highlight-ini"><div class="highlight"><pre><span class="k">[httpd]</span>
+<span class="na">bind_address</span> <span class="o">=</span> <span class="s">127.0.0.1</span>
+</pre></div>
+</div>
+<p>To let CouchDB listen any available IP address, just set up <tt class="docutils literal"><span class="pre">0.0.0.0</span></tt>
+value:</p>
+<div class="highlight-ini"><div class="highlight"><pre><span class="k">[httpd]</span>
+<span class="na">bind_address</span> <span class="o">=</span> <span class="s">0.0.0.0</span>
+</pre></div>
+</div>
+<p>For IPv6 support you need to set <tt class="docutils literal"><span class="pre">::1</span></tt> if you want to let CouchDB
+listen local address:</p>
+<div class="highlight-ini"><div class="highlight"><pre><span class="k">[httpd]</span>
+<span class="na">bind_address</span> <span class="o">=</span> <span class="s">::1</span>
+</pre></div>
+</div>
+<p>or <tt class="docutils literal"><span class="pre">::</span></tt> for any available:</p>
+<div class="highlight-ini"><div class="highlight"><pre><span class="k">[httpd]</span>
+<span class="na">bind_address</span> <span class="o">=</span> <span class="s">::</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="option">
+<dt id="httpd/changes_timeout">
+<tt class="descname">changes_timeout</tt><a class="headerlink" href="#httpd/changes_timeout" title="Permalink to this definition">¶</a></dt>
+<dd><p>Specifies default <cite>timeout</cite> value for <a class="reference internal" href="../api/database/changes.html#changes"><em>Changes Feed</em></a> in
+milliseconds (60000 by default):</p>
+<div class="highlight-ini"><div class="highlight"><pre><span class="k">[httpd]</span>
+<span class="na">changes_feed</span> <span class="o">=</span> <span class="s">60000 ; 60 seconds</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="option">
+<dt id="httpd/config_whitelist">
+<tt class="descname">config_whitelist</tt><a class="headerlink" href="#httpd/config_whitelist" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the configuration modification whitelist. Only whitelisted values
+may be changed via the <a class="reference internal" href="../api/server/configuration.html#api-config"><em>config API</em></a>. To allow the
+admin to change this value over HTTP, remember to include
+<tt class="docutils literal"><span class="pre">{httpd,config_whitelist}</span></tt> itself. Excluding it from the list would
+require editing this file to update the whitelist:</p>
+<div class="highlight-ini"><div class="highlight"><pre><span class="k">[httpd]</span>
+<span class="na">config_whitelist</span> <span class="o">=</span> <span class="s">[{httpd,config_whitelist}, {log,level}, {etc,etc}]</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="option">
+<dt id="httpd/default_handler">
+<tt class="descname">default_handler</tt><a class="headerlink" href="#httpd/default_handler" title="Permalink to this definition">¶</a></dt>
+<dd><p>Specifies default HTTP requests handler:</p>
+<div class="highlight-ini"><div class="highlight"><pre><span class="k">[httpd]</span>
+<span class="na">default_handler</span> <span class="o">=</span> <span class="s">{couch_httpd_db, handle_request}</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="option">
+<dt id="httpd/enable_cors">
+<tt class="descname">enable_cors</tt><a class="headerlink" href="#httpd/enable_cors" title="Permalink to this definition">¶</a></dt>
+<dd><div class="versionadded">
+<p><span class="versionmodified">New in version 1.3.</span></p>
+</div>
+<p>Controls <a class="reference internal" href="#config-cors"><em>CORS</em></a> feature:</p>
+<div class="highlight-ini"><div class="highlight"><pre><span class="k">[httpd]</span>
+<span class="na">enable_cors</span> <span class="o">=</span> <span class="s">false</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="option">
+<dt id="httpd/log_max_chunk_size">
+<tt class="descname">log_max_chunk_size</tt><a class="headerlink" href="#httpd/log_max_chunk_size" title="Permalink to this definition">¶</a></dt>
+<dd><p>Defines maximum chunk size in bytes for <a class="reference internal" href="../api/server/common.html#api-server-log"><em>_log</em></a>
+resource:</p>
+<div class="highlight-ini"><div class="highlight"><pre><span class="k">[httpd]</span>
+<span class="na">log_max_chunk_size</span> <span class="o">=</span> <span class="s">1000000</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="option">
+<dt id="httpd/port">
+<tt class="descname">port</tt><a class="headerlink" href="#httpd/port" title="Permalink to this definition">¶</a></dt>
+<dd><p>Defined the port number to listen:</p>
+<div class="highlight-ini"><div class="highlight"><pre><span class="k">[httpd]</span>
+<span class="na">port</span> <span class="o">=</span> <span class="s">5984</span>
+</pre></div>
+</div>
+<p>To let CouchDB handle any free port, set this option to <tt class="docutils literal"><span class="pre">0</span></tt>:</p>
+<div class="highlight-ini"><div class="highlight"><pre><span class="k">[httpd]</span>
+<span class="na">port</span> <span class="o">=</span> <span class="s">0</span>
+</pre></div>
+</div>
+<p>After that, CouchDB URI could be located within the URI file.</p>
+</dd></dl>
+
+<dl class="option">
+<dt id="httpd/redirect_vhost_handler">
+<tt class="descname">redirect_vhost_handler</tt><a class="headerlink" href="#httpd/redirect_vhost_handler" title="Permalink to this definition">¶</a></dt>
+<dd><p>This option customizes the default function that handles requests to
+<a class="reference internal" href="#vhosts" title="[vhosts]"><tt class="xref config config-section docutils literal"><span class="pre">virtual</span> <span class="pre">hosts</span></tt></a>:</p>
+<div class="highlight-ini"><div class="highlight"><pre><span class="k">[httpd]</span>
+<span class="na">redirect_vhost_handler</span> <span class="o">=</span> <span class="s">{Module, Fun}</span>
+</pre></div>
+</div>
+<p>The specified function take 2 arguments: the Mochiweb request object
+and the target path.</p>
+</dd></dl>
+
+<dl class="option">
+<dt id="httpd/server_options">
+<tt class="descname">server_options</tt><a class="headerlink" href="#httpd/server_options" title="Permalink to this definition">¶</a></dt>
+<dd><p>Server options for the <a class="reference external" href="https://github.com/mochi/mochiweb">MochiWeb</a> component of CouchDB can be added to
+the configuration files:</p>
+<div class="highlight-ini"><div class="highlight"><pre><span class="k">[httpd]</span>
+<span class="na">server_options</span> <span class="o">=</span> <span class="s">[{backlog, 128}, {acceptor_pool_size, 16}]</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="option">
+<dt id="httpd/secure_rewrites">
+<tt class="descname">secure_rewrites</tt><a class="headerlink" href="#httpd/secure_rewrites" title="Permalink to this definition">¶</a></dt>
+<dd><p>This option allow to isolate databases via subdomains:</p>
+<div class="highlight-ini"><div class="highlight"><pre><span class="k">[httpd]</span>
+<span class="na">secure_rewrites</span> <span class="o">=</span> <span class="s">true</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="option">
+<dt id="httpd/socket_options">
+<tt class="descname">socket_options</tt><a class="headerlink" href="#httpd/socket_options" title="Permalink to this definition">¶</a></dt>
+<dd><p>The socket options for the listening socket in CouchDB can be specified
+as a list of tuples. For example:</p>
+<div class="highlight-ini"><div class="highlight"><pre><span class="k">[httpd]</span>
+<span class="na">socket_options</span> <span class="o">=</span> <span class="s">[{recbuf, 262144}, {sndbuf, 262144}, {nodelay, true}]</span>
+</pre></div>
+</div>
+<p>The options supported are a subset of full options supported by the
+TCP/IP stack. A list of the supported options are provided in the
+<a class="reference external" href="http://www.erlang.org/doc/man/inet.html#setopts-2">Erlang inet</a> documentation.</p>
+</dd></dl>
+
+<dl class="option">
+<dt id="httpd/vhost_global_handlers">
+<tt class="descname">vhost_global_handlers</tt><a class="headerlink" href="#httpd/vhost_global_handlers" title="Permalink to this definition">¶</a></dt>
+<dd><p>List of global handlers that are available for <a class="reference internal" href="#vhosts" title="[vhosts]"><tt class="xref config config-section docutils literal"><span class="pre">virtual</span> <span class="pre">hosts</span></tt></a>:</p>
+<div class="highlight-ini"><div class="highlight"><pre><span class="k">[httpd]</span>
+<span class="na">vhost_global_handlers</span> <span class="o">=</span> <span class="s">_utils, _uuids, _session, _oauth, _users</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="option">
+<dt id="httpd/x_forwarded_host">
+<tt class="descname">x_forwarded_host</tt><a class="headerlink" href="#httpd/x_forwarded_host" title="Permalink to this definition">¶</a></dt>
+<dd><p>The <cite>x_forwarded_host</cite> header (<tt class="docutils literal"><span class="pre">X-Forwarded-Host</span></tt> by default) is used
+to forward the original value of the <tt class="docutils literal"><span class="pre">Host</span></tt> header field in case, for
+example, if a reverse proxy is rewriting the &#8220;Host&#8221; header field to
+some internal host name before forward the request to CouchDB:</p>
+<div class="highlight-ini"><div class="highlight"><pre><span class="k">[httpd]</span>
+<span class="na">x_forwarded_host</span> <span class="o">=</span> <span class="s">X-Forwarded-Host</span>
+</pre></div>
+</div>
+<p>This header has higher priority above <tt class="docutils literal"><span class="pre">Host</span></tt> one, if only it exists
+in the request.</p>
+</dd></dl>
+
+<dl class="option">
+<dt id="httpd/x_forwarded_proto">
+<tt class="descname">x_forwarded_proto</tt><a class="headerlink" href="#httpd/x_forwarded_proto" title="Permalink to this definition">¶</a></dt>
+<dd><p><cite>x_forwarded_proto</cite> header (<tt class="docutils literal"><span class="pre">X-Forwarder-Proto</span></tt> by default) is used
+for identifying the originating protocol of an HTTP request, since a
+reverse proxy may communicate with CouchDB instance using HTTP even if
+the request to the reverse proxy is HTTPS:</p>
+<div class="highlight-ini"><div class="highlight"><pre><span class="k">[httpd]</span>
+<span class="na">x_forwarded_proto</span> <span class="o">=</span> <span class="s">X-Forwarded-Proto</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="option">
+<dt id="httpd/x_forwarded_ssl">
+<tt class="descname">x_forwarded_ssl</tt><a class="headerlink" href="#httpd/x_forwarded_ssl" title="Permalink to this definition">¶</a></dt>
+<dd><p>The <cite>x_forwarded_ssl</cite> header (<tt class="docutils literal"><span class="pre">X-Forwarded-Ssl</span></tt> by default) tells
+CouchDB that it should use the <cite>https</cite> scheme instead of the <cite>http</cite>.
+Actually, it&#8217;s a synonym for <tt class="docutils literal"><span class="pre">X-Forwarded-Proto:</span> <span class="pre">https</span></tt> header, but
+used by some reverse proxies:</p>
+<div class="highlight-ini"><div class="highlight"><pre><span class="k">[httpd]</span>
+<span class="na">x_forwarded_ssl</span> <span class="o">=</span> <span class="s">X-Forwarded-Ssl</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="option">
+<dt id="httpd/WWW-Authenticate">
+<tt class="descname">WWW-Authenticate</tt><a class="headerlink" href="#httpd/WWW-Authenticate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set this option to trigger basic-auth popup on unauthorized requests:</p>
+<div class="highlight-ini"><div class="highlight"><pre><span class="k">[httpd]</span>
+<span class="na">WWW-Authenticate</span> <span class="o">=</span> <span class="s">Basic realm=&quot;Welcome to the Couch!&quot;</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="secure-socket-level-options">
+<span id="config-ssl"></span><h2>3.4.2. Secure Socket Level Options<a class="headerlink" href="#secure-socket-level-options" title="Permalink to this headline">¶</a></h2>
+<dl class="section">
+<dt id="ssl">
+<tt class="descname">[ssl]</tt><a class="headerlink" href="#ssl" title="Permalink to this definition">¶</a></dt>
+<dd><p>CouchDB supports SSL natively. All your secure connection needs can now be
+served without needing to set up and maintain a separate proxy server that
+handles SSL.</p>
+<p>SSL setup can be tricky, but the configuration in CouchDB was designed to
+be as easy as possible. All you need is two files; a certificate and a
+private key. If you bought an official SSL certificate from a certificate
+authority, both should be in your possession already.</p>
+<p>If you just want to try this out and don&#8217;t want to pay anything upfront,
+you can create a self-signed certificate. Everything will work the same,
+but clients will get a warning about an insecure certificate.</p>
+<p>You will need the <a class="reference external" href="http://www.openssl.org/">OpenSSL</a> command line tool installed. It probably
+already is.</p>
+<div class="highlight-bash"><div class="highlight"><pre>shell&gt; mkdir /etc/couchdb/cert
+shell&gt; <span class="nb">cd</span> /etc/couchdb/cert
+shell&gt; openssl genrsa &gt; privkey.pem
+shell&gt; openssl req -new -x509 -key privkey.pem -out couchdb.pem -days 1095
+shell&gt; chmod <span class="m">600</span> privkey.pem couchdb.pem
+shell&gt; chown couchdb privkey.pem couchdb.pem
+</pre></div>
+</div>
+<p>Now, you need to edit CouchDB&#8217;s configuration, by editing your
+<tt class="docutils literal"><span class="pre">local.ini</span></tt> file. Here is what you need to do.</p>
+<p>At first, <a class="reference internal" href="services.html#daemons/httpsd" title="httpsd"><tt class="xref config config-option docutils literal"><span class="pre">enable</span> <span class="pre">the</span> <span class="pre">HTTPS</span> <span class="pre">daemon</span></tt></a>:</p>
+<div class="highlight-ini"><div class="highlight"><pre><span class="k">[daemons]</span>
+<span class="na">httpsd</span> <span class="o">=</span> <span class="s">{couch_httpd, start_link, [https]}</span>
+</pre></div>
+</div>
+<p>Next, under the <tt class="docutils literal"><span class="pre">[ssl]</span></tt> section set up the newly generated certificates:</p>
+<div class="highlight-ini"><div class="highlight"><pre><span class="k">[ssl]</span>
+<span class="na">cert_file</span> <span class="o">=</span> <span class="s">/etc/couchdb/cert/couchdb.pem</span>
+<span class="na">key_file</span> <span class="o">=</span> <span class="s">/etc/couchdb/cert/privkey.pem</span>
+</pre></div>
+</div>
+<p>For more information please read <a class="reference external" href="http://www.openssl.org/docs/HOWTO/certificates.txt">certificates HOWTO</a>.</p>
+<p>Now start (or restart) CouchDB. You should be able to connect to it
+using HTTPS on port 6984:</p>
+<div class="highlight-console"><div class="highlight"><pre><span class="go">shell&gt; curl https://127.0.0.1:6984/</span>
+<span class="go">curl: (60) SSL certificate problem, verify that the CA cert is OK. Details:</span>
+<span class="go">error:14090086:SSL routines:SSL3_GET_SERVER_CERTIFICATE:certificate verify failed</span>
+<span class="go">More details here: http://curl.haxx.se/docs/sslcerts.html</span>
+
+<span class="go">curl performs SSL certificate verification by default, using a &quot;bundle&quot;</span>
+<span class="go">of Certificate Authority (CA) public keys (CA certs). If the default</span>
+<span class="go">bundle file isn&#39;t adequate, you can specify an alternate file</span>
+<span class="go">using the --cacert option.</span>
+<span class="go">If this HTTPS server uses a certificate signed by a CA represented in</span>
+<span class="go">the bundle, the certificate verification probably failed due to a</span>
+<span class="go">problem with the certificate (it might be expired, or the name might</span>
+<span class="go">not match the domain name in the URL).</span>
+<span class="go">If you&#39;d like to turn off curl&#39;s verification of the certificate, use</span>
+<span class="go">the -k (or --insecure) option.</span>
+</pre></div>
+</div>
+<p>Oh no! What happened?! Remember, clients will notify their users that your
+certificate is self signed. <tt class="docutils literal"><span class="pre">curl</span></tt> is the client in this case and it
+notifies you. Luckily you trust yourself (don&#8217;t you?) and you can specify
+the <tt class="docutils literal"><span class="pre">-k</span></tt> option as the message reads:</p>
+<div class="highlight-console"><div class="highlight"><pre><span class="go">shell&gt; curl -k https://127.0.0.1:6984/</span>
+<span class="go">{&quot;couchdb&quot;:&quot;Welcome&quot;,&quot;version&quot;:&quot;1.5.0&quot;}</span>
+</pre></div>
+</div>
+<p>All done.</p>
+<dl class="option">
+<dt id="ssl/cacert_file">
+<tt class="descname">cacert_file</tt><a class="headerlink" href="#ssl/cacert_file" title="Permalink to this definition">¶</a></dt>
+<dd><p>The path to a file containing PEM encoded CA certificates. The CA
+certificates are used to build the server certificate chain, and for
+client authentication. Also the CAs are used in the list of acceptable
+client CAs passed to the client when a certificate is requested. May be
+omitted if there is no need to verify the client and if there are not
+any intermediate CAs for the server certificate:</p>
+<div class="highlight-ini"><div class="highlight"><pre><span class="k">[ssl]</span>
+<span class="na">cacert_file</span> <span class="o">=</span> <span class="s">/etc/ssl/certs/ca-certificates.crt</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="option">
+<dt id="ssl/cert_file">
+<tt class="descname">cert_file</tt><a class="headerlink" href="#ssl/cert_file" title="Permalink to this definition">¶</a></dt>
+<dd><p>Path to a file containing the user&#8217;s certificate:</p>
+<div class="highlight-ini"><div class="highlight"><pre><span class="k">[ssl]</span>
+<span class="na">cert_file</span> <span class="o">=</span> <span class="s">/etc/couchdb/cert/couchdb.pem</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="option">
+<dt id="ssl/key_file">
+<tt class="descname">key_file</tt><a class="headerlink" href="#ssl/key_file" title="Permalink to this definition">¶</a></dt>
+<dd><p>Path to file containing user&#8217;s private PEM encoded key:</p>
+<div class="highlight-ini"><div class="highlight"><pre><span class="k">[ssl]</span>
+<span class="na">key_file</span> <span class="o">=</span> <span class="s">/etc/couchdb/cert/privkey.pem</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="option">
+<dt id="ssl/password">
+<tt class="descname">password</tt><a class="headerlink" href="#ssl/password" title="Permalink to this definition">¶</a></dt>
+<dd><p>String containing the user&#8217;s password. Only used if the private keyfile
+is password protected:</p>
+<div class="highlight-ini"><div class="highlight"><pre><span class="k">[ssl]</span>
+<span class="na">password</span> <span class="o">=</span> <span class="s">somepassword</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="option">
+<dt id="ssl/ssl_certificate_max_depth">
+<tt class="descname">ssl_certificate_max_depth</tt><a class="headerlink" href="#ssl/ssl_certificate_max_depth" title="Permalink to this definition">¶</a></dt>
+<dd><p>Maximum peer certificate depth (must be set even if certificate
+validation is off):</p>
+<div class="highlight-ini"><div class="highlight"><pre><span class="k">[ssl]</span>
+<span class="na">ssl_certificate_max_depth</span> <span class="o">=</span> <span class="s">1</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="option">
+<dt id="ssl/verify_fun">
+<tt class="descname">verify_fun</tt><a class="headerlink" href="#ssl/verify_fun" title="Permalink to this definition">¶</a></dt>
+<dd><p>The verification fun (optional) if not specified, the default
+verification fun will be used:</p>
+<div class="highlight-ini"><div class="highlight"><pre><span class="k">[ssl]</span>
+<span class="na">verify_fun</span> <span class="o">=</span> <span class="s">{Module, VerifyFun}</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="option">
+<dt id="ssl/verify_ssl_certificates">
+<tt class="descname">verify_ssl_certificates</tt><a class="headerlink" href="#ssl/verify_ssl_certificates" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set to <cite>true</cite> to validate peer certificates:</p>
+<div class="highlight-ini"><div class="highlight"><pre><span class="k">[ssl]</span>
+<span class="na">verify_ssl_certificates</span> <span class="o">=</span> <span class="s">false</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="option">
+<dt id="ssl/fail_if_no_peer_cert">
+<tt class="descname">fail_if_no_peer_cert</tt><a class="headerlink" href="#ssl/fail_if_no_peer_cert" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set to <cite>true</cite> to terminate the TLS/SSL handshake with a
+<cite>handshake_failure</cite> alert message if the client does not send a
+certificate. Only used if <cite>verify_ssl_certificates</cite> is <cite>true</cite>. If set
+to <cite>false</cite> it will only fail if the client sends an invalid certificate
+(an empty certificate is considered valid):</p>
+<div class="highlight-ini"><div class="highlight"><pre><span class="k">[ssl]</span>
+<span class="na">fail_if_no_peer_cert</span> <span class="o">=</span> <span class="s">false</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="option">
+<dt id="ssl/secure_renegotiate">
+<tt class="descname">secure_renegotiate</tt><a class="headerlink" href="#ssl/secure_renegotiate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set to <cite>true</cite> to reject renegotiation attempt that does not live up to
+RFC 5746:</p>
+<div class="highlight-ini"><div class="highlight"><pre><span class="k">[ssl]</span>
+<span class="na">secure_renegotiate</span> <span class="o">=</span> <span class="s">true</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="option">
+<dt id="ssl/ciphers">
+<tt class="descname">ciphers</tt><a class="headerlink" href="#ssl/ciphers" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set to the cipher suites that should be supported which can be
+specified in erlang format &#8220;{ecdhe_ecdsa,aes_128_cbc,sha256}&#8221; or
+in OpenSSL format &#8220;ECDHE-ECDSA-AES128-SHA256&#8221;.</p>
+<div class="highlight-ini"><div class="highlight"><pre><span class="k">[ssl]</span>
+<span class="na">ciphers</span> <span class="o">=</span> <span class="s">[&quot;ECDHE-ECDSA-AES128-SHA256&quot;, &quot;ECDHE-ECDSA-AES128-SHA&quot;]</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="option">
+<dt id="ssl/tls_versions">
+<tt class="descname">tls_versions</tt><a class="headerlink" href="#ssl/tls_versions" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set to a list of permitted SSL/TLS protocol versions:</p>
+<div class="highlight-ini"><div class="highlight"><pre><span class="k">[ssl]</span>
+<span class="na">tls_versions</span> <span class="o">=</span> <span class="s">[tlsv1 | &#39;tlsv1.1&#39; | &#39;tlsv1.2&#39;]</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="cross-origin-resource-sharing">
+<span id="config-cors"></span><span id="cors"></span><h2>3.4.3. Cross-Origin Resource Sharing<a class="headerlink" href="#cross-origin-resource-sharing" title="Permalink to this headline">¶</a></h2>
+<dl class="section">
+<dt id="cors">
+<tt class="descname">[cors]</tt><a class="headerlink" href="#cors" title="Permalink to this definition">¶</a></dt>
+<dd><div class="versionadded">
+<p><span class="versionmodified">New in version 1.3: </span>added CORS support, see JIRA <a class="reference external" href="https://issues.apache.org/jira/browse/COUCHDB-431">COUCHDB-431</a></p>
+</div>
+<p><cite>CORS</cite>, or &#8220;Cross-Origin Resource Sharing&#8221;, allows a resource such as a web
+page running JavaScript inside a browser, to make AJAX requests
+(XMLHttpRequests) to a different domain, without compromising the security
+of either party.</p>
+<p>A typical use case is to have a static website hosted on a CDN make
+requests to another resource, such as a hosted CouchDB instance. This
+avoids needing an intermediary proxy, using <cite>JSONP</cite> or similar workarounds
+to retrieve and host content.</p>
+<p>While CouchDB&#8217;s integrated HTTP server has support for document attachments
+makes this less of a constraint for pure CouchDB projects, there are many
+cases where separating the static content from the database access is
+desirable, and CORS makes this very straightforward.</p>
+<p>By supporting CORS functionality, a CouchDB instance can accept direct
+connections to protected databases and instances, without the browser
+functionality being blocked due to same-origin constraints. CORS is
+supported today on over 90% of recent browsers.</p>
+<p>CORS support is provided as experimental functionality in 1.3, and as such
+will need to be enabled specifically in CouchDB&#8217;s configuration. While all
+origins are forbidden from making requests by default, support is available
+for simple requests, preflight requests and per-vhost configuration.</p>
+<p>This section requires <a class="reference internal" href="#httpd/enable_cors" title="enable_cors"><tt class="xref config config-option docutils literal"><span class="pre">httpd/enable_cors</span></tt></a> option have
+<tt class="docutils literal"><span class="pre">true</span></tt> value:</p>
+<div class="highlight-ini"><div class="highlight"><pre><span class="k">[httpd]</span>
+<span class="na">enable_cors</span> <span class="o">=</span> <span class="s">true</span>
+</pre></div>
+</div>
+<dl class="option">
+<dt id="cors/credentials">
+<tt class="descname">credentials</tt><a class="headerlink" href="#cors/credentials" title="Permalink to this definition">¶</a></dt>
+<dd><p>By default, neither authentication headers nor cookies are included in
+requests and responses. To do so requires both setting
+<tt class="docutils literal"><span class="pre">XmlHttpRequest.withCredentials</span> <span class="pre">=</span> <span class="pre">true</span></tt> on the request object in the
+browser and enabling credentials support in CouchDB.</p>
+<div class="highlight-ini"><div class="highlight"><pre><span class="k">[cors]</span>
+<span class="na">credentials</span> <span class="o">=</span> <span class="s">true</span>
+</pre></div>
+</div>
+<p>CouchDB will respond to a credentials-enabled CORS request with an
+additional header, <tt class="docutils literal"><span class="pre">Access-Control-Allow-Credentials=true</span></tt>.</p>
+</dd></dl>
+
+<dl class="option">
+<dt id="cors/origins">
+<tt class="descname">origins</tt><a class="headerlink" href="#cors/origins" title="Permalink to this definition">¶</a></dt>
+<dd><p>List of origins separated by a comma, <tt class="docutils literal"><span class="pre">*</span></tt> means accept all. You can’t
+set <tt class="docutils literal"><span class="pre">origins</span> <span class="pre">=</span> <span class="pre">*</span></tt> and <tt class="docutils literal"><span class="pre">credentials</span> <span class="pre">=</span> <span class="pre">true</span></tt> option at the same
+time:</p>
+<div class="highlight-ini"><div class="highlight"><pre><span class="k">[cors]</span>
+<span class="na">origins</span> <span class="o">=</span> <span class="s">*</span>
+</pre></div>
+</div>
+<p>Access can be restricted by protocol, host and optionally by port.
+Origins must follow the scheme: <a class="reference external" href="http://example.com:80">http://example.com:80</a>:</p>
+<div class="highlight-ini"><div class="highlight"><pre><span class="k">[cors]</span>
+<span class="na">origins</span> <span class="o">=</span> <span class="s">http://localhost, https://localhost, http://couch.mydev.name:8080</span>
+</pre></div>
+</div>
+<p>Note that by default, no origins are accepted. You must define them
+explicitly.</p>
+</dd></dl>
+
+<dl class="option">
+<dt id="cors/headers">
+<tt class="descname">headers</tt><a class="headerlink" href="#cors/headers" title="Permalink to this definition">¶</a></dt>
+<dd><p>List of accepted headers separated by a comma:</p>
+<div class="highlight-ini"><div class="highlight"><pre><span class="k">[cors]</span>
+<span class="na">headers</span> <span class="o">=</span> <span class="s">X-Couch-Id, X-Couch-Rev</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="option">
+<dt id="cors/methods">
+<tt class="descname">methods</tt><a class="headerlink" href="#cors/methods" title="Permalink to this definition">¶</a></dt>
+<dd><p>List of accepted methods:</p>
+<div class="highlight-ini"><div class="highlight"><pre><span class="k">[cors]</span>
+<span class="na">methods</span> <span class="o">=</span> <span class="s">GET,POST</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<div class="admonition seealso">
+<p class="first admonition-title">See also</p>
+<p>Original JIRA <a class="reference external" href="https://issues.apache.org/jira/browse/COUCHDB-431">implementation ticket</a></p>
+<p>Standards and References:</p>
+<ul class="simple">
+<li>IETF RFCs relating to methods: <span class="target" id="index-0"></span><a class="rfc reference external" href="http://tools.ietf.org/html/rfc2618.html"><strong>RFC 2618</strong></a>, <span class="target" id="index-1"></span><a class="rfc reference external" href="http://tools.ietf.org/html/rfc2817.html"><strong>RFC 2817</strong></a>, <span class="target" id="index-2"></span><a class="rfc reference external" href="http://tools.ietf.org/html/rfc5789.html"><strong>RFC 5789</strong></a></li>
+<li>IETF RFC for Web Origins: <span class="target" id="index-3"></span><a class="rfc reference external" href="http://tools.ietf.org/html/rfc6454.html"><strong>RFC 6454</strong></a></li>
+<li>W3C <a class="reference external" href="http://www.w3.org/TR/cors">CORS standard</a></li>
+</ul>
+<p>Mozilla Developer Network Resources:</p>
+<ul class="simple">
+<li><a class="reference external" href="https://developer.mozilla.org/en-US/docs/Same-origin_policy_for_file:_URIs">Same origin policy for URIs</a></li>
+<li><a class="reference external" href="https://developer.mozilla.org/En/HTTP_access_control">HTTP Access Control</a></li>
+<li><a class="reference external" href="https://developer.mozilla.org/En/Server-Side_Access_Control">Server-side Access Control</a></li>
+<li><a class="reference external" href="https://developer.mozilla.org/en-US/docs/Same_origin_policy_for_JavaScript">JavaScript same origin policy</a></li>
+</ul>
+<p>Client-side CORS support and usage:</p>
+<ul class="last simple">
+<li><a class="reference external" href="http://caniuse.com/cors">CORS browser support matrix</a></li>
+<li><a class="reference external" href="http://www.html5rocks.com/en/tutorials/cors/">COS tutorial</a></li>
+<li><a class="reference external" href="http://hacks.mozilla.org/2009/07/cross-site-xmlhttprequest-with-cors/">XHR with CORS</a></li>
+</ul>
+</div>
+</dd></dl>
+
+<div class="section" id="per-virtual-host-configuration">
+<h3>Per Virtual Host Configuration<a class="headerlink" href="#per-virtual-host-configuration" title="Permalink to this headline">¶</a></h3>
+<p>To set the options for a <a class="reference internal" href="#vhosts" title="[vhosts]"><tt class="xref config config-section docutils literal"><span class="pre">vhosts</span></tt></a>, you will need to create a section
+with the vhost name prefixed by <tt class="docutils literal"><span class="pre">cors:</span></tt>. Example case for the vhost
+<cite>example.com</cite>:</p>
+<div class="highlight-ini"><div class="highlight"><pre><span class="k">[cors:example.com]</span>
+<span class="na">credentials</span> <span class="o">=</span> <span class="s">false</span>
+<span class="c1">; List of origins separated by a comma</span>
+<span class="na">origins</span> <span class="o">=</span> <span class="s">*</span>
+<span class="c1">; List of accepted headers separated by a comma</span>
+<span class="na">headers</span> <span class="o">=</span> <span class="s">X-CouchDB-Header</span>
+<span class="c1">; List of accepted methods</span>
+<span class="na">methods</span> <span class="o">=</span> <span class="s">HEAD, GET</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="virtual-hosts">
+<span id="config-vhosts"></span><h2>3.4.4. Virtual Hosts<a class="headerlink" href="#virtual-hosts" title="Permalink to this headline">¶</a></h2>
+<dl class="section">
+<dt id="vhosts">
+<tt class="descname">[vhosts]</tt><a class="headerlink" href="#vhosts" title="Permalink to this definition">¶</a></dt>
+<dd><p>CouchDB can map requests to different locations based on the <tt class="docutils literal"><span class="pre">Host</span></tt>
+header, even if they arrive on the same inbound IP address.</p>
+<p>This allows different virtual hosts on the same machine to map to different
+databases or design documents, etc. The most common use case is to map a
+virtual host to a <a class="reference internal" href="../api/ddoc/rewrites.html#api-ddoc-rewrite"><em>Rewrite Handler</em></a>, to provide
+full control over the application&#8217;s URIs.</p>
+<p>To add a virtual host, add a <cite>CNAME</cite> pointer to the DNS for your domain
+name. For development and testing, it is sufficient to add an entry in the
+hosts file, typically <cite>/etc/hosts`</cite> on Unix-like operating systems:</p>
+<div class="highlight-text"><div class="highlight"><pre># CouchDB vhost definitions, refer to local.ini for further details
+127.0.0.1       couchdb.local
+</pre></div>
+</div>
+<p>Test that this is working:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>ping -n <span class="m">2</span> couchdb.local
+PING couchdb.local <span class="o">(</span>127.0.0.1<span class="o">)</span> 56<span class="o">(</span>84<span class="o">)</span> bytes of data.
+<span class="m">64</span> bytes from localhost <span class="o">(</span>127.0.0.1<span class="o">)</span>: <span class="nv">icmp_req</span><span class="o">=</span><span class="m">1</span> <span class="nv">ttl</span><span class="o">=</span><span class="m">64</span> <span class="nb">time</span><span class="o">=</span>0.025 ms
+<span class="m">64</span> bytes from localhost <span class="o">(</span>127.0.0.1<span class="o">)</span>: <span class="nv">icmp_req</span><span class="o">=</span><span class="m">2</span> <span class="nv">ttl</span><span class="o">=</span><span class="m">64</span> <span class="nb">time</span><span class="o">=</span>0.051 ms
+</pre></div>
+</div>
+<p>Finally, add an entry to your <a class="reference internal" href="index.html#config"><em>configuration file</em></a> in the
+<tt class="docutils literal"><span class="pre">[vhosts]</span></tt> section:</p>
+<div class="highlight-ini"><div class="highlight"><pre><span class="k">[vhosts]</span>
+<span class="na">couchdb.local:5984</span> <span class="o">=</span> <span class="s">/example</span>
+<span class="na">*.couchdb.local:5984</span> <span class="o">=</span> <span class="s">/example</span>
+</pre></div>
+</div>
+<p>If your CouchDB is listening on the the default HTTP port (80), or is
+sitting behind a proxy, then you don&#8217;t need to specify a port number in the
+<cite>vhost</cite> key.</p>
+<p>The first line will rewrite the request to display the content of the
+<cite>example</cite> database. This rule works only if the <tt class="docutils literal"><span class="pre">Host</span></tt> header is
+<tt class="docutils literal"><span class="pre">couchdb.local</span></tt> and won&#8217;t work for <cite>CNAMEs</cite>. The second rule, on the
+other hand, matches all <cite>CNAMEs</cite> to <cite>example</cite> db, so that both
+<cite>www.couchdb.local</cite> and <cite>db.couchdb.local</cite> will work.</p>
+</dd></dl>
+
+<div class="section" id="rewriting-hosts-to-a-path">
+<h3>Rewriting Hosts to a Path<a class="headerlink" href="#rewriting-hosts-to-a-path" title="Permalink to this headline">¶</a></h3>
+<p>Like in the <a class="reference internal" href="../api/ddoc/rewrites.html#api-ddoc-rewrite"><em>_rewrite</em></a> handler you can match some
+variable and use them to create the target path. Some examples:</p>
+<div class="highlight-ini"><div class="highlight"><pre><span class="k">[vhosts]</span>
+<span class="na">*.couchdb.local</span> <span class="o">=</span> <span class="s">/*</span>
+<span class="na">:dbname.</span> <span class="o">=</span> <span class="s">/:dbname</span>
+<span class="na">:ddocname.:dbname.example.com</span> <span class="o">=</span> <span class="s">/:dbname/_design/:ddocname/_rewrite</span>
+</pre></div>
+</div>
+<p>The first rule passes the wildcard as <cite>dbname</cite>. The second one does the same,
+but uses a variable name. And the third one allows you to use any URL with
+<cite>ddocname</cite> in any database with <cite>dbname</cite>.</p>
+<p>You could also change the default function to handle request by changing the
+setting <a class="reference internal" href="#httpd/redirect_vhost_handler" title="redirect_vhost_handler"><tt class="xref config config-option docutils literal"><span class="pre">httpd/redirect_vhost_handler</span></tt></a>.</p>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+    <p class="logo"><a href="../index.html">
+      <img class="logo" src="../_static/logo.png" alt="Logo"/>
+    </a></p><!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+<div id="searchbox" style="display: none">
+
+<h3>Quick Search</h3>
+
+<form class="search" action="../search.html" method="get">
+<input type="text" name="q" style="width:115px">
+<input type="submit" value="Go">
+<input type="hidden" name="check_keywords" value="yes">
+<input type="hidden" name="area" value="default">
+</form>
+
+<br>
+
+</div>
+
+<script type="text/javascript">$('#searchbox').show(0);</script>
+  <h3><a href="../contents.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">3.4. CouchDB HTTP Server</a><ul>
+<li><a class="reference internal" href="#http-server-options">3.4.1. HTTP Server Options</a></li>
+<li><a class="reference internal" href="#secure-socket-level-options">3.4.2. Secure Socket Level Options</a></li>
+<li><a class="reference internal" href="#cross-origin-resource-sharing">3.4.3. Cross-Origin Resource Sharing</a><ul>
+<li><a class="reference internal" href="#per-virtual-host-configuration">Per Virtual Host Configuration</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#virtual-hosts">3.4.4. Virtual Hosts</a><ul>
+<li><a class="reference internal" href="#rewriting-hosts-to-a-path">Rewriting Hosts to a Path</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="couch-peruser.html"
+                        title="previous chapter">3.3. couch_peruser</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="auth.html"
+                        title="next chapter">3.5. Authentication and Authorization</a></p><!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+
+<h3>Utilities</h3>
+
+<ul>
+<li><a href="../">Fauxton</a></li>
+</ul>
+<!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+<h3>More Help</h3>
+
+<ul>
+<li><a href="https://couchdb.apache.org/">Homepage</a></li>
+<li><a href="https://cwiki.apache.org/confluence/display/COUCHDB/">Wiki</a></li>
+<li><a href="https://couchdb.apache.org/#mailing-list">Mailing Lists</a></li>
+<li><a href="http://webchat.freenode.net/?channels=couchdb">IRC</a></li>
+<li><a href="https://issues.apache.org/jira/browse/CouchDB">Issues</a></li>
+<li><a href="../download.html">Download</a></li>
+<li><a href="https://github.com/apache/couchdb-documentation/blob/master/src/config/http.rst"
+       rel="nofollow">Show on GitHub</a></li>
+<li><a href="https://github.com/apache/couchdb-documentation/edit/master/src/config/http.rst"
+       rel="nofollow">Edit on GitHub</a></li>
+</ul><!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../http-api.html" title="HTTP API Reference"
+             >API Reference</a></li>
+        <li class="right" >
+          <a href="../config-ref.html" title="Configuration Reference"
+             >Config Reference</a> |</li>
+        <li class="right" >
+          <a href="auth.html" title="3.5. Authentication and Authorization"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="couch-peruser.html" title="3.3. couch_peruser"
+             >previous</a> |</li>
+  <li><a href="../index.html">Apache CouchDB 2.0 Documentation</a> &raquo;</li>
+          <li><a href="index.html" >3. Configuring CouchDB</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2016, Apache Software Foundation.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
+    </div>
+  </body>
+</html>

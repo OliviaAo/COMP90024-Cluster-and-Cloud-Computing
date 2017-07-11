@@ -1,0 +1,364 @@
+<!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>11.1. Setup &mdash; Apache CouchDB 2.0 Documentation</title>
+    
+    <link rel="stylesheet" href="../_static/rtd.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '2.0.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+    <link rel="author" title="About these documents" href="../about.html" />
+    <link rel="top" title="Apache CouchDB 2.0 Documentation" href="../index.html" />
+    <link rel="up" title="11. Cluster Reference" href="index.html" />
+    <link rel="next" title="11.2. Theory" href="theory.html" />
+    <link rel="prev" title="11. Cluster Reference" href="index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../http-api.html" title="HTTP API Reference"
+             >API Reference</a></li>
+        <li class="right" >
+          <a href="../config-ref.html" title="Configuration Reference"
+             >Config Reference</a> |</li>
+        <li class="right" >
+          <a href="theory.html" title="11.2. Theory"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="11. Cluster Reference"
+             accesskey="P">previous</a> |</li>
+  <li><a href="../index.html">Apache CouchDB 2.0 Documentation</a> &raquo;</li>
+          <li><a href="index.html" accesskey="U">11. Cluster Reference</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="setup">
+<span id="cluster-setup"></span><h1>11.1. Setup<a class="headerlink" href="#setup" title="Permalink to this headline">¶</a></h1>
+<p>Everything you need to know to prepare the cluster for the installation of
+CouchDB.</p>
+<div class="section" id="firewall">
+<h2>11.1.1. Firewall<a class="headerlink" href="#firewall" title="Permalink to this headline">¶</a></h2>
+<p>If you do not have a firewall between your servers, then you can skip this.</p>
+<p>CouchDB in cluster mode uses the port <tt class="docutils literal"><span class="pre">5984</span></tt> just as standalone, but is also
+uses <tt class="docutils literal"><span class="pre">5986</span></tt> for node-local APIs.</p>
+<p>Erlang uses TCP port <tt class="docutils literal"><span class="pre">4369</span></tt> (EPMD) to find other nodes, so all servers must be
+able to speak to each other on this port. In an Erlang Cluster, all nodes are
+connected to all other nodes. A mesh.</p>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">If you expose the port <tt class="docutils literal"><span class="pre">4369</span></tt> to the Internet or any other untrusted
+network, then the only thing protecting you is the
+<a class="reference external" href="http://erlang.org/doc/reference_manual/distributed.html">cookie</a>.</p>
+</div>
+<p>Every Erlang application then uses other ports for talking to each other. Yes,
+this means random ports. This will obviously not work with a firewall, but it is
+possible to force an Erlang application to use a specific port rage.</p>
+<p>This documentation will use the range TCP <tt class="docutils literal"><span class="pre">9100-9200</span></tt>. Open up those ports in
+your firewalls and it is time to test it.</p>
+<p>You need 2 servers with working hostnames. Let us call them server1 and server2.</p>
+<p>On server1:</p>
+<div class="highlight-bash"><div class="highlight"><pre>erl -sname bus -setcookie <span class="s1">&#39;brumbrum&#39;</span> -kernel inet_dist_listen_min <span class="m">9100</span> -kernel inet_dist_listen_max 9200
+</pre></div>
+</div>
+<p>Then on server2:</p>
+<div class="highlight-bash"><div class="highlight"><pre>erl -sname car -setcookie <span class="s1">&#39;brumbrum&#39;</span> -kernel inet_dist_listen_min <span class="m">9100</span> -kernel inet_dist_listen_max 9200
+</pre></div>
+</div>
+<dl class="docutils">
+<dt>An explanation to the commands:</dt>
+<dd><ul class="first last simple">
+<li><tt class="docutils literal"><span class="pre">erl</span></tt> the Erlang shell.</li>
+<li><tt class="docutils literal"><span class="pre">-sname</span> <span class="pre">bus</span></tt> the name of the Erlang node.</li>
+<li><tt class="docutils literal"><span class="pre">-setcookie</span> <span class="pre">'brumbrum'</span></tt> the &#8220;password&#8221; used when nodes connect to each
+other.</li>
+<li><tt class="docutils literal"><span class="pre">-kernel</span> <span class="pre">inet_dist_listen_min</span> <span class="pre">9100</span></tt> the lowest port in the rage.</li>
+<li><tt class="docutils literal"><span class="pre">-kernel</span> <span class="pre">inet_dist_listen_max</span> <span class="pre">9200</span></tt> the highest port in the rage.</li>
+</ul>
+</dd>
+</dl>
+<p>This gives us 2 Erlang shells. shell1 on server1, shell2 on server2.
+Time to connect them. The <tt class="docutils literal"><span class="pre">.</span></tt> is to Erlang what <tt class="docutils literal"><span class="pre">;</span></tt> is to C.</p>
+<p>In shell1:</p>
+<div class="highlight-erlang"><div class="highlight"><pre><span class="nn">net_kernel</span><span class="p">:</span><span class="nf">connect_node</span><span class="p">(</span><span class="n">car</span><span class="p">@</span><span class="n">server2</span><span class="p">).</span>
+</pre></div>
+</div>
+<p>This will connect to the node called <tt class="docutils literal"><span class="pre">car</span></tt> on the server called <tt class="docutils literal"><span class="pre">server2</span></tt>.</p>
+<p>If that returns true, then you have a Erlang cluster, and the firewalls are
+open. If you get false or nothing at all, then you have a problem with the
+firewall.</p>
+<div class="section" id="first-time-in-erlang-time-to-play">
+<h3>First time in Erlang? Time to play!<a class="headerlink" href="#first-time-in-erlang-time-to-play" title="Permalink to this headline">¶</a></h3>
+<p>Run in both shells:</p>
+<div class="highlight-erlang"><div class="highlight"><pre><span class="nb">register</span><span class="p">(</span><span class="n">shell</span><span class="p">,</span> <span class="n">self</span><span class="p">()).</span>
+</pre></div>
+</div>
+<p>shell1:</p>
+<div class="highlight-erlang"><div class="highlight"><pre><span class="p">{</span><span class="n">shell</span><span class="p">,</span> <span class="n">car</span><span class="p">@</span><span class="n">server2</span><span class="p">}</span> <span class="o">!</span> <span class="p">{</span><span class="n">hello</span><span class="p">,</span> <span class="n">from</span><span class="p">,</span> <span class="n">self</span><span class="p">()}.</span>
+</pre></div>
+</div>
+<p>shell2:</p>
+<div class="highlight-erlang"><div class="highlight"><pre><span class="nf">flush</span><span class="p">().</span>
+<span class="p">{</span><span class="n">shell</span><span class="p">,</span> <span class="n">bus</span><span class="p">@</span><span class="n">server1</span><span class="p">}</span> <span class="o">!</span> <span class="p">{</span><span class="s">&quot;It speaks!&quot;</span><span class="p">,</span> <span class="n">from</span><span class="p">,</span> <span class="n">self</span><span class="p">()}.</span>
+</pre></div>
+</div>
+<p>shell1:</p>
+<div class="highlight-erlang"><div class="highlight"><pre><span class="nf">flush</span><span class="p">().</span>
+</pre></div>
+</div>
+<p>To close the shells, run in both:</p>
+<div class="highlight-erlang"><div class="highlight"><pre><span class="nf">q</span><span class="p">().</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="make-couchdb-use-the-open-ports">
+<h3>Make CouchDB use the open ports.<a class="headerlink" href="#make-couchdb-use-the-open-ports" title="Permalink to this headline">¶</a></h3>
+<p>Open <tt class="docutils literal"><span class="pre">sys.config</span></tt>, on all nodes, and add <tt class="docutils literal"><span class="pre">inet_dist_listen_min,</span> <span class="pre">9100</span></tt> and
+<tt class="docutils literal"><span class="pre">inet_dist_listen_max,</span> <span class="pre">9200</span></tt> like below:</p>
+<div class="highlight-erlang"><div class="highlight"><pre><span class="p">[</span>
+    <span class="p">{</span><span class="n">lager</span><span class="p">,</span> <span class="p">[</span>
+        <span class="p">{</span><span class="n">error_logger_hwm</span><span class="p">,</span> <span class="mi">1000</span><span class="p">},</span>
+        <span class="p">{</span><span class="n">error_logger_redirect</span><span class="p">,</span> <span class="n">true</span><span class="p">},</span>
+        <span class="p">{</span><span class="n">handlers</span><span class="p">,</span> <span class="p">[</span>
+            <span class="p">{</span><span class="n">lager_console_backend</span><span class="p">,</span> <span class="p">[</span><span class="n">debug</span><span class="p">,</span> <span class="p">{</span>
+                <span class="n">lager_default_formatter</span><span class="p">,</span>
+                <span class="p">[</span>
+                    <span class="n">date</span><span class="p">,</span> <span class="s">&quot; &quot;</span><span class="p">,</span> <span class="n">time</span><span class="p">,</span>
+                    <span class="s">&quot; [&quot;</span><span class="p">,</span> <span class="n">severity</span><span class="p">,</span> <span class="s">&quot;] &quot;</span><span class="p">,</span>
+                    <span class="nb">node</span><span class="p">,</span> <span class="s">&quot; &quot;</span><span class="p">,</span> <span class="n">pid</span><span class="p">,</span> <span class="s">&quot; &quot;</span><span class="p">,</span>
+                    <span class="n">message</span><span class="p">,</span>
+                    <span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span>
+                <span class="p">]</span>
+            <span class="p">}]}</span>
+        <span class="p">]},</span>
+        <span class="p">{</span><span class="n">inet_dist_listen_min</span><span class="p">,</span> <span class="mi">9100</span><span class="p">},</span>
+        <span class="p">{</span><span class="n">inet_dist_listen_max</span><span class="p">,</span> <span class="mi">9200</span><span class="p">}</span>
+    <span class="p">]}</span>
+<span class="p">].</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="the-cluster-setup-wizard">
+<span id="cluster-setup-wizard"></span><h2>11.1.2. The Cluster Setup Wizard<a class="headerlink" href="#the-cluster-setup-wizard" title="Permalink to this headline">¶</a></h2>
+<p>Setting up a cluster of Erlang applications correctly can be a daunting
+task. Luckily, CouchDB 2.0 comes with a convenient Cluster Setup Wizard
+as part of the Fauxton web administration interface.</p>
+<p>After installation and initial startup, visit Fauxton at
+<tt class="docutils literal"><span class="pre">http://127.0.0.01:5984/_utils#setup</span></tt>. You will be asked to set up
+CouchDB as a single-node instance or set up a cluster.</p>
+<p>When you click &#8220;setup cluster&#8221; on the other hand, you are asked for
+admin credentials again and then to add nodes by IP address. To get
+more nodes, go through the same install procedure on other machines.</p>
+<p>Before you can add nodes to form a cluster, you have to have them
+listen on a public ip address and set up an admin user. Do this, once
+per node:</p>
+<div class="highlight-bash"><div class="highlight"><pre>curl -X PUT http://127.0.0.1:5984/_node/couchdb@&lt;this-nodes-ip-address&gt;/_config/admins/admin -d <span class="s1">&#39;&quot;password&quot;&#39;</span>
+curl -X PUT http://127.0.0.1:5984/_node/couchdb@&lt;this-nodes-ip-address&gt;/_config/chttpd/bind_address -d <span class="s1">&#39;&quot;0.0.0.0&quot;&#39;</span>
+</pre></div>
+</div>
+<p>Now you can enter their IP addresses in the setup screen on your first
+node. And make sure to put in the admin username and password. And use
+the same admin username and password on all nodes.</p>
+<p>Once you added all nodes, click &#8220;Setup&#8221; and Fauxton will finish the
+cluster configuration for you.</p>
+<p>See <a class="reference external" href="http://127.0.0.1:5984/_membership">http://127.0.0.1:5984/_membership</a> to get a list of all the nodes in
+your cluster.</p>
+<p>Now your cluster is ready and available. You can send requests to any
+one of the nodes and get to all the data.</p>
+<p>For a proper production setup, you&#8217;d now set up a HTTP proxy in front
+of the nodes, that does load balancing. We recommend <a class="reference external" href="http://haproxy.org/">HAProxy</a>. See
+our <a class="reference external" href="https://github.com/apache/couchdb/blob/master/rel/haproxy.cfg">example configuration for HAProxy</a>. All you need is to adjust the
+ip addresses and ports.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+    <p class="logo"><a href="../index.html">
+      <img class="logo" src="../_static/logo.png" alt="Logo"/>
+    </a></p><!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+<div id="searchbox" style="display: none">
+
+<h3>Quick Search</h3>
+
+<form class="search" action="../search.html" method="get">
+<input type="text" name="q" style="width:115px">
+<input type="submit" value="Go">
+<input type="hidden" name="check_keywords" value="yes">
+<input type="hidden" name="area" value="default">
+</form>
+
+<br>
+
+</div>
+
+<script type="text/javascript">$('#searchbox').show(0);</script>
+  <h3><a href="../contents.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">11.1. Setup</a><ul>
+<li><a class="reference internal" href="#firewall">11.1.1. Firewall</a><ul>
+<li><a class="reference internal" href="#first-time-in-erlang-time-to-play">First time in Erlang? Time to play!</a></li>
+<li><a class="reference internal" href="#make-couchdb-use-the-open-ports">Make CouchDB use the open ports.</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#the-cluster-setup-wizard">11.1.2. The Cluster Setup Wizard</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="index.html"
+                        title="previous chapter">11. Cluster Reference</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="theory.html"
+                        title="next chapter">11.2. Theory</a></p><!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+
+<h3>Utilities</h3>
+
+<ul>
+<li><a href="../">Fauxton</a></li>
+</ul>
+<!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+<h3>More Help</h3>
+
+<ul>
+<li><a href="https://couchdb.apache.org/">Homepage</a></li>
+<li><a href="https://cwiki.apache.org/confluence/display/COUCHDB/">Wiki</a></li>
+<li><a href="https://couchdb.apache.org/#mailing-list">Mailing Lists</a></li>
+<li><a href="http://webchat.freenode.net/?channels=couchdb">IRC</a></li>
+<li><a href="https://issues.apache.org/jira/browse/CouchDB">Issues</a></li>
+<li><a href="../download.html">Download</a></li>
+<li><a href="https://github.com/apache/couchdb-documentation/blob/master/src/cluster/setup.rst"
+       rel="nofollow">Show on GitHub</a></li>
+<li><a href="https://github.com/apache/couchdb-documentation/edit/master/src/cluster/setup.rst"
+       rel="nofollow">Edit on GitHub</a></li>
+</ul><!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../http-api.html" title="HTTP API Reference"
+             >API Reference</a></li>
+        <li class="right" >
+          <a href="../config-ref.html" title="Configuration Reference"
+             >Config Reference</a> |</li>
+        <li class="right" >
+          <a href="theory.html" title="11.2. Theory"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="11. Cluster Reference"
+             >previous</a> |</li>
+  <li><a href="../index.html">Apache CouchDB 2.0 Documentation</a> &raquo;</li>
+          <li><a href="index.html" >11. Cluster Reference</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2016, Apache Software Foundation.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
+    </div>
+  </body>
+</html>

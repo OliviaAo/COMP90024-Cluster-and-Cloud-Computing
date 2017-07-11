@@ -1,0 +1,863 @@
+<!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>6.2.1. Introduction to Views &mdash; Apache CouchDB 2.0 Documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/rtd.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '2.0.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <link rel="author" title="About these documents" href="../../about.html" />
+    <link rel="top" title="Apache CouchDB 2.0 Documentation" href="../../index.html" />
+    <link rel="up" title="6.2. Guide to Views" href="index.html" />
+    <link rel="next" title="6.2.2. Views Collation" href="collation.html" />
+    <link rel="prev" title="6.2. Guide to Views" href="index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../http-api.html" title="HTTP API Reference"
+             >API Reference</a></li>
+        <li class="right" >
+          <a href="../../config-ref.html" title="Configuration Reference"
+             >Config Reference</a> |</li>
+        <li class="right" >
+          <a href="collation.html" title="6.2.2. Views Collation"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="6.2. Guide to Views"
+             accesskey="P">previous</a> |</li>
+  <li><a href="../../index.html">Apache CouchDB 2.0 Documentation</a> &raquo;</li>
+          <li><a href="../index.html" >6. CouchApp</a> &raquo;</li>
+          <li><a href="index.html" accesskey="U">6.2. Guide to Views</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="introduction-to-views">
+<span id="views-intro"></span><h1>6.2.1. Introduction to Views<a class="headerlink" href="#introduction-to-views" title="Permalink to this headline">¶</a></h1>
+<p>Views are useful for many purposes:</p>
+<ul class="simple">
+<li>Filtering the documents in your database to find those relevant to a
+particular process.</li>
+<li>Extracting data from your documents and presenting it in a specific order.</li>
+<li>Building efficient indexes to find documents by any value or structure that
+resides in them.</li>
+<li>Use these indexes to represent relationships among documents.</li>
+<li>Finally, with views you can make all sorts of calculations on the data in your
+documents. For example, if documents represent your company’s financial
+transactions, a view can answer the question of what the spending was in the
+last week, month, or year.</li>
+</ul>
+<div class="section" id="what-is-a-view">
+<h2>What Is a View?<a class="headerlink" href="#what-is-a-view" title="Permalink to this headline">¶</a></h2>
+<p>Let’s go through the different use cases. First is extracting data that you
+might need for a special purpose in a specific order. For a front page, we want
+a list of blog post titles sorted by date. We’ll work with a set of example
+documents as we walk through how views work:</p>
+<div class="highlight-javascript"><div class="highlight"><pre><span class="p">{</span>
+    <span class="s2">&quot;_id&quot;</span><span class="o">:</span><span class="s2">&quot;biking&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;_rev&quot;</span><span class="o">:</span><span class="s2">&quot;AE19EBC7654&quot;</span><span class="p">,</span>
+
+    <span class="s2">&quot;title&quot;</span><span class="o">:</span><span class="s2">&quot;Biking&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;body&quot;</span><span class="o">:</span><span class="s2">&quot;My biggest hobby is mountainbiking. The other day...&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;date&quot;</span><span class="o">:</span><span class="s2">&quot;2009/01/30 18:04:11&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<div class="highlight-javascript"><div class="highlight"><pre><span class="p">{</span>
+    <span class="s2">&quot;_id&quot;</span><span class="o">:</span><span class="s2">&quot;bought-a-cat&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;_rev&quot;</span><span class="o">:</span><span class="s2">&quot;4A3BBEE711&quot;</span><span class="p">,</span>
+
+    <span class="s2">&quot;title&quot;</span><span class="o">:</span><span class="s2">&quot;Bought a Cat&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;body&quot;</span><span class="o">:</span><span class="s2">&quot;I went to the the pet store earlier and brought home a little kitty...&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;date&quot;</span><span class="o">:</span><span class="s2">&quot;2009/02/17 21:13:39&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<div class="highlight-javascript"><div class="highlight"><pre><span class="p">{</span>
+    <span class="s2">&quot;_id&quot;</span><span class="o">:</span><span class="s2">&quot;hello-world&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;_rev&quot;</span><span class="o">:</span><span class="s2">&quot;43FBA4E7AB&quot;</span><span class="p">,</span>
+
+    <span class="s2">&quot;title&quot;</span><span class="o">:</span><span class="s2">&quot;Hello World&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;body&quot;</span><span class="o">:</span><span class="s2">&quot;Well hello and welcome to my new blog...&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;date&quot;</span><span class="o">:</span><span class="s2">&quot;2009/01/15 15:52:20&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Three will do for the example. Note that the documents are sorted by &#8220;_id&#8221;,
+which is how they are stored in the database. Now we define a view.
+Bear with us without an explanation while we show you some code:</p>
+<div class="highlight-javascript"><div class="highlight"><pre><span class="kd">function</span><span class="p">(</span><span class="nx">doc</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">if</span><span class="p">(</span><span class="nx">doc</span><span class="p">.</span><span class="nx">date</span> <span class="o">&amp;&amp;</span> <span class="nx">doc</span><span class="p">.</span><span class="nx">title</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">emit</span><span class="p">(</span><span class="nx">doc</span><span class="p">.</span><span class="nx">date</span><span class="p">,</span> <span class="nx">doc</span><span class="p">.</span><span class="nx">title</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>This is a <cite>map function</cite>, and it is written in JavaScript. If you are not
+familiar with JavaScript but have used C or any other C-like language such as
+Java, PHP, or C#, this should look familiar. It is a simple function definition.</p>
+<p>You provide CouchDB with view functions as strings stored inside the <tt class="docutils literal"><span class="pre">views</span></tt>
+field of a design document. You don’t run it yourself. Instead, when you
+<cite>query your view</cite>, CouchDB takes the source code and runs it for you on every
+document in the database your view was defined in. You <cite>query your view</cite> to
+retrieve the <cite>view result</cite>.</p>
+<p>All map functions have a single parameter doc. This is a single document in
+the database. Our map function checks whether our document has a <tt class="docutils literal"><span class="pre">date</span></tt> and
+a <tt class="docutils literal"><span class="pre">title</span></tt> attribute — luckily, all of our documents have them — and then calls
+the built-in <a class="reference internal" href="../../query-server/javascript.html#emit" title="emit"><tt class="xref js js-func docutils literal"><span class="pre">emit()</span></tt></a> function with these two attributes as arguments.</p>
+<p>The <a class="reference internal" href="../../query-server/javascript.html#emit" title="emit"><tt class="xref js js-func docutils literal"><span class="pre">emit()</span></tt></a> function always takes two arguments: the first is <tt class="docutils literal"><span class="pre">key</span></tt>,
+and the second is <tt class="docutils literal"><span class="pre">value</span></tt>. The <tt class="docutils literal"><span class="pre">emit(key,</span> <span class="pre">value)</span></tt> function creates an entry
+in our <cite>view result</cite>. One more thing: the <tt class="docutils literal"><span class="pre">emit()</span></tt> function can be called
+multiple times in the map function to create multiple entries in the view
+results from a single document, but we are not doing that yet.</p>
+<p>CouchDB takes whatever you pass into the emit() function and puts it into a list
+(see Table 1, “View results” below). Each row in that list includes the <cite>key</cite>
+and <cite>value</cite>. More importantly, the list is sorted by key (by <tt class="docutils literal"><span class="pre">doc.date</span></tt>
+in our case).  The most important feature of a view result is that it is sorted
+by <cite>key</cite>. We will come back to that over and over again to do neat things. Stay
+tuned.</p>
+<p>Table 1. View results:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="56%" />
+<col width="44%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Key</th>
+<th class="head">Value</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>&#8220;2009/01/15 15:52:20&#8221;</td>
+<td>&#8220;Hello World&#8221;</td>
+</tr>
+<tr class="row-odd"><td>&#8220;2009/01/30 18:04:11&#8221;</td>
+<td>&#8220;Biking&#8221;</td>
+</tr>
+<tr class="row-even"><td>&#8220;2009/02/17 21:13:39&#8221;</td>
+<td>&#8220;Bought a Cat&#8221;</td>
+</tr>
+</tbody>
+</table>
+<p>When you query your view, CouchDB takes the source code and runs it for you on
+every document in the database. If you have a lot of documents, that takes
+quite a bit of time and you might wonder if it is not horribly inefficient
+to do this. Yes, it would be, but CouchDB is designed to avoid any extra costs:
+it only runs through all documents once, when you first query your view.
+If a document is changed, the map function is only run once, to recompute
+the keys and values for that single document.</p>
+<p>The view result is stored in a B-tree, just like the structure that is
+responsible for holding your documents. View B-trees are stored in their
+own file, so that for high-performance CouchDB usage, you can keep views on
+their own disk. The B-tree provides very fast lookups of rows by key, as well
+as efficient streaming of rows in a key range. In our example, a single view
+can answer all questions that involve time: “Give me all the blog posts from
+last week” or “last month” or “this year.” Pretty neat.</p>
+<p>When we query our view, we get back a list of all documents sorted by date.
+Each row also includes the post title so we can construct links to posts.
+Table 1 is just a graphical representation of the view result.
+The actual result is JSON-encoded and contains a little more metadata:</p>
+<div class="highlight-javascript"><div class="highlight"><pre><span class="p">{</span>
+    <span class="s2">&quot;total_rows&quot;</span><span class="o">:</span> <span class="mi">3</span><span class="p">,</span>
+    <span class="s2">&quot;offset&quot;</span><span class="o">:</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="s2">&quot;rows&quot;</span><span class="o">:</span> <span class="p">[</span>
+        <span class="p">{</span>
+            <span class="s2">&quot;key&quot;</span><span class="o">:</span> <span class="s2">&quot;2009/01/15 15:52:20&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;id&quot;</span><span class="o">:</span> <span class="s2">&quot;hello-world&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;value&quot;</span><span class="o">:</span> <span class="s2">&quot;Hello World&quot;</span>
+        <span class="p">},</span>
+
+        <span class="p">{</span>
+            <span class="s2">&quot;key&quot;</span><span class="o">:</span> <span class="s2">&quot;2009/01/30 18:04:11&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;id&quot;</span><span class="o">:</span> <span class="s2">&quot;biking&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;value&quot;</span><span class="o">:</span> <span class="s2">&quot;Biking&quot;</span>
+        <span class="p">},</span>
+
+        <span class="p">{</span>
+            <span class="s2">&quot;key&quot;</span><span class="o">:</span> <span class="s2">&quot;2009/02/17 21:13:39&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;id&quot;</span><span class="o">:</span> <span class="s2">&quot;bought-a-cat&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;value&quot;</span><span class="o">:</span> <span class="s2">&quot;Bought a Cat&quot;</span>
+        <span class="p">}</span>
+
+    <span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Now, the actual result is not as nicely formatted and doesn’t include any
+superfluous whitespace or newlines, but this is better for you (and us!)
+to read and understand. Where does that &#8220;id&#8221; member in the result rows come
+from? That wasn’t there before. That’s because we omitted it earlier to avoid
+confusion. CouchDB automatically includes the document ID of the document that
+created the entry in the view result. We’ll use this as well when constructing
+links to the blog post pages.</p>
+</div>
+<div class="section" id="efficient-lookups">
+<h2>Efficient Lookups<a class="headerlink" href="#efficient-lookups" title="Permalink to this headline">¶</a></h2>
+<p>Let’s move on to the second use case for views: “building efficient indexes to
+find documents by any value or structure that resides in them.” We already
+explained the efficient indexing, but we skipped a few details. This is a good
+time to finish this discussion as we are looking at map functions that are a
+little more complex.</p>
+<p>First, back to the B-trees! We explained that the B-tree that backs the
+key-sorted view result is built only once, when you first query a view,
+and all subsequent queries will just read the B-tree instead of executing
+the map function for all documents again. What happens, though, when you change
+a document, add a new one, or delete one? Easy: CouchDB is smart enough
+to find the rows in the view result that were created by a specific document.
+It marks them invalid so that they no longer show up in view results.
+If the document was deleted, we’re good — the resulting B-tree reflects the
+state of the database. If a document got updated, the new document is run
+through the map function and the resulting new lines are inserted into
+the B-tree at the correct spots. New documents are handled in the same way.
+The B-tree is a very efficient data structure for our needs, and the crash-only
+design of CouchDB databases is carried over to the view indexes as well.</p>
+<p>To add one more point to the efficiency discussion: usually multiple documents
+are updated between view queries. The mechanism explained in the previous
+paragraph gets applied to all changes in the database since the last time
+the view was queried in a batch operation, which makes things even faster and
+is generally a better use of your resources.</p>
+<div class="section" id="find-one">
+<h3>Find One<a class="headerlink" href="#find-one" title="Permalink to this headline">¶</a></h3>
+<p>On to more complex map functions. We said “find documents by any value or
+structure that resides in them.” We already explained how to extract a value
+by which to sort a list of views (our date field). The same mechanism is used
+for fast lookups. The URI to query to get a view’s result is
+<tt class="docutils literal"><span class="pre">/database/_design/designdocname/_view/viewname</span></tt>. This gives you a list of all
+rows in the view. We have only three documents, so things are small, but with
+thousands of documents, this can get long. You can add view parameters to the
+URI to constrain the result set. Say we know the date of a blog post.
+To find a single document, we would use
+<tt class="docutils literal"><span class="pre">/blog/_design/docs/_view/by_date?key=&quot;2009/01/30</span> <span class="pre">18:04:11&quot;</span></tt>
+to get the “Biking” blog post. Remember that you can place whatever you like
+in the key parameter to the emit() function. Whatever you put in there, we can
+now use to look up exactly — and fast.</p>
+<p>Note that in the case where multiple rows have the same key (perhaps we design
+a view where the key is the name of the post’s author), key queries can return
+more than one row.</p>
+</div>
+<div class="section" id="find-many">
+<h3>Find Many<a class="headerlink" href="#find-many" title="Permalink to this headline">¶</a></h3>
+<p>We talked about “getting all posts for last month.” If it’s February now,
+this is as easy as:</p>
+<div class="highlight-python"><div class="highlight"><pre>/blog/_design/docs/_view/by_date?startkey=&quot;2010/01/01 00:00:00&quot;&amp;endkey=&quot;2010/02/00 00:00:00&quot;
+</pre></div>
+</div>
+<p>The <tt class="docutils literal"><span class="pre">startkey</span></tt> and <tt class="docutils literal"><span class="pre">endkey</span></tt> parameters specify an inclusive range on which
+we can search.</p>
+<p>To make things a little nicer and to prepare for a future example, we are going
+to change the format of our date field. Instead of a string, we are going to use
+an array, where individual members are part of a timestamp in decreasing
+significance. This sounds fancy, but it is rather easy. Instead of:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="p">{</span>
+    <span class="s">&quot;date&quot;</span><span class="p">:</span> <span class="s">&quot;2009/01/31 00:00:00&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>we use:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="p">{</span>
+    <span class="s">&quot;date&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">2009</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">31</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Our map function does not have to change for this, but our view result looks
+a little different:</p>
+<p>Table 2. New view results:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="60%" />
+<col width="40%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Key</th>
+<th class="head">Value</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>[2009, 1, 15, 15, 52, 20]</td>
+<td>&#8220;Hello World&#8221;</td>
+</tr>
+<tr class="row-odd"><td>[2009, 2, 17, 21, 13, 39]</td>
+<td>&#8220;Biking&#8221;</td>
+</tr>
+<tr class="row-even"><td>[2009, 1, 30, 18, 4, 11]</td>
+<td>&#8220;Bought a Cat&#8221;</td>
+</tr>
+</tbody>
+</table>
+<p>And our queries change to:</p>
+<div class="highlight-python"><div class="highlight"><pre>/blog/_design/docs/_view/by_date?startkey=[2010, 1, 1, 0, 0, 0]&amp;endkey=[2010, 2, 1, 0, 0, 0]
+</pre></div>
+</div>
+<p>For all you care, this is just a change in syntax, not meaning. But it shows
+you the power of views. Not only can you construct an index with scalar values
+like strings and integers, you can also use JSON structures as keys for your
+views. Say we tag our documents with a list of tags and want to see all tags,
+but we don’t care for documents that have not been tagged.</p>
+<div class="highlight-javascript"><div class="highlight"><pre><span class="p">{</span>
+    <span class="p">...</span>
+    <span class="nx">tags</span><span class="o">:</span> <span class="p">[</span><span class="s2">&quot;cool&quot;</span><span class="p">,</span> <span class="s2">&quot;freak&quot;</span><span class="p">,</span> <span class="s2">&quot;plankton&quot;</span><span class="p">],</span>
+    <span class="p">...</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<div class="highlight-javascript"><div class="highlight"><pre><span class="p">{</span>
+    <span class="p">...</span>
+    <span class="nx">tags</span><span class="o">:</span> <span class="p">[],</span>
+    <span class="p">...</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<div class="highlight-javascript"><div class="highlight"><pre><span class="kd">function</span><span class="p">(</span><span class="nx">doc</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">if</span><span class="p">(</span><span class="nx">doc</span><span class="p">.</span><span class="nx">tags</span><span class="p">.</span><span class="nx">length</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">for</span><span class="p">(</span><span class="kd">var</span> <span class="nx">idx</span> <span class="k">in</span> <span class="nx">doc</span><span class="p">.</span><span class="nx">tags</span><span class="p">)</span> <span class="p">{</span>
+            <span class="nx">emit</span><span class="p">(</span><span class="nx">doc</span><span class="p">.</span><span class="nx">tags</span><span class="p">[</span><span class="nx">idx</span><span class="p">],</span> <span class="kc">null</span><span class="p">);</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>This shows a few new things. You can have conditions on structure
+(<tt class="docutils literal"><span class="pre">if(doc.tags.length</span> <span class="pre">&gt;</span> <span class="pre">0)</span></tt>) instead of just values. This is also an example of
+how a map function calls <a class="reference internal" href="../../query-server/javascript.html#emit" title="emit"><tt class="xref js js-func docutils literal"><span class="pre">emit()</span></tt></a> multiple times per document.
+And finally, you can pass null instead of a value to the value parameter.
+The same is true for the key parameter. We’ll see in a bit how that is useful.</p>
+</div>
+<div class="section" id="reversed-results">
+<h3>Reversed Results<a class="headerlink" href="#reversed-results" title="Permalink to this headline">¶</a></h3>
+<p>To retrieve view results in reverse order, use the <tt class="docutils literal"><span class="pre">descending=true</span></tt> query
+parameter. If you are using a <tt class="docutils literal"><span class="pre">startkey</span></tt> parameter, you will find that CouchDB
+returns different rows or no rows at all. What’s up with that?</p>
+<p>It’s pretty easy to understand when you see how view query options work under
+the hood. A view is stored in a tree structure for fast lookups. Whenever you
+query a view, this is how CouchDB operates:</p>
+<ol class="arabic simple">
+<li>Starts reading at the top, or at the position that <tt class="docutils literal"><span class="pre">startkey</span></tt> specifies,
+if present.</li>
+<li>Returns one row at a time until the end or until it hits <tt class="docutils literal"><span class="pre">endkey</span></tt>,
+if present.</li>
+</ol>
+<p>If you specify <tt class="docutils literal"><span class="pre">descending=true</span></tt>, the reading direction is reversed,
+not the sort  order of the rows in the view. In addition, the same two-step
+procedure is followed.</p>
+<p>Say you have a view result that looks like this:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="42%" />
+<col width="58%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Key</th>
+<th class="head">Value</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>0</td>
+<td>&#8220;foo&#8221;</td>
+</tr>
+<tr class="row-odd"><td>1</td>
+<td>&#8220;bar&#8221;</td>
+</tr>
+<tr class="row-even"><td>2</td>
+<td>&#8220;baz&#8221;</td>
+</tr>
+</tbody>
+</table>
+<p>Here are potential query options: <tt class="docutils literal"><span class="pre">?startkey=1&amp;descending=true</span></tt>. What will
+CouchDB do? See #1 above: it jumps to <tt class="docutils literal"><span class="pre">startkey</span></tt>, which is the row with the
+key <tt class="docutils literal"><span class="pre">1</span></tt>, and starts reading backward until it hits the end of the view.
+So the particular result would be:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="42%" />
+<col width="58%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Key</th>
+<th class="head">Value</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>1</td>
+<td>&#8220;bar&#8221;</td>
+</tr>
+<tr class="row-odd"><td>0</td>
+<td>&#8220;foo&#8221;</td>
+</tr>
+</tbody>
+</table>
+<p>This is very likely not what you want. To get the rows with the indexes <tt class="docutils literal"><span class="pre">1</span></tt>
+and <tt class="docutils literal"><span class="pre">2</span></tt> in reverse order, you need to switch the <tt class="docutils literal"><span class="pre">startkey</span></tt> to <tt class="docutils literal"><span class="pre">endkey</span></tt>:
+<tt class="docutils literal"><span class="pre">endkey=1&amp;descending=true</span></tt>:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="42%" />
+<col width="58%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Key</th>
+<th class="head">Value</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>2</td>
+<td>&#8220;baz&#8221;</td>
+</tr>
+<tr class="row-odd"><td>1</td>
+<td>&#8220;bar&#8221;</td>
+</tr>
+</tbody>
+</table>
+<p>Now that looks a lot better. CouchDB started reading at the bottom of the view
+and went backward until it hit <tt class="docutils literal"><span class="pre">endkey</span></tt>.</p>
+</div>
+</div>
+<div class="section" id="the-view-to-get-comments-for-posts">
+<h2>The View to Get Comments for Posts<a class="headerlink" href="#the-view-to-get-comments-for-posts" title="Permalink to this headline">¶</a></h2>
+<p>We use an array key here to support the <tt class="docutils literal"><span class="pre">group_level</span></tt> reduce query parameter.
+CouchDB’s views are stored in the B-tree file structure. Because of the way
+B-trees are structured, we can cache the intermediate reduce results in the
+non-leaf nodes of the tree, so reduce queries can be computed along arbitrary
+key ranges in logarithmic time. See Figure 1, “Comments map function”.</p>
+<p>In the blog app, we use <tt class="docutils literal"><span class="pre">group_level</span></tt> reduce queries to compute the count of
+comments both on a per-post and total basis, achieved by querying the same view
+index with different methods. With some array keys, and assuming each key has
+the value <tt class="docutils literal"><span class="pre">1</span></tt>:</p>
+<div class="highlight-javascript"><div class="highlight"><pre><span class="p">[</span><span class="s2">&quot;a&quot;</span><span class="p">,</span><span class="s2">&quot;b&quot;</span><span class="p">,</span><span class="s2">&quot;c&quot;</span><span class="p">]</span>
+<span class="p">[</span><span class="s2">&quot;a&quot;</span><span class="p">,</span><span class="s2">&quot;b&quot;</span><span class="p">,</span><span class="s2">&quot;e&quot;</span><span class="p">]</span>
+<span class="p">[</span><span class="s2">&quot;a&quot;</span><span class="p">,</span><span class="s2">&quot;c&quot;</span><span class="p">,</span><span class="s2">&quot;m&quot;</span><span class="p">]</span>
+<span class="p">[</span><span class="s2">&quot;b&quot;</span><span class="p">,</span><span class="s2">&quot;a&quot;</span><span class="p">,</span><span class="s2">&quot;c&quot;</span><span class="p">]</span>
+<span class="p">[</span><span class="s2">&quot;b&quot;</span><span class="p">,</span><span class="s2">&quot;a&quot;</span><span class="p">,</span><span class="s2">&quot;g&quot;</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>the reduce view:</p>
+<div class="highlight-javascript"><div class="highlight"><pre><span class="kd">function</span><span class="p">(</span><span class="nx">keys</span><span class="p">,</span> <span class="nx">values</span><span class="p">,</span> <span class="nx">rereduce</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="nx">sum</span><span class="p">(</span><span class="nx">values</span><span class="p">)</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>returns the total number of rows between the start and end key.
+So with <tt class="docutils literal"><span class="pre">startkey=[&quot;a&quot;,&quot;b&quot;]&amp;endkey=[&quot;b&quot;]</span></tt> (which includes the first three of
+the above keys) the result would equal <tt class="docutils literal"><span class="pre">3</span></tt>. The effect is to count rows.
+If you’d like to count rows without depending on the row value, you can switch
+on the <tt class="docutils literal"><span class="pre">rereduce</span></tt> parameter:</p>
+<div class="highlight-javascript"><div class="highlight"><pre><span class="kd">function</span><span class="p">(</span><span class="nx">keys</span><span class="p">,</span> <span class="nx">values</span><span class="p">,</span> <span class="nx">rereduce</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nx">rereduce</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="nx">sum</span><span class="p">(</span><span class="nx">values</span><span class="p">);</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="nx">values</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">The JavaScript function above could be effectively replaced by the builtin
+<tt class="docutils literal"><span class="pre">_count</span></tt>.</p>
+</div>
+<div class="figure align-center">
+<a class="reference internal image-reference" href="../../_images/views-intro-01.png"><img alt="Comments map function" src="../../_images/views-intro-01.png" style="width: 643.0px; height: 532.5px;" /></a>
+<p class="caption">Figure 1. Comments map function</p>
+</div>
+<p>This is the reduce view used by the example app to count comments, while
+utilizing the map to output the comments, which are more useful than just
+<tt class="docutils literal"><span class="pre">1</span></tt> over and over. It pays to spend some time playing around with map and
+reduce functions. Fauxton is OK for this, but it doesn’t give full access to
+all the query parameters. Writing your own test code for views in your language
+of choice is a great way to explore the nuances and capabilities of CouchDB’s
+incremental MapReduce system.</p>
+<p>Anyway, with a <tt class="docutils literal"><span class="pre">group_level</span></tt> query, you’re basically running a series of
+reduce range queries: one for each group that shows up at the level you query.
+Let’s reprint the key list from earlier, grouped at level <tt class="docutils literal"><span class="pre">1</span></tt>:</p>
+<div class="highlight-javascript"><div class="highlight"><pre><span class="p">[</span><span class="s2">&quot;a&quot;</span><span class="p">]</span>   <span class="mi">3</span>
+<span class="p">[</span><span class="s2">&quot;b&quot;</span><span class="p">]</span>   <span class="mi">2</span>
+</pre></div>
+</div>
+<p>And at <tt class="docutils literal"><span class="pre">group_level=2</span></tt>:</p>
+<div class="highlight-javascript"><div class="highlight"><pre><span class="p">[</span><span class="s2">&quot;a&quot;</span><span class="p">,</span><span class="s2">&quot;b&quot;</span><span class="p">]</span>   <span class="mi">2</span>
+<span class="p">[</span><span class="s2">&quot;a&quot;</span><span class="p">,</span><span class="s2">&quot;c&quot;</span><span class="p">]</span>   <span class="mi">1</span>
+<span class="p">[</span><span class="s2">&quot;b&quot;</span><span class="p">,</span><span class="s2">&quot;a&quot;</span><span class="p">]</span>   <span class="mi">2</span>
+</pre></div>
+</div>
+<p>Using the parameter <tt class="docutils literal"><span class="pre">group=true</span></tt> makes it behave as though it were
+<tt class="docutils literal"><span class="pre">group_level=999</span></tt>, so in the case of our current example, it would give the
+number <tt class="docutils literal"><span class="pre">1</span></tt> for each key, as there are no exactly duplicated keys.</p>
+</div>
+<div class="section" id="reduce-rereduce">
+<h2>Reduce/Rereduce<a class="headerlink" href="#reduce-rereduce" title="Permalink to this headline">¶</a></h2>
+<p>We briefly talked about the <tt class="docutils literal"><span class="pre">rereduce</span></tt> parameter to the reduce function.
+We’ll explain what’s up with it in this section. By now, you should have learned
+that your view result is stored in B-tree index structure for efficiency.
+The existence and use of the <tt class="docutils literal"><span class="pre">rereduce</span></tt> parameter is tightly coupled to how
+the B-tree index works.</p>
+<p>Consider the map result are:</p>
+<div class="highlight-javascript"><div class="highlight"><pre><span class="s2">&quot;afrikaans&quot;</span><span class="p">,</span> <span class="mi">1</span>
+<span class="s2">&quot;afrikaans&quot;</span><span class="p">,</span> <span class="mi">1</span>
+<span class="s2">&quot;chinese&quot;</span><span class="p">,</span> <span class="mi">1</span>
+<span class="s2">&quot;chinese&quot;</span><span class="p">,</span> <span class="mi">1</span>
+<span class="s2">&quot;chinese&quot;</span><span class="p">,</span> <span class="mi">1</span>
+<span class="s2">&quot;chinese&quot;</span><span class="p">,</span> <span class="mi">1</span>
+<span class="s2">&quot;french&quot;</span><span class="p">,</span> <span class="mi">1</span>
+<span class="s2">&quot;italian&quot;</span><span class="p">,</span> <span class="mi">1</span>
+<span class="s2">&quot;italian&quot;</span><span class="p">,</span> <span class="mi">1</span>
+<span class="s2">&quot;spanish&quot;</span><span class="p">,</span> <span class="mi">1</span>
+<span class="s2">&quot;vietnamese&quot;</span><span class="p">,</span> <span class="mi">1</span>
+<span class="s2">&quot;vietnamese&quot;</span><span class="p">,</span> <span class="mi">1</span>
+</pre></div>
+</div>
+<p>Example 1. Example view result (mmm, food)</p>
+<p>When we want to find out how many dishes there are per origin, we can reuse
+the simple reduce function shown earlier:</p>
+<div class="highlight-javascript"><div class="highlight"><pre><span class="kd">function</span><span class="p">(</span><span class="nx">keys</span><span class="p">,</span> <span class="nx">values</span><span class="p">,</span> <span class="nx">rereduce</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="nx">sum</span><span class="p">(</span><span class="nx">values</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Figure 2, “The B-tree index” shows a simplified version of what the B-tree index
+looks like. We abbreviated the key strings.</p>
+<div class="figure align-center">
+<img alt="The B-tree index" src="../../_images/views-intro-02.png" />
+<p class="caption">Figure 2. The B-tree index</p>
+</div>
+<p>The view result is what computer science grads call a “pre-order” walk through
+the tree. We look at each element in each node starting from the left. Whenever
+we see that there is a subnode to descend into, we descend and start reading
+the elements in that subnode. When we have walked through the entire tree,
+we’re done.</p>
+<p>You can see that CouchDB stores both keys and values inside each leaf node.
+In our case, it is simply always <tt class="docutils literal"><span class="pre">1</span></tt>, but you might have a value where you
+count other results and then all rows have a different value. What’s important
+is that CouchDB runs all elements that are within a node into the reduce
+function (setting the <tt class="docutils literal"><span class="pre">rereduce</span></tt> parameter to false) and stores the result
+inside the parent node along with the edge to the subnode. In our case, each
+edge has a 3 representing the reduce value for the node it points to.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">In reality, nodes have more than 1,600 elements in them. CouchDB computes
+the result for all the elements in multiple iterations over the elements in
+a single node, not all at once (which would be disastrous for memory
+consumption).</p>
+</div>
+<p>Now let’s see what happens when we run a query. We want to know how many
+&#8220;chinese&#8221; entries we have. The query option is simple: <tt class="docutils literal"><span class="pre">?key=&quot;chinese&quot;</span></tt>.
+See Figure 3, “The B-tree index reduce result”.</p>
+<div class="figure align-center">
+<img alt="The B-tree index reduce result" src="../../_images/views-intro-03.png" />
+<p class="caption">Figure 3. The B-tree index reduce result</p>
+</div>
+<p>CouchDB detects that all values in the subnode include the &#8220;chinese&#8221; key.
+It concludes that it can take just the 3 values associated with that node to
+compute the final result. It then finds the node left to it and sees that it’s
+a node with keys outside the requested range (<tt class="docutils literal"><span class="pre">key=</span></tt> requests a range where
+the beginning and the end are the same value). It concludes that it has to use
+the &#8220;chinese&#8221; element’s value and the other node’s value and run them through
+the reduce function with the <tt class="docutils literal"><span class="pre">rereduce</span></tt> parameter set to true.</p>
+<p>The reduce function effectively calculates 3 + 1 at query time and returns the
+desired result. The next example shows some pseudocode that shows the last
+invocation of the reduce function with actual values:</p>
+<div class="highlight-javascript"><div class="highlight"><pre><span class="kd">function</span><span class="p">(</span><span class="kc">null</span><span class="p">,</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="kc">true</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="nx">sum</span><span class="p">([</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">]);</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Now, we said your reduce function must actually reduce your values. If you see
+the B-tree, it should become obvious what happens when you don’t reduce your
+values. Consider the following map result and reduce function. This time we
+want to get a list of all the unique labels in our view:</p>
+<div class="highlight-javascript"><div class="highlight"><pre><span class="s2">&quot;abc&quot;</span><span class="p">,</span> <span class="s2">&quot;afrikaans&quot;</span>
+<span class="s2">&quot;cef&quot;</span><span class="p">,</span> <span class="s2">&quot;afrikaans&quot;</span>
+<span class="s2">&quot;fhi&quot;</span><span class="p">,</span> <span class="s2">&quot;chinese&quot;</span>
+<span class="s2">&quot;hkl&quot;</span><span class="p">,</span> <span class="s2">&quot;chinese&quot;</span>
+<span class="s2">&quot;ino&quot;</span><span class="p">,</span> <span class="s2">&quot;chinese&quot;</span>
+<span class="s2">&quot;lqr&quot;</span><span class="p">,</span> <span class="s2">&quot;chinese&quot;</span>
+<span class="s2">&quot;mtu&quot;</span><span class="p">,</span> <span class="s2">&quot;french&quot;</span>
+<span class="s2">&quot;owx&quot;</span><span class="p">,</span> <span class="s2">&quot;italian&quot;</span>
+<span class="s2">&quot;qza&quot;</span><span class="p">,</span> <span class="s2">&quot;italian&quot;</span>
+<span class="s2">&quot;tdx&quot;</span><span class="p">,</span> <span class="s2">&quot;spanish&quot;</span>
+<span class="s2">&quot;xfg&quot;</span><span class="p">,</span> <span class="s2">&quot;vietnamese&quot;</span>
+<span class="s2">&quot;zul&quot;</span><span class="p">,</span> <span class="s2">&quot;vietnamese&quot;</span>
+</pre></div>
+</div>
+<p>We don’t care for the key here and only list all the labels we have. Our reduce
+function removes duplicates:</p>
+<div class="highlight-javascript"><div class="highlight"><pre><span class="kd">function</span><span class="p">(</span><span class="nx">keys</span><span class="p">,</span> <span class="nx">values</span><span class="p">,</span> <span class="nx">rereduce</span><span class="p">)</span> <span class="p">{</span>
+    <span class="kd">var</span> <span class="nx">unique_labels</span> <span class="o">=</span> <span class="p">{};</span>
+    <span class="nx">values</span><span class="p">.</span><span class="nx">forEach</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">label</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="nx">unique_labels</span><span class="p">[</span><span class="nx">label</span><span class="p">])</span> <span class="p">{</span>
+            <span class="nx">unique_labels</span><span class="p">[</span><span class="nx">label</span><span class="p">]</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+        <span class="p">}</span>
+    <span class="p">});</span>
+
+    <span class="k">return</span> <span class="nx">unique_labels</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>This translates to Figure 4, “An overflowing reduce index”.</p>
+<p>We hope you get the picture. The way the B-tree storage works means that if you
+don’t actually reduce your data in the reduce function, you end up having
+CouchDB copy huge amounts of data around that grow linearly, if not faster,
+with the number of rows in your view.</p>
+<p>CouchDB will be able to compute the final result, but only for views with a few
+rows. Anything larger will experience a ridiculously slow view build time.
+To help with that, CouchDB since version 0.10.0 will throw an error if your
+reduce function does not reduce its input values.</p>
+<div class="figure align-center">
+<img alt="An overflowing reduce index" src="../../_images/views-intro-04.png" />
+<p class="caption">Figure 4. An overflowing reduce index</p>
+</div>
+</div>
+<div class="section" id="lessons-learned">
+<h2>Lessons Learned<a class="headerlink" href="#lessons-learned" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>If you don’t use the key field in the map function, you are probably doing it
+wrong.</li>
+<li>If you are trying to make a list of values unique in the reduce functions,
+you are probably doing it wrong.</li>
+<li>If you don’t reduce your values to a single scalar value or a small
+fixed-sized object or array with a fixed number of scalar values of small
+sizes, you are probably doing it wrong.</li>
+</ul>
+</div>
+<div class="section" id="wrapping-up">
+<h2>Wrapping Up<a class="headerlink" href="#wrapping-up" title="Permalink to this headline">¶</a></h2>
+<p>Map functions are side effect–free functions that take a document as argument
+and <cite>emit</cite> key/value pairs. CouchDB stores the emitted rows by constructing a
+sorted B-tree index, so row lookups by key, as well as streaming operations
+across a range of rows, can be accomplished in a small memory and processing
+footprint, while writes avoid seeks. Generating a view takes <tt class="docutils literal"><span class="pre">O(N)</span></tt>, where
+<tt class="docutils literal"><span class="pre">N</span></tt> is the total number of rows in the view. However, querying a view is very
+quick, as the B-tree remains shallow even when it contains many, many keys.</p>
+<p>Reduce functions operate on the sorted rows emitted by map view functions.
+CouchDB’s reduce functionality takes advantage of one of the fundamental
+properties of B-tree indexes: for every leaf node (a sorted row), there is a
+chain of internal nodes reaching back to the root. Each leaf node in the B-tree
+carries a few rows (on the order of tens, depending on row size), and each
+internal node may link to a few leaf nodes or other internal nodes.</p>
+<p>The reduce function is run on every node in the tree in order to calculate
+the final reduce value. The end result is a reduce function that can be
+incrementally updated upon changes to the map function, while recalculating
+the reduction values for a minimum number of nodes. The initial reduction is
+calculated once per each node (inner and leaf) in the tree.</p>
+<p>When run on leaf nodes (which contain actual map rows), the reduce function’s
+third parameter, <tt class="docutils literal"><span class="pre">rereduce</span></tt>, is false. The arguments in this case are the keys
+and values as output by the map function. The function has a single returned
+reduction value, which is stored on the inner node that a working set of leaf
+nodes have in common, and is used as a cache in future reduce calculations.</p>
+<p>When the reduce function is run on inner nodes, the <tt class="docutils literal"><span class="pre">rereduce</span></tt> flag is
+<tt class="docutils literal"><span class="pre">true</span></tt>. This allows the function to account for the fact that it will be
+receiving its own prior output. When <tt class="docutils literal"><span class="pre">rereduce</span></tt> is true, the values passed to
+the function are intermediate reduction values as cached from previous
+calculations. When the tree is more than two levels deep, the <cite>rereduce</cite> phase
+is repeated, consuming chunks of the previous level’s output until the final
+reduce value is calculated at the root node.</p>
+<p>A common mistake new CouchDB users make is attempting to construct complex
+aggregate values with a reduce function. Full reductions should result in a
+scalar value, like 5, and not, for instance, a JSON hash with a set of unique
+keys and the count of each. The problem with this approach is that you’ll end
+up with a very large final value. The number of unique keys can be nearly as
+large as the number of total keys, even for a large set. It is fine to combine
+a few scalar calculations into one reduce function; for instance, to find the
+total, average, and standard deviation of a set of numbers in a single function.</p>
+<p>If you’re interested in pushing the edge of CouchDB’s incremental reduce
+functionality, have a look at <a class="reference external" href="http://research.google.com/archive/sawzall.html">Google’s paper on Sawzall</a>, which gives examples
+of some of the more exotic reductions that can be accomplished in a system with
+similar constraints.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+    <p class="logo"><a href="../../index.html">
+      <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+    </a></p><!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+<div id="searchbox" style="display: none">
+
+<h3>Quick Search</h3>
+
+<form class="search" action="../../search.html" method="get">
+<input type="text" name="q" style="width:115px">
+<input type="submit" value="Go">
+<input type="hidden" name="check_keywords" value="yes">
+<input type="hidden" name="area" value="default">
+</form>
+
+<br>
+
+</div>
+
+<script type="text/javascript">$('#searchbox').show(0);</script>
+  <h3><a href="../../contents.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">6.2.1. Introduction to Views</a><ul>
+<li><a class="reference internal" href="#what-is-a-view">What Is a View?</a></li>
+<li><a class="reference internal" href="#efficient-lookups">Efficient Lookups</a><ul>
+<li><a class="reference internal" href="#find-one">Find One</a></li>
+<li><a class="reference internal" href="#find-many">Find Many</a></li>
+<li><a class="reference internal" href="#reversed-results">Reversed Results</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#the-view-to-get-comments-for-posts">The View to Get Comments for Posts</a></li>
+<li><a class="reference internal" href="#reduce-rereduce">Reduce/Rereduce</a></li>
+<li><a class="reference internal" href="#lessons-learned">Lessons Learned</a></li>
+<li><a class="reference internal" href="#wrapping-up">Wrapping Up</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="index.html"
+                        title="previous chapter">6.2. Guide to Views</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="collation.html"
+                        title="next chapter">6.2.2. Views Collation</a></p><!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+
+<h3>Utilities</h3>
+
+<ul>
+<li><a href="../">Fauxton</a></li>
+</ul>
+<!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+<h3>More Help</h3>
+
+<ul>
+<li><a href="https://couchdb.apache.org/">Homepage</a></li>
+<li><a href="https://cwiki.apache.org/confluence/display/COUCHDB/">Wiki</a></li>
+<li><a href="https://couchdb.apache.org/#mailing-list">Mailing Lists</a></li>
+<li><a href="http://webchat.freenode.net/?channels=couchdb">IRC</a></li>
+<li><a href="https://issues.apache.org/jira/browse/CouchDB">Issues</a></li>
+<li><a href="../../download.html">Download</a></li>
+<li><a href="https://github.com/apache/couchdb-documentation/blob/master/src/couchapp/views/intro.rst"
+       rel="nofollow">Show on GitHub</a></li>
+<li><a href="https://github.com/apache/couchdb-documentation/edit/master/src/couchapp/views/intro.rst"
+       rel="nofollow">Edit on GitHub</a></li>
+</ul><!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../http-api.html" title="HTTP API Reference"
+             >API Reference</a></li>
+        <li class="right" >
+          <a href="../../config-ref.html" title="Configuration Reference"
+             >Config Reference</a> |</li>
+        <li class="right" >
+          <a href="collation.html" title="6.2.2. Views Collation"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="6.2. Guide to Views"
+             >previous</a> |</li>
+  <li><a href="../../index.html">Apache CouchDB 2.0 Documentation</a> &raquo;</li>
+          <li><a href="../index.html" >6. CouchApp</a> &raquo;</li>
+          <li><a href="index.html" >6.2. Guide to Views</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2016, Apache Software Foundation.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
+    </div>
+  </body>
+</html>

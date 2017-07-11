@@ -1,0 +1,22 @@
+- wail time excessive (12 hours is overkill). Means that your job in queue
+far longer than needed
+- no need for -np as this is given in sbatch script already by previous
+parameters
+- best to have files in script and not in code: makes system more portable
+- you have hardcoded your laptop/desktop files and not the bigTwitter.json
+file on spartan (hence couldnąt run)
+- code is well commented
+- algorithm nicely handles file processing and dealing with partitioning
+- issue is you read whole file into master node - will always be a
+performance bottleneck (not penalising you here - just saying for next
+time)
+- better to have all worker nodes read in their own part of the file (as
+this was a data parallelisation challenge and reading/writing was key to
+performance)
+- the gridA..gridD and processing tweets into boxes/rows/columns was a bit
+clunky and hard coded to this solution (not penalising you here just
+saying)
+- your results are hard to explain. 2 nodes 8 cores and 1 node 8 cores
+should really have been similar and perhaps 3-5* faster than 1 node 1
+core. This is because you havenąt really supported much data
+parallelisation (master node reads in data and sends chunks etc)

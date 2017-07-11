@@ -1,0 +1,1342 @@
+<!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>10.3.4. /db/_find &mdash; Apache CouchDB 2.0 Documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/rtd.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '2.0.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <link rel="author" title="About these documents" href="../../about.html" />
+    <link rel="top" title="Apache CouchDB 2.0 Documentation" href="../../index.html" />
+    <link rel="up" title="10.3. Databases" href="index.html" />
+    <link rel="next" title="10.3.7. /db/_changes" href="changes.html" />
+    <link rel="prev" title="10.3.2. /db/_all_docs" href="bulk-api.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../http-api.html" title="HTTP API Reference"
+             >API Reference</a></li>
+        <li class="right" >
+          <a href="../../config-ref.html" title="Configuration Reference"
+             >Config Reference</a> |</li>
+        <li class="right" >
+          <a href="changes.html" title="10.3.7. /db/_changes"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="bulk-api.html" title="10.3.2. /db/_all_docs"
+             accesskey="P">previous</a> |</li>
+  <li><a href="../../index.html">Apache CouchDB 2.0 Documentation</a> &raquo;</li>
+          <li><a href="../index.html" >10. API Reference</a> &raquo;</li>
+          <li><a href="index.html" accesskey="U">10.3. Databases</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="db-find">
+<span id="api-db-find"></span><h1>10.3.4. <tt class="docutils literal"><span class="pre">/db/_find</span></tt><a class="headerlink" href="#db-find" title="Permalink to this headline">¶</a></h1>
+<dl class="post">
+<dt id="post--db-_find">
+<tt class="descname">POST </tt><tt class="descname">/{db}/_find</tt><a class="headerlink" href="#post--db-_find" title="Permalink to this definition">¶</a></dt>
+<dd><p>Find documents using a declarative JSON querying syntax.
+Queries can use the built-in <a class="reference internal" href="bulk-api.html#api-db-all-docs"><em>_all_docs</em></a> index or
+custom indices, specified using the <a class="reference internal" href="#api-db-find-index"><em>_index</em></a>
+endpoint.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>db</strong> &#8211; Database name</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name" colspan="2">Request Headers:</th></tr>
+<tr class="field-even field"><td>&nbsp;</td><td class="field-body"><ul class="first simple">
+<li><a class="reference external" href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.17">Content-Type</a> &#8211; <ul>
+<li><em class="mimetype">application/json</em></li>
+</ul>
+</li>
+</ul>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name" colspan="2">Query Parameters:</th></tr>
+<tr class="field-odd field"><td>&nbsp;</td><td class="field-body"><ul class="first simple">
+<li><strong>selector</strong> (<em>json</em>) &#8211; JSON object describing criteria used to select
+documents. More information provided in the section on <a class="reference internal" href="#find-selectors"><em>selector
+syntax</em></a>.</li>
+<li><strong>limit</strong> (<em>number</em>) &#8211; Maximum number of results returned. Default is <tt class="docutils literal"><span class="pre">25</span></tt>.
+<em>Optional</em></li>
+<li><strong>skip</strong> (<em>number</em>) &#8211; Skip the first &#8216;n&#8217; results, where &#8216;n&#8217; is the value
+specified. <em>Optional</em></li>
+<li><strong>sort</strong> (<em>json</em>) &#8211; JSON array following <a class="reference internal" href="#find-sort"><em>sort syntax</em></a>.
+<em>Optional</em></li>
+<li><strong>fields</strong> (<em>json</em>) &#8211; JSON array specifying which fields of each object should
+be returned. If it is omitted, the entire object is returned.
+More information provided in the section on <a class="reference internal" href="#find-filter"><em>filtering fields</em></a>. <em>Optional</em></li>
+<li><strong>use_index</strong> (<em>json</em>) &#8211; Instruct a query to use a specific index. Specified
+either as <tt class="docutils literal"><span class="pre">&quot;&lt;design_document&gt;&quot;</span></tt> or
+<tt class="docutils literal"><span class="pre">[&quot;&lt;design_document&gt;&quot;,</span> <span class="pre">&quot;&lt;index_name&gt;&quot;]</span></tt>. <em>Optional</em></li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name" colspan="2">Response Headers:</th></tr>
+<tr class="field-even field"><td>&nbsp;</td><td class="field-body"><ul class="first simple">
+<li><a class="reference external" href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.17">Content-Type</a> &#8211; <em class="mimetype">application/json</em></li>
+<li><a class="reference external" href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.41">Transfer-Encoding</a> &#8211; <tt class="docutils literal"><span class="pre">chunked</span></tt></li>
+</ul>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name" colspan="2">Response JSON Object:</th></tr>
+<tr class="field-odd field"><td>&nbsp;</td><td class="field-body"><ul class="first simple">
+<li><strong>docs</strong> (<em>object</em>) &#8211; Documents matching the selector</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Status Codes:</th><td class="field-body"><ul class="first last simple">
+<li><a class="reference external" href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.2.1">200 OK</a> &#8211; Request completed successfully</li>
+<li><a class="reference external" href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.4.1">400 Bad Request</a> &#8211; Invalid request</li>
+<li><a class="reference external" href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.4.2">401 Unauthorized</a> &#8211; Read permission required</li>
+<li><a class="reference external" href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.5.1">500 Internal Server Error</a> &#8211; Query execution error</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Request</strong>:</p>
+<div class="highlight-http"><div class="highlight"><pre><span class="nf">POST</span> <span class="nn">/movies/_find</span> <span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span>
+<span class="na">Accept</span><span class="o">:</span> <span class="l">application/json</span>
+<span class="na">Content-Type</span><span class="o">:</span> <span class="l">application/json</span>
+<span class="na">Content-Length</span><span class="o">:</span> <span class="l">168</span>
+<span class="na">Host</span><span class="o">:</span> <span class="l">localhost:5984</span>
+
+<span class="p">{</span>
+    <span class="nt">&quot;selector&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;year&quot;</span><span class="p">:</span> <span class="p">{</span><span class="nt">&quot;$gt&quot;</span><span class="p">:</span> <span class="mi">2010</span><span class="p">}</span>
+    <span class="p">},</span>
+    <span class="nt">&quot;fields&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;_id&quot;</span><span class="p">,</span> <span class="s2">&quot;_rev&quot;</span><span class="p">,</span> <span class="s2">&quot;year&quot;</span><span class="p">,</span> <span class="s2">&quot;title&quot;</span><span class="p">],</span>
+    <span class="nt">&quot;sort&quot;</span><span class="p">:</span> <span class="p">[{</span><span class="nt">&quot;year&quot;</span><span class="p">:</span> <span class="s2">&quot;asc&quot;</span><span class="p">}],</span>
+    <span class="nt">&quot;limit&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
+    <span class="nt">&quot;skip&quot;</span><span class="p">:</span> <span class="mi">0</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p><strong>Response</strong>:</p>
+<div class="highlight-http"><div class="highlight"><pre><span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span> <span class="m">200</span> <span class="ne">OK</span>
+<span class="na">Cache-Control</span><span class="o">:</span> <span class="l">must-revalidate</span>
+<span class="na">Content-Type</span><span class="o">:</span> <span class="l">application/json</span>
+<span class="na">Date</span><span class="o">:</span> <span class="l">Thu, 01 Sep 2016 15:41:53 GMT</span>
+<span class="na">Server</span><span class="o">:</span> <span class="l">CouchDB (Erlang OTP)</span>
+<span class="na">Transfer-Encoding</span><span class="o">:</span> <span class="l">chunked</span>
+
+<span class="p">{</span>
+    <span class="nt">&quot;docs&quot;</span><span class="p">:</span> <span class="p">[</span>
+        <span class="p">{</span>
+            <span class="nt">&quot;_id&quot;</span><span class="p">:</span> <span class="s2">&quot;176694&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;_rev&quot;</span><span class="p">:</span> <span class="s2">&quot;1-54f8e950cc338d2385d9b0cda2fd918e&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;year&quot;</span><span class="p">:</span> <span class="mi">2011</span><span class="p">,</span>
+            <span class="nt">&quot;title&quot;</span><span class="p">:</span> <span class="s2">&quot;The Tragedy of Man&quot;</span>
+        <span class="p">},</span>
+        <span class="p">{</span>
+            <span class="nt">&quot;_id&quot;</span><span class="p">:</span> <span class="s2">&quot;780504&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;_rev&quot;</span><span class="p">:</span> <span class="s2">&quot;1-5f14bab1a1e9ac3ebdf85905f47fb084&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;year&quot;</span><span class="p">:</span> <span class="mi">2011</span><span class="p">,</span>
+            <span class="nt">&quot;title&quot;</span><span class="p">:</span> <span class="s2">&quot;Drive&quot;</span>
+        <span class="p">}</span>
+    <span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<div class="section" id="selector-syntax">
+<span id="find-selectors"></span><h2>Selector Syntax<a class="headerlink" href="#selector-syntax" title="Permalink to this headline">¶</a></h2>
+<p>Selectors are expressed as a JSON object describing documents of interest.
+Within this structure, you can apply conditional logic using specially named
+fields.</p>
+<p>Whilst selectors have some similarities with MongoDB query documents, these
+arise from a similarity of purpose and do not necessarily extend to commonality
+of function or result.</p>
+<div class="section" id="selector-basics">
+<span id="find-selectorbasics"></span><h3>Selector Basics<a class="headerlink" href="#selector-basics" title="Permalink to this headline">¶</a></h3>
+<p>Elementary selector syntax requires you to specify one or more fields, and the
+corresponding values required for those fields. This selector matches all
+documents whose &#8220;director&#8221; field has the value &#8220;Lars von Trier&#8221;.</p>
+<blockquote>
+<div><div class="highlight-javascript"><div class="highlight"><pre><span class="p">{</span>
+    <span class="s2">&quot;director&quot;</span><span class="o">:</span> <span class="s2">&quot;Lars von Trier&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>You can create more complex selector expressions by combining operators.
+However, you cannot use &#8216;combination&#8217; or &#8216;array logical&#8217; operators such as
+<tt class="docutils literal"><span class="pre">$regex</span></tt> as the basis of a query. Only the equality operators such as <tt class="docutils literal"><span class="pre">$eq</span></tt>,
+<tt class="docutils literal"><span class="pre">$gt</span></tt>, <tt class="docutils literal"><span class="pre">$gte</span></tt>, <tt class="docutils literal"><span class="pre">$lt</span></tt>, and <tt class="docutils literal"><span class="pre">$lte</span></tt> (but not <tt class="docutils literal"><span class="pre">$ne</span></tt>) can be used as the
+basis of a more complex query. For more information about creating complex
+selector expressions, see <a class="reference internal" href="#find-expressions"><em>creating selector expressions</em></a>.</p>
+</div>
+<div class="section" id="selector-with-2-fields">
+<span id="find-twofields"></span><h3>Selector with 2 fields<a class="headerlink" href="#selector-with-2-fields" title="Permalink to this headline">¶</a></h3>
+<p>This selector matches any document with a name field containing <tt class="docutils literal"><span class="pre">&quot;Paul&quot;</span></tt>,
+and that also has a location field with the value <tt class="docutils literal"><span class="pre">&quot;Boston&quot;</span></tt>.</p>
+<blockquote>
+<div><div class="highlight-javascript"><div class="highlight"><pre><span class="p">{</span>
+    <span class="s2">&quot;name&quot;</span><span class="o">:</span> <span class="s2">&quot;Paul&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;location&quot;</span><span class="o">:</span> <span class="s2">&quot;Boston&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div></blockquote>
+</div>
+<div class="section" id="subfields">
+<span id="find-subfields"></span><h3>Subfields<a class="headerlink" href="#subfields" title="Permalink to this headline">¶</a></h3>
+<p>A more complex selector enables you to specify the values for field of nested
+objects, or subfields. For example, you might use a standard JSON structure for
+specifying a field and subfield.</p>
+<blockquote>
+<div><div class="highlight-javascript"><div class="highlight"><pre><span class="p">{</span>
+    <span class="s2">&quot;imdb&quot;</span><span class="o">:</span> <span class="p">{</span>
+        <span class="s2">&quot;rating&quot;</span><span class="o">:</span> <span class="mi">8</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>An abbreviated equivalent uses a dot notation to combine the field and subfield
+names into a single name.</p>
+<blockquote>
+<div><div class="highlight-javascript"><div class="highlight"><pre><span class="p">{</span>
+    <span class="s2">&quot;imdb.rating&quot;</span><span class="o">:</span> <span class="mi">8</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div></blockquote>
+</div>
+<div class="section" id="operators">
+<span id="find-operators"></span><h3>Operators<a class="headerlink" href="#operators" title="Permalink to this headline">¶</a></h3>
+<p>Operators are identified by the use of a dollar sign ($) prefix in the name
+field.</p>
+<p>There are two core types of operators in the selector syntax:</p>
+<ul class="simple">
+<li>Combination operators</li>
+<li>Condition operators</li>
+</ul>
+<p>In general, combination operators are applied at the topmost level of selection.
+They are used to combine conditions, or to create combinations of conditions,
+into one selector.</p>
+<p>Every explicit operator has the form:</p>
+<blockquote>
+<div><div class="highlight-javascript"><div class="highlight"><pre><span class="p">{</span><span class="s2">&quot;$operator&quot;</span><span class="o">:</span> <span class="nx">argument</span><span class="p">}</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>A selector without an explicit operator is considered to have an implicit
+operator. The exact implicit operator is determined by the structure of the
+selector expression.</p>
+</div>
+<div class="section" id="implicit-operators">
+<span id="find-implicit-operators"></span><h3>Implicit Operators<a class="headerlink" href="#implicit-operators" title="Permalink to this headline">¶</a></h3>
+<p>There are two implicit operators:</p>
+<ul class="simple">
+<li>Equality</li>
+<li>And</li>
+</ul>
+<p>In a selector, any field containing a JSON value, but that has no operators in
+it, is considered to be an equality condition. The implicit equality test
+applies also for fields and subfields.</p>
+<p>Any JSON object that is not the argument to a condition operator is an implicit
+$and operator on each field.</p>
+<p>In the below example, we use an operator to match any document, where the
+<tt class="docutils literal"><span class="pre">&quot;year&quot;</span></tt> field has a value greater than <tt class="docutils literal"><span class="pre">2010</span></tt>:</p>
+<blockquote>
+<div><div class="highlight-javascript"><div class="highlight"><pre><span class="p">{</span>
+    <span class="s2">&quot;year&quot;</span><span class="o">:</span> <span class="p">{</span>
+        <span class="s2">&quot;$gt&quot;</span><span class="o">:</span> <span class="mi">2010</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>In this next example, there must be a field <tt class="docutils literal"><span class="pre">&quot;director&quot;</span></tt> in a matching
+document, and the field must have a value exactly equal to <tt class="docutils literal"><span class="pre">&quot;Lars</span> <span class="pre">von</span> <span class="pre">Trier&quot;</span></tt>.</p>
+<blockquote>
+<div><div class="highlight-javascript"><div class="highlight"><pre><span class="p">{</span>
+    <span class="s2">&quot;director&quot;</span><span class="o">:</span> <span class="s2">&quot;Lars von Trier&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>You can also make the equality operator explicit.</p>
+<blockquote>
+<div><div class="highlight-javascript"><div class="highlight"><pre><span class="p">{</span>
+    <span class="s2">&quot;director&quot;</span><span class="o">:</span> <span class="p">{</span>
+        <span class="s2">&quot;$eq&quot;</span><span class="o">:</span> <span class="s2">&quot;Lars von Trier&quot;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>In the next example using subfields, the required field <tt class="docutils literal"><span class="pre">&quot;imdb&quot;</span></tt> in a matching
+document must also have a subfield <tt class="docutils literal"><span class="pre">&quot;rating&quot;</span></tt> and the subfield must have a
+value equal to <tt class="docutils literal"><span class="pre">8</span></tt>.</p>
+<blockquote>
+<div><div class="highlight-javascript"><div class="highlight"><pre><span class="p">{</span>
+    <span class="s2">&quot;imdb&quot;</span><span class="o">:</span> <span class="p">{</span>
+        <span class="s2">&quot;rating&quot;</span><span class="o">:</span> <span class="mi">8</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>Again, you can make the equality operator explicit.</p>
+<blockquote>
+<div><div class="highlight-javascript"><div class="highlight"><pre><span class="p">{</span>
+    <span class="s2">&quot;imdb&quot;</span><span class="o">:</span> <span class="p">{</span>
+        <span class="s2">&quot;rating&quot;</span><span class="o">:</span> <span class="p">{</span> <span class="s2">&quot;$eq&quot;</span><span class="o">:</span> <span class="mi">8</span> <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>In this example, the field <tt class="docutils literal"><span class="pre">&quot;director&quot;</span></tt> must be present and contain the value
+<tt class="docutils literal"><span class="pre">&quot;Lars</span> <span class="pre">von</span> <span class="pre">Trier&quot;</span></tt> and the field <tt class="docutils literal"><span class="pre">&quot;year&quot;</span></tt> must exist and have the value
+<tt class="docutils literal"><span class="pre">2003</span></tt>.</p>
+<blockquote>
+<div><div class="highlight-javascript"><div class="highlight"><pre><span class="p">{</span>
+    <span class="s2">&quot;director&quot;</span><span class="o">:</span> <span class="s2">&quot;Lars von Trier&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;year&quot;</span><span class="o">:</span> <span class="mi">2003</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>You can make both the <tt class="docutils literal"><span class="pre">$and</span></tt> operator and the equality operator explicit.</p>
+<blockquote>
+<div><div class="highlight-javascript"><div class="highlight"><pre><span class="p">{</span>
+    <span class="s2">&quot;$and&quot;</span><span class="o">:</span> <span class="p">[</span>
+        <span class="p">{</span>
+            <span class="s2">&quot;director&quot;</span><span class="o">:</span> <span class="p">{</span>
+                <span class="s2">&quot;$eq&quot;</span><span class="o">:</span> <span class="s2">&quot;Lars von Trier&quot;</span>
+            <span class="p">}</span>
+        <span class="p">},</span>
+        <span class="p">{</span>
+            <span class="s2">&quot;year&quot;</span><span class="o">:</span> <span class="p">{</span>
+                <span class="s2">&quot;$eq&quot;</span><span class="o">:</span> <span class="mi">2003</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+    <span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div></blockquote>
+</div>
+<div class="section" id="explicit-operators">
+<span id="find-explicit-operators"></span><h3>Explicit Operators<a class="headerlink" href="#explicit-operators" title="Permalink to this headline">¶</a></h3>
+<p>All operators, apart from &#8216;Equality&#8217; and &#8216;And&#8217;, must be stated explicitly.</p>
+</div>
+<div class="section" id="combination-operators">
+<span id="find-combination-operators"></span><h3>Combination Operators<a class="headerlink" href="#combination-operators" title="Permalink to this headline">¶</a></h3>
+<p>Combination operators are used to combine selectors. In addition to the common
+boolean operators found in most programming languages, there are two combination
+operators (<tt class="docutils literal"><span class="pre">$all</span></tt> and <tt class="docutils literal"><span class="pre">$elemMatch</span></tt>) that help you work with JSON arrays.</p>
+<p>A combination operator takes a single argument. The argument is either another
+selector, or an array of selectors.</p>
+<p>The list of combination operators:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="21%" />
+<col width="13%" />
+<col width="66%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Operator</th>
+<th class="head">Argument</th>
+<th class="head">Purpose</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td><tt class="docutils literal"><span class="pre">$and</span></tt></td>
+<td>Array</td>
+<td>Matches if all the selectors in the array match.</td>
+</tr>
+<tr class="row-odd"><td><tt class="docutils literal"><span class="pre">$or</span></tt></td>
+<td>Array</td>
+<td>Matches if any of the selectors in the array
+match. All selectors must use the same index.</td>
+</tr>
+<tr class="row-even"><td><tt class="docutils literal"><span class="pre">$not</span></tt></td>
+<td>Selector</td>
+<td>Matches if the given selector does not match.</td>
+</tr>
+<tr class="row-odd"><td><tt class="docutils literal"><span class="pre">$nor</span></tt></td>
+<td>Array</td>
+<td>Matches if none of the selectors in the array
+match.</td>
+</tr>
+<tr class="row-even"><td><tt class="docutils literal"><span class="pre">$all</span></tt></td>
+<td>Array</td>
+<td>Matches an array value if it contains all the
+elements of the argument array.</td>
+</tr>
+<tr class="row-odd"><td><tt class="docutils literal"><span class="pre">$elemMatch</span></tt></td>
+<td>Selector</td>
+<td>Matches and returns all documents that contain an
+array field with at least one element that
+matches all the specified query criteria.</td>
+</tr>
+</tbody>
+</table>
+<p id="find-and"><strong>The ``$and`` operator</strong></p>
+<p>The <tt class="docutils literal"><span class="pre">$and</span></tt> operator matches if all the selectors in the array match. Below is
+an example using the primary index (<tt class="docutils literal"><span class="pre">`_all_docs`</span></tt>):</p>
+<blockquote>
+<div><div class="highlight-javascript"><div class="highlight"><pre><span class="p">{</span>
+    <span class="s2">&quot;$and&quot;</span><span class="o">:</span> <span class="p">[</span>
+        <span class="p">{</span>
+            <span class="s2">&quot;_id&quot;</span><span class="o">:</span> <span class="p">{</span> <span class="s2">&quot;$gt&quot;</span><span class="o">:</span> <span class="kc">null</span> <span class="p">}</span>
+        <span class="p">},</span>
+        <span class="p">{</span>
+            <span class="s2">&quot;year&quot;</span><span class="o">:</span> <span class="p">{</span>
+                <span class="s2">&quot;$in&quot;</span><span class="o">:</span> <span class="p">[</span><span class="mi">2014</span><span class="p">,</span> <span class="mi">2015</span><span class="p">]</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+    <span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p id="find-or"><strong>The ``$or`` operator</strong></p>
+<p>The <tt class="docutils literal"><span class="pre">$or</span></tt> operator matches if any of the selectors in the array match. Below
+is an example used with an index on the field <tt class="docutils literal"><span class="pre">&quot;year&quot;</span></tt>:</p>
+<blockquote>
+<div><div class="highlight-javascript"><div class="highlight"><pre><span class="p">{</span>
+    <span class="s2">&quot;year&quot;</span><span class="o">:</span> <span class="mi">1977</span><span class="p">,</span>
+    <span class="s2">&quot;$or&quot;</span><span class="o">:</span> <span class="p">[</span>
+        <span class="p">{</span> <span class="s2">&quot;director&quot;</span><span class="o">:</span> <span class="s2">&quot;George Lucas&quot;</span> <span class="p">},</span>
+        <span class="p">{</span> <span class="s2">&quot;director&quot;</span><span class="o">:</span> <span class="s2">&quot;Steven Spielberg&quot;</span> <span class="p">}</span>
+    <span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p id="find-not"><strong>The ``$not`` operator</strong></p>
+<p>The <tt class="docutils literal"><span class="pre">$not</span></tt> operator matches if the given selector does not match. Below is an
+example used with an index on the field <tt class="docutils literal"><span class="pre">&quot;year&quot;</span></tt>:</p>
+<blockquote>
+<div><div class="highlight-javascript"><div class="highlight"><pre><span class="p">{</span>
+    <span class="s2">&quot;year&quot;</span><span class="o">:</span> <span class="p">{</span>
+        <span class="s2">&quot;$gte&quot;</span><span class="o">:</span> <span class="mi">1900</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;year&quot;</span><span class="o">:</span> <span class="p">{</span>
+        <span class="s2">&quot;$lte&quot;</span><span class="o">:</span> <span class="mi">1903</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;$not&quot;</span><span class="o">:</span> <span class="p">{</span>
+        <span class="s2">&quot;year&quot;</span><span class="o">:</span> <span class="mi">1901</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p id="find-nor"><strong>The ``$nor`` operator</strong></p>
+<p>The <tt class="docutils literal"><span class="pre">$nor</span></tt> operator matches if the given selector does not match. Below is an
+example used with an index on the field <tt class="docutils literal"><span class="pre">&quot;year&quot;</span></tt>:</p>
+<blockquote>
+<div><div class="highlight-javascript"><div class="highlight"><pre><span class="p">{</span>
+    <span class="s2">&quot;year&quot;</span><span class="o">:</span> <span class="p">{</span>
+        <span class="s2">&quot;$gte&quot;</span><span class="o">:</span> <span class="mi">1900</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;year&quot;</span><span class="o">:</span> <span class="p">{</span>
+        <span class="s2">&quot;$lte&quot;</span><span class="o">:</span> <span class="mi">1910</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;$nor&quot;</span><span class="o">:</span> <span class="p">[</span>
+        <span class="p">{</span> <span class="s2">&quot;year&quot;</span><span class="o">:</span> <span class="mi">1901</span> <span class="p">},</span>
+        <span class="p">{</span> <span class="s2">&quot;year&quot;</span><span class="o">:</span> <span class="mi">1905</span> <span class="p">},</span>
+        <span class="p">{</span>  <span class="s2">&quot;year&quot;</span><span class="o">:</span> <span class="mi">1907</span> <span class="p">}</span>
+    <span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p id="find-all"><strong>The ``$all`` operator</strong></p>
+<p>The <tt class="docutils literal"><span class="pre">$all</span></tt> operator matches an array value if it contains all the elements of
+the argument array. Below is an example used with used with the primary index
+(<tt class="docutils literal"><span class="pre">_all_docs</span></tt>):</p>
+<blockquote>
+<div><div class="highlight-javascript"><div class="highlight"><pre><span class="p">{</span>
+    <span class="s2">&quot;_id&quot;</span><span class="o">:</span> <span class="p">{</span>
+        <span class="s2">&quot;$gt&quot;</span><span class="o">:</span> <span class="kc">null</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;genre&quot;</span><span class="o">:</span> <span class="p">{</span>
+        <span class="s2">&quot;$all&quot;</span><span class="o">:</span> <span class="p">[</span><span class="s2">&quot;Comedy&quot;</span><span class="p">,</span><span class="s2">&quot;Short&quot;</span><span class="p">]</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p id="find-elemmatch"><strong>The ``$elemMatch`` operator</strong></p>
+<p>The <tt class="docutils literal"><span class="pre">$elemMatch</span></tt> operator matches and returns all documents that contain an
+array field with at least one element matching the supplied query criteria.
+Below is an example used with used with the primary index (<tt class="docutils literal"><span class="pre">_all_docs</span></tt>):</p>
+<blockquote>
+<div><div class="highlight-javascript"><div class="highlight"><pre><span class="p">{</span>
+    <span class="s2">&quot;_id&quot;</span><span class="o">:</span> <span class="p">{</span> <span class="s2">&quot;$gt&quot;</span><span class="o">:</span> <span class="kc">null</span> <span class="p">},</span>
+    <span class="s2">&quot;genre&quot;</span><span class="o">:</span> <span class="p">{</span>
+        <span class="s2">&quot;$elemMatch&quot;</span><span class="o">:</span> <span class="p">{</span>
+            <span class="s2">&quot;$eq&quot;</span><span class="o">:</span> <span class="s2">&quot;Horror&quot;</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div></blockquote>
+</div>
+<div class="section" id="condition-operators">
+<span id="find-condition-operators"></span><h3>Condition Operators<a class="headerlink" href="#condition-operators" title="Permalink to this headline">¶</a></h3>
+<p>Condition operators are specific to a field, and are used to evaluate the value
+stored in that field. For instance, the basic <cite>$eq</cite> operator matches when the
+specified field contains a value that is equal to the supplied argument.</p>
+<p>The basic equality and inequality operators common to most programming languages
+are supported. In addition, some &#8216;meta&#8217; condition operators are available. Some
+condition operators accept any valid JSON content as the argument.
+Other condition operators require the argument to be in a specific JSON format.</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="20%" />
+<col width="17%" />
+<col width="16%" />
+<col width="47%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Operator type</th>
+<th class="head">Operator</th>
+<th class="head">Argument</th>
+<th class="head">Purpose</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>(In)equality</td>
+<td><tt class="docutils literal"><span class="pre">$lt</span></tt></td>
+<td>Any JSON</td>
+<td>The field is less than the
+argument</td>
+</tr>
+<tr class="row-odd"><td>&nbsp;</td>
+<td><tt class="docutils literal"><span class="pre">$lte</span></tt></td>
+<td>Any JSON</td>
+<td>The field is less than or equal to
+the argument.</td>
+</tr>
+<tr class="row-even"><td>&nbsp;</td>
+<td><tt class="docutils literal"><span class="pre">$eq</span></tt></td>
+<td>Any JSON</td>
+<td>The field is equal to the argument</td>
+</tr>
+<tr class="row-odd"><td>&nbsp;</td>
+<td><tt class="docutils literal"><span class="pre">$ne</span></tt></td>
+<td>Any JSON</td>
+<td>The field is not equal to the
+argument.</td>
+</tr>
+<tr class="row-even"><td>&nbsp;</td>
+<td><tt class="docutils literal"><span class="pre">$gte</span></tt></td>
+<td>Any JSON</td>
+<td>The field is greater than or equal
+to the argument.</td>
+</tr>
+<tr class="row-odd"><td>&nbsp;</td>
+<td><tt class="docutils literal"><span class="pre">$gt</span></tt></td>
+<td>Any JSON</td>
+<td>The field is greater than the
+to the argument.</td>
+</tr>
+<tr class="row-even"><td>Object</td>
+<td><tt class="docutils literal"><span class="pre">$exists</span></tt></td>
+<td>Boolean</td>
+<td>Check whether the field exists or
+not, regardless of its value.</td>
+</tr>
+<tr class="row-odd"><td>&nbsp;</td>
+<td><tt class="docutils literal"><span class="pre">$type</span></tt></td>
+<td>String</td>
+<td>Check the document field&#8217;s type.
+Valid values are <tt class="docutils literal"><span class="pre">&quot;null&quot;</span></tt>,
+<tt class="docutils literal"><span class="pre">&quot;boolean&quot;</span></tt>, <tt class="docutils literal"><span class="pre">&quot;number&quot;</span></tt>,
+<tt class="docutils literal"><span class="pre">&quot;string&quot;</span></tt>, <tt class="docutils literal"><span class="pre">&quot;array&quot;</span></tt>, and
+<tt class="docutils literal"><span class="pre">&quot;object&quot;</span></tt>.</td>
+</tr>
+<tr class="row-even"><td>Array</td>
+<td><tt class="docutils literal"><span class="pre">$in</span></tt></td>
+<td>Array of
+JSON values</td>
+<td>The document field must exist in
+the list provided.</td>
+</tr>
+<tr class="row-odd"><td>&nbsp;</td>
+<td><tt class="docutils literal"><span class="pre">$nin</span></tt></td>
+<td>Array of
+JSON values</td>
+<td>The document field not must exist
+in the list provided.</td>
+</tr>
+<tr class="row-even"><td>&nbsp;</td>
+<td><tt class="docutils literal"><span class="pre">$size</span></tt></td>
+<td>Integer</td>
+<td>Special condition to match the
+length of an array field in a
+document. Non-array fields cannot
+match this condition.</td>
+</tr>
+<tr class="row-odd"><td>Miscellaneous</td>
+<td><tt class="docutils literal"><span class="pre">$mod</span></tt></td>
+<td>[Divisor,
+Remainder]</td>
+<td>Divisor and Remainder are both
+positive or negative integers.
+Non-integer values result in a
+404. Matches documents where
+<tt class="docutils literal"><span class="pre">field</span> <span class="pre">%</span> <span class="pre">Divisor</span> <span class="pre">==</span> <span class="pre">Remainder</span></tt>
+is true, and only when the
+document field is an integer.</td>
+</tr>
+<tr class="row-even"><td>&nbsp;</td>
+<td><tt class="docutils literal"><span class="pre">$regex</span></tt></td>
+<td>String</td>
+<td>A regular expression pattern to
+match against the document field.
+Only matches when the field is a
+string value and matches the
+supplied regular expression. The
+matching algorithms are based on
+the Perl Compatible Regular
+Expression (PCRE) library. For
+more information about what is
+implemented, see the see the
+<a class="reference external" href="http://erlang.org/doc/man/re.html">Erlang Regular Expression</a></td>
+</tr>
+</tbody>
+</table>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">Regular expressions do not work with indexes, so they should not be used to
+filter large data sets.</p>
+</div>
+</div>
+<div class="section" id="creating-selector-expressions">
+<span id="find-expressions"></span><h3>Creating Selector Expressions<a class="headerlink" href="#creating-selector-expressions" title="Permalink to this headline">¶</a></h3>
+<p>We have seen examples of combining selector expressions, such as <a class="reference internal" href="#find-combination-operators"><em>using
+explicit $and and $eq operators</em></a>.</p>
+<p>In general, whenever you have an operator that takes an argument, that argument
+can itself be another operator with arguments of its own. This enables us to
+build up more complex selector expressions.</p>
+<p>However, only equality operators such as <tt class="docutils literal"><span class="pre">$eq</span></tt>, <tt class="docutils literal"><span class="pre">$gt</span></tt>, <tt class="docutils literal"><span class="pre">$gte</span></tt>, <tt class="docutils literal"><span class="pre">$lt</span></tt>,
+and <tt class="docutils literal"><span class="pre">$lte</span></tt> (but not <tt class="docutils literal"><span class="pre">$ne</span></tt>) can be used as the basis of a query. You should
+include at least one of these in a selector.</p>
+<p>For example, if you try to perform a query that attempts to match all documents
+that have a field called <cite>afieldname</cite> containing a value that begins with the
+letter <cite>A</cite>, this will trigger a warning because no index could be used and
+the database performs a full scan of the primary index:</p>
+<blockquote>
+<div><p><strong>Request</strong></p>
+<div class="highlight-http"><div class="highlight"><pre><span class="nf">POST</span> <span class="nn">/movies/_find</span> <span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span>
+<span class="na">Accept</span><span class="o">:</span> <span class="l">application/json</span>
+<span class="na">Content-Type</span><span class="o">:</span> <span class="l">application/json</span>
+<span class="na">Content-Length</span><span class="o">:</span> <span class="l">112</span>
+<span class="na">Host</span><span class="o">:</span> <span class="l">localhost:5984</span>
+
+<span class="p">{</span>
+    <span class="nt">&quot;selector&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;afieldname&quot;</span><span class="p">:</span> <span class="p">{</span><span class="nt">&quot;$regex&quot;</span><span class="p">:</span> <span class="s2">&quot;^A&quot;</span><span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p><strong>Response</strong>:</p>
+<div class="highlight-http"><div class="highlight"><pre><span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span> <span class="m">200</span> <span class="ne">OK</span>
+<span class="na">Cache-Control</span><span class="o">:</span> <span class="l">must-revalidate</span>
+<span class="na">Content-Type</span><span class="o">:</span> <span class="l">application/json</span>
+<span class="na">Date</span><span class="o">:</span> <span class="l">Thu, 01 Sep 2016 17:25:51 GMT</span>
+<span class="na">Server</span><span class="o">:</span> <span class="l">CouchDB (Erlang OTP)</span>
+<span class="na">Transfer-Encoding</span><span class="o">:</span> <span class="l">chunked</span>
+
+<span class="p">{</span>
+    <span class="nt">&quot;warning&quot;</span><span class="p">:</span><span class="s2">&quot;no matching index found, create an index to optimize</span>
+<span class="s2">    query time&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;docs&quot;</span><span class="p">:[</span>
+    <span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div></blockquote>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">It&#8217;s always recommended that you create an appropriate index when deploying
+in production.</p>
+</div>
+<p>Most selector expressions work exactly as you would expect for the given
+operator.</p>
+</div>
+</div>
+<div class="section" id="sort-syntax">
+<span id="find-sort"></span><h2>Sort Syntax<a class="headerlink" href="#sort-syntax" title="Permalink to this headline">¶</a></h2>
+<p>The <tt class="docutils literal"><span class="pre">sort</span></tt> field contains a list of field name and direction pairs, expressed
+as a basic array. The first field name and direction pair is the topmost level
+of sort. The second pair, if provided, is the next level of sort.</p>
+<p>The field can be any field, using dotted notation if desired for sub-document
+fields.</p>
+<p>The direction value is <tt class="docutils literal"><span class="pre">&quot;asc&quot;</span></tt> for ascending, and <tt class="docutils literal"><span class="pre">&quot;desc&quot;</span></tt> for descending.
+If you omit the direction value, the default <tt class="docutils literal"><span class="pre">&quot;asc&quot;</span></tt> is used.</p>
+<p>Example, sorting by 2 fields:</p>
+<blockquote>
+<div><div class="highlight-javascript"><div class="highlight"><pre><span class="p">[{</span><span class="s2">&quot;fieldName1&quot;</span><span class="o">:</span> <span class="s2">&quot;desc&quot;</span><span class="p">},</span> <span class="p">{</span><span class="s2">&quot;fieldName2&quot;</span><span class="o">:</span> <span class="s2">&quot;desc&quot;</span> <span class="p">}]</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>Example, sorting by 2 fields, assuming default direction for both :</p>
+<blockquote>
+<div><div class="highlight-javascript"><div class="highlight"><pre><span class="p">[</span><span class="s2">&quot;fieldNameA&quot;</span><span class="p">,</span> <span class="s2">&quot;fieldNameB&quot;</span><span class="p">]</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>A typical requirement is to search for some content using a selector, then to
+sort the results according to the specified field, in the required direction.</p>
+<p>To use sorting, ensure that:</p>
+<ul>
+<li><p class="first">At least one of the sort fields is included in the selector.</p>
+</li>
+<li><dl class="first docutils">
+<dt>There is an index already defined, with all the sort fields in the same</dt>
+<dd><p class="first last">order.</p>
+</dd>
+</dl>
+</li>
+<li><p class="first">Each object in the sort array has a single key.</p>
+</li>
+</ul>
+<p>If an object in the sort array does not have a single key, the resulting sort
+order is implementation specific and might change.</p>
+<p>Find does not support multiple fields with different sort orders, so the
+directions must be either all ascending or all descending.</p>
+</div>
+<div class="section" id="filtering-fields">
+<span id="find-filter"></span><h2>Filtering Fields<a class="headerlink" href="#filtering-fields" title="Permalink to this headline">¶</a></h2>
+<p>It is possible to specify exactly which fields are returned for a document when
+selecting from a database. The two advantages are:</p>
+<ul>
+<li><dl class="first docutils">
+<dt>Your results are limited to only those parts of the document that are</dt>
+<dd><p class="first last">required for your application.</p>
+</dd>
+</dl>
+</li>
+<li><p class="first">A reduction in the size of the response.</p>
+</li>
+</ul>
+<p>The fields returned are specified as an array.</p>
+<p>Only the specified filter fields are included, in the response. There is no
+automatic inclusion of the <tt class="docutils literal"><span class="pre">_id</span></tt> or other metadata fields when a field list
+is included.</p>
+<p>Example of selective retrieval of fields from matching documents:</p>
+<blockquote>
+<div><div class="highlight-javascript"><div class="highlight"><pre><span class="p">{</span>
+    <span class="s2">&quot;selector&quot;</span><span class="o">:</span> <span class="p">{</span> <span class="s2">&quot;Actor_name&quot;</span><span class="o">:</span> <span class="s2">&quot;Robert De Niro&quot;</span> <span class="p">},</span>
+    <span class="s2">&quot;fields&quot;</span><span class="o">:</span> <span class="p">[</span><span class="s2">&quot;Actor_name&quot;</span><span class="p">,</span> <span class="s2">&quot;Movie_year&quot;</span><span class="p">,</span> <span class="s2">&quot;_id&quot;</span><span class="p">,</span> <span class="s2">&quot;_rev&quot;</span><span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div></blockquote>
+</div>
+</div>
+<div class="section" id="db-index">
+<span id="api-db-find-index"></span><h1>10.3.5. <tt class="docutils literal"><span class="pre">/db/_index</span></tt><a class="headerlink" href="#db-index" title="Permalink to this headline">¶</a></h1>
+<span class="target" id="api-db-find-index-post"></span><dl class="post">
+<dt id="post--db-_index">
+<tt class="descname">POST </tt><tt class="descname">/{db}/_index</tt><a class="headerlink" href="#post--db-_index" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>db</strong> &#8211; Database name</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name" colspan="2">Request Headers:</th></tr>
+<tr class="field-even field"><td>&nbsp;</td><td class="field-body"><ul class="first simple">
+<li><a class="reference external" href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.17">Content-Type</a> &#8211; <ul>
+<li><em class="mimetype">application/json</em></li>
+</ul>
+</li>
+</ul>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name" colspan="2">Query Parameters:</th></tr>
+<tr class="field-odd field"><td>&nbsp;</td><td class="field-body"><ul class="first simple">
+<li><strong>index</strong> (<em>json</em>) &#8211; JSON object describing the index to create.</li>
+<li><strong>ddoc</strong> (<em>string</em>) &#8211; Name of the design document in which the index will be
+created. By default, each index will be created in its own design
+document.
+Indexes can be grouped into design documents for efficiency. However, a
+change to one index in a design document will invalidate all other
+indexes in the same document (similar to views). <em>Optional</em></li>
+<li><strong>name</strong> (<em>string</em>) &#8211; Name of the index. If no name is provided, a name will
+be generated automatically. <em>Optional</em></li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name" colspan="2">Response Headers:</th></tr>
+<tr class="field-even field"><td>&nbsp;</td><td class="field-body"><ul class="first simple">
+<li><a class="reference external" href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.17">Content-Type</a> &#8211; <em class="mimetype">application/json</em></li>
+<li><a class="reference external" href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.41">Transfer-Encoding</a> &#8211; <tt class="docutils literal"><span class="pre">chunked</span></tt></li>
+</ul>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name" colspan="2">Response JSON Object:</th></tr>
+<tr class="field-odd field"><td>&nbsp;</td><td class="field-body"><ul class="first simple">
+<li><strong>result</strong> (<em>string</em>) &#8211; Flag to show whether the index was created or one
+already exists. Can be <cite>&#8220;created&#8221;</cite> or <cite>&#8220;exists&#8221;</cite>.</li>
+<li><strong>id</strong> (<em>string</em>) &#8211; Id of the design document the index was created in.</li>
+<li><strong>name</strong> (<em>string</em>) &#8211; Name of the index created.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Status Codes:</th><td class="field-body"><ul class="first last simple">
+<li><a class="reference external" href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.2.1">200 OK</a> &#8211; Index created successfully or already exists</li>
+<li><a class="reference external" href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.4.1">400 Bad Request</a> &#8211; Invalid request</li>
+<li><a class="reference external" href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.4.2">401 Unauthorized</a> &#8211; Admin permission required</li>
+<li><a class="reference external" href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.5.1">500 Internal Server Error</a> &#8211; Execution error</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Index object format</strong></p>
+<p>The index object is a JSON array of field names following the <a class="reference internal" href="#find-sort"><em>sort
+syntax</em></a>. Nested fields are also allowed, e.g. <cite>&#8220;person.name&#8221;</cite>.</p>
+<p><strong>Request</strong>:</p>
+<div class="highlight-http"><div class="highlight"><pre><span class="nf">POST</span> <span class="nn">/db/_index</span> <span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span>
+<span class="na">Accept</span><span class="o">:</span> <span class="l">application/json</span>
+<span class="na">Content-Type</span><span class="o">:</span> <span class="l">application/json</span>
+<span class="na">Content-Length</span><span class="o">:</span> <span class="l">116</span>
+<span class="na">Host</span><span class="o">:</span> <span class="l">localhost:5984</span>
+
+<span class="p">{</span>
+    <span class="nt">&quot;index&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;fields&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;foo&quot;</span><span class="p">]</span>
+    <span class="p">},</span>
+    <span class="nt">&quot;name&quot;</span> <span class="p">:</span> <span class="s2">&quot;foo-index&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p><strong>Response</strong>:</p>
+<div class="highlight-http"><div class="highlight"><pre><span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span> <span class="m">200</span> <span class="ne">OK</span>
+<span class="na">Cache-Control</span><span class="o">:</span> <span class="l">must-revalidate</span>
+<span class="na">Content-Length</span><span class="o">:</span> <span class="l">96</span>
+<span class="na">Content-Type</span><span class="o">:</span> <span class="l">application/json</span>
+<span class="na">Date</span><span class="o">:</span> <span class="l">Thu, 01 Sep 2016 18:17:48 GMT</span>
+<span class="na">Server</span><span class="o">:</span> <span class="l">CouchDB (Erlang OTP/18)</span>
+
+<span class="p">{</span>
+    <span class="nt">&quot;result&quot;</span><span class="p">:</span><span class="s2">&quot;created&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="s2">&quot;_design/a5f4711fc9448864a13c81dc71e660b524d7410c&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="s2">&quot;foo-index&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<span class="target" id="api-db-find-index-get"></span><dl class="get">
+<dt id="get--db-_index">
+<tt class="descname">GET </tt><tt class="descname">/{db}/_index</tt><a class="headerlink" href="#get--db-_index" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>db</strong> &#8211; Database name.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name" colspan="2">Response Headers:</th></tr>
+<tr class="field-even field"><td>&nbsp;</td><td class="field-body"><ul class="first simple">
+<li><a class="reference external" href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.17">Content-Type</a> &#8211; <em class="mimetype">application/json</em></li>
+<li><a class="reference external" href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.41">Transfer-Encoding</a> &#8211; <tt class="docutils literal"><span class="pre">chunked</span></tt></li>
+</ul>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name" colspan="2">Response JSON Object:</th></tr>
+<tr class="field-odd field"><td>&nbsp;</td><td class="field-body"><ul class="first simple">
+<li><strong>total_rows</strong> (<em>number</em>) &#8211; Number of indexes</li>
+<li><strong>indexes</strong> (<em>object</em>) &#8211; Array of index definitions</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Status Codes:</th><td class="field-body"><ul class="first last simple">
+<li><a class="reference external" href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.2.1">200 OK</a> &#8211; Success</li>
+<li><a class="reference external" href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.4.1">400 Bad Request</a> &#8211; Invalid request</li>
+<li><a class="reference external" href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.4.2">401 Unauthorized</a> &#8211; Read permission required</li>
+<li><a class="reference external" href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.5.1">500 Internal Server Error</a> &#8211; Execution error</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Request</strong>:</p>
+<div class="highlight-http"><div class="highlight"><pre><span class="nf">GET</span> <span class="nn">/db/_index</span> <span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span>
+<span class="na">Accept</span><span class="o">:</span> <span class="l">application/json</span>
+<span class="na">Host</span><span class="o">:</span> <span class="l">localhost:5984</span>
+</pre></div>
+</div>
+<p><strong>Response</strong>:</p>
+<div class="highlight-http"><div class="highlight"><pre><span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span> <span class="m">200</span> <span class="ne">OK</span>
+<span class="na">Cache-Control</span><span class="o">:</span> <span class="l">must-revalidate</span>
+<span class="na">Content-Length</span><span class="o">:</span> <span class="l">238</span>
+<span class="na">Content-Type</span><span class="o">:</span> <span class="l">application/json</span>
+<span class="na">Date</span><span class="o">:</span> <span class="l">Thu, 01 Sep 2016 18:17:48 GMT</span>
+<span class="na">Server</span><span class="o">:</span> <span class="l">CouchDB (Erlang OTP/18)</span>
+
+<span class="p">{</span>
+    <span class="nt">&quot;total_rows&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
+    <span class="nt">&quot;indexes&quot;</span><span class="p">:</span> <span class="p">[</span>
+    <span class="p">{</span>
+        <span class="nt">&quot;ddoc&quot;</span><span class="p">:</span> <span class="kc">null</span><span class="p">,</span>
+        <span class="nt">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;_all_docs&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;special&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;def&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="nt">&quot;fields&quot;</span><span class="p">:</span> <span class="p">[</span>
+                <span class="p">{</span>
+                    <span class="nt">&quot;_id&quot;</span><span class="p">:</span> <span class="s2">&quot;asc&quot;</span>
+                <span class="p">}</span>
+            <span class="p">]</span>
+        <span class="p">}</span>
+    <span class="p">},</span>
+    <span class="p">{</span>
+        <span class="nt">&quot;ddoc&quot;</span><span class="p">:</span> <span class="s2">&quot;_design/a5f4711fc9448864a13c81dc71e660b524d7410c&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;foo-index&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;json&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;def&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="nt">&quot;fields&quot;</span><span class="p">:</span> <span class="p">[</span>
+                <span class="p">{</span>
+                    <span class="nt">&quot;foo&quot;</span><span class="p">:</span> <span class="s2">&quot;asc&quot;</span>
+                <span class="p">}</span>
+            <span class="p">]</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+  <span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<span class="target" id="api-db-find-index-delete"></span><dl class="delete">
+<dt id="delete--db-_index-designdoc-json-name">
+<tt class="descname">DELETE </tt><tt class="descname">/{db}/_index/{designdoc}/json/{name}</tt><a class="headerlink" href="#delete--db-_index-designdoc-json-name" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>db</strong> &#8211; Database name.</li>
+<li><strong>designdoc</strong> &#8211; Design document name.</li>
+<li><strong>name</strong> &#8211; Index name.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name" colspan="2">Response Headers:</th></tr>
+<tr class="field-even field"><td>&nbsp;</td><td class="field-body"><ul class="first simple">
+<li><a class="reference external" href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.17">Content-Type</a> &#8211; <em class="mimetype">application/json</em></li>
+</ul>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name" colspan="2">Response JSON Object:</th></tr>
+<tr class="field-odd field"><td>&nbsp;</td><td class="field-body"><ul class="first simple">
+<li><strong>ok</strong> (<em>string</em>) &#8211; <cite>&#8220;true&#8221;</cite> if successful.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Status Codes:</th><td class="field-body"><ul class="first last simple">
+<li><a class="reference external" href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.2.1">200 OK</a> &#8211; Success</li>
+<li><a class="reference external" href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.4.1">400 Bad Request</a> &#8211; Invalid request</li>
+<li><a class="reference external" href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.4.2">401 Unauthorized</a> &#8211; Writer permission required</li>
+<li><a class="reference external" href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.4.5">404 Not Found</a> &#8211; Index not found</li>
+<li><a class="reference external" href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.5.1">500 Internal Server Error</a> &#8211; Execution error</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Request</strong>:</p>
+<div class="highlight-http"><div class="highlight"><pre><span class="nf">DELETE</span> <span class="nn">/db/_index/_design/a5f4711fc9448864a13c81dc71e660b524d7410c/json/foo-index</span> <span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span>
+<span class="na">Accept</span><span class="o">:</span> <span class="l">*/*</span>
+<span class="na">Host</span><span class="o">:</span> <span class="l">localhost:5984</span>
+</pre></div>
+</div>
+<p><strong>Response</strong>:</p>
+<div class="highlight-http"><div class="highlight"><pre><span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span> <span class="m">200</span> <span class="ne">OK</span>
+<span class="na">Cache-Control</span><span class="o">:</span> <span class="l">must-revalidate</span>
+<span class="na">Content-Length</span><span class="o">:</span> <span class="l">12</span>
+<span class="na">Content-Type</span><span class="o">:</span> <span class="l">application/json</span>
+<span class="na">Date</span><span class="o">:</span> <span class="l">Thu, 01 Sep 2016 19:21:40 GMT</span>
+<span class="na">Server</span><span class="o">:</span> <span class="l">CouchDB (Erlang OTP/18)</span>
+
+<span class="p">{</span>
+    <span class="nt">&quot;ok&quot;</span><span class="p">:</span> <span class="kc">true</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</div>
+<div class="section" id="db-explain">
+<span id="api-db-find-explain"></span><h1>10.3.6. <tt class="docutils literal"><span class="pre">/db/_explain</span></tt><a class="headerlink" href="#db-explain" title="Permalink to this headline">¶</a></h1>
+<dl class="post">
+<dt id="post--db-_explain">
+<tt class="descname">POST </tt><tt class="descname">/{db}/_explain</tt><a class="headerlink" href="#post--db-_explain" title="Permalink to this definition">¶</a></dt>
+<dd><p>Query parameters are the same as <a class="reference internal" href="#api-db-find"><em>_find</em></a></p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>db</strong> &#8211; Database name</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name" colspan="2">Request Headers:</th></tr>
+<tr class="field-even field"><td>&nbsp;</td><td class="field-body"><ul class="first simple">
+<li><a class="reference external" href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.17">Content-Type</a> &#8211; <em class="mimetype">application/json</em></li>
+</ul>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name" colspan="2">Response Headers:</th></tr>
+<tr class="field-odd field"><td>&nbsp;</td><td class="field-body"><ul class="first simple">
+<li><a class="reference external" href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.17">Content-Type</a> &#8211; <em class="mimetype">application/json</em></li>
+<li><a class="reference external" href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.41">Transfer-Encoding</a> &#8211; <tt class="docutils literal"><span class="pre">chunked</span></tt></li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name" colspan="2">Response JSON Object:</th></tr>
+<tr class="field-even field"><td>&nbsp;</td><td class="field-body"><ul class="first simple">
+<li><strong>dbname</strong> (<em>string</em>) &#8211; Name of database</li>
+<li><strong>index</strong> (<em>object</em>) &#8211; Index used to fullfil the query</li>
+<li><strong>selector</strong> (<em>object</em>) &#8211; Query selector used</li>
+<li><strong>opts</strong> (<em>object</em>) &#8211; Query options used</li>
+<li><strong>limit</strong> (<em>number</em>) &#8211; Limit parameter used</li>
+<li><strong>skip</strong> (<em>number</em>) &#8211; Skip parameter used</li>
+<li><strong>fields</strong> (<em>object</em>) &#8211; Fields to be returned by the query</li>
+<li><strong>range</strong> (<em>object</em>) &#8211; Range parameters passed to the underlying view</li>
+</ul>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Status Codes:</th><td class="field-body"><ul class="first last simple">
+<li><a class="reference external" href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.2.1">200 OK</a> &#8211; Request completed successfully</li>
+<li><a class="reference external" href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.4.1">400 Bad Request</a> &#8211; Invalid request</li>
+<li><a class="reference external" href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.4.2">401 Unauthorized</a> &#8211; Read permission required</li>
+<li><a class="reference external" href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.5.1">500 Internal Server Error</a> &#8211; Execution error</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Request</strong>:</p>
+<div class="highlight-http"><div class="highlight"><pre><span class="nf">POST</span> <span class="nn">/movies/_explain</span> <span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span>
+<span class="na">Accept</span><span class="o">:</span> <span class="l">application/json</span>
+<span class="na">Content-Type</span><span class="o">:</span> <span class="l">application/json</span>
+<span class="na">Content-Length</span><span class="o">:</span> <span class="l">168</span>
+<span class="na">Host</span><span class="o">:</span> <span class="l">localhost:5984</span>
+
+<span class="p">{</span>
+    <span class="nt">&quot;selector&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;year&quot;</span><span class="p">:</span> <span class="p">{</span><span class="nt">&quot;$gt&quot;</span><span class="p">:</span> <span class="mi">2010</span><span class="p">}</span>
+    <span class="p">},</span>
+    <span class="nt">&quot;fields&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;_id&quot;</span><span class="p">,</span> <span class="s2">&quot;_rev&quot;</span><span class="p">,</span> <span class="s2">&quot;year&quot;</span><span class="p">,</span> <span class="s2">&quot;title&quot;</span><span class="p">],</span>
+    <span class="nt">&quot;sort&quot;</span><span class="p">:</span> <span class="p">[{</span><span class="nt">&quot;year&quot;</span><span class="p">:</span> <span class="s2">&quot;asc&quot;</span><span class="p">}],</span>
+    <span class="nt">&quot;limit&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
+    <span class="nt">&quot;skip&quot;</span><span class="p">:</span> <span class="mi">0</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p><strong>Response</strong>:</p>
+<div class="highlight-http"><div class="highlight"><pre><span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span> <span class="m">200</span> <span class="ne">OK</span>
+<span class="na">Cache-Control</span><span class="o">:</span> <span class="l">must-revalidate</span>
+<span class="na">Content-Type</span><span class="o">:</span> <span class="l">application/json</span>
+<span class="na">Date</span><span class="o">:</span> <span class="l">Thu, 01 Sep 2016 15:41:53 GMT</span>
+<span class="na">Server</span><span class="o">:</span> <span class="l">CouchDB (Erlang OTP)</span>
+<span class="na">Transfer-Encoding</span><span class="o">:</span> <span class="l">chunked</span>
+
+<span class="p">{</span>
+    <span class="nt">&quot;dbname&quot;</span><span class="p">:</span> <span class="s2">&quot;movies&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;index&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;ddoc&quot;</span><span class="p">:</span> <span class="s2">&quot;_design/0d61d9177426b1e2aa8d0fe732ec6e506f5d443c&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;0d61d9177426b1e2aa8d0fe732ec6e506f5d443c&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;json&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;def&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="nt">&quot;fields&quot;</span><span class="p">:</span> <span class="p">[</span>
+                <span class="p">{</span>
+                    <span class="nt">&quot;year&quot;</span><span class="p">:</span> <span class="s2">&quot;asc&quot;</span>
+                <span class="p">}</span>
+            <span class="p">]</span>
+        <span class="p">}</span>
+    <span class="p">},</span>
+    <span class="nt">&quot;selector&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;year&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="nt">&quot;$gt&quot;</span><span class="p">:</span> <span class="mi">2010</span>
+        <span class="p">}</span>
+    <span class="p">},</span>
+    <span class="nt">&quot;opts&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;use_index&quot;</span><span class="p">:</span> <span class="p">[],</span>
+        <span class="nt">&quot;bookmark&quot;</span><span class="p">:</span> <span class="s2">&quot;nil&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;limit&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
+        <span class="nt">&quot;skip&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="nt">&quot;sort&quot;</span><span class="p">:</span> <span class="p">{},</span>
+        <span class="nt">&quot;fields&quot;</span><span class="p">:</span> <span class="p">[</span>
+            <span class="s2">&quot;_id&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;_rev&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;year&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;title&quot;</span>
+        <span class="p">],</span>
+        <span class="nt">&quot;r&quot;</span><span class="p">:</span> <span class="p">[</span>
+            <span class="mi">49</span>
+        <span class="p">],</span>
+        <span class="nt">&quot;conflicts&quot;</span><span class="p">:</span> <span class="kc">false</span>
+    <span class="p">},</span>
+    <span class="nt">&quot;limit&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
+    <span class="nt">&quot;skip&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="nt">&quot;fields&quot;</span><span class="p">:</span> <span class="p">[</span>
+        <span class="s2">&quot;_id&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;_rev&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;year&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;title&quot;</span>
+    <span class="p">],</span>
+    <span class="nt">&quot;range&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;start_key&quot;</span><span class="p">:</span> <span class="p">[</span>
+            <span class="mi">2010</span>
+        <span class="p">],</span>
+        <span class="nt">&quot;end_key&quot;</span><span class="p">:</span> <span class="p">[</span>
+            <span class="p">{}</span>
+        <span class="p">]</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<div class="section" id="index-selection">
+<h2>Index selection<a class="headerlink" href="#index-selection" title="Permalink to this headline">¶</a></h2>
+<p><cite>_find</cite> chooses which index to use for responding to a query, unless you specify
+an index at query time.</p>
+<p>If there are two or more json type indexes on the same fields, the index with
+the smallest number of fields in the index is preferred. If there are still two
+or more candidate indexes, the index with the first alphabetical name is chosen.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">It&#8217;s good practice to specify indexes explicitly in your queries. This
+prevents existing queries being affected by new indexes that might get added
+in a production environment.</p>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+    <p class="logo"><a href="../../index.html">
+      <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+    </a></p><!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+<div id="searchbox" style="display: none">
+
+<h3>Quick Search</h3>
+
+<form class="search" action="../../search.html" method="get">
+<input type="text" name="q" style="width:115px">
+<input type="submit" value="Go">
+<input type="hidden" name="check_keywords" value="yes">
+<input type="hidden" name="area" value="default">
+</form>
+
+<br>
+
+</div>
+
+<script type="text/javascript">$('#searchbox').show(0);</script>
+  <h3><a href="../../contents.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">10.3.4. <tt class="docutils literal"><span class="pre">/db/_find</span></tt></a><ul>
+<li><a class="reference internal" href="#selector-syntax">Selector Syntax</a><ul>
+<li><a class="reference internal" href="#selector-basics">Selector Basics</a></li>
+<li><a class="reference internal" href="#selector-with-2-fields">Selector with 2 fields</a></li>
+<li><a class="reference internal" href="#subfields">Subfields</a></li>
+<li><a class="reference internal" href="#operators">Operators</a></li>
+<li><a class="reference internal" href="#implicit-operators">Implicit Operators</a></li>
+<li><a class="reference internal" href="#explicit-operators">Explicit Operators</a></li>
+<li><a class="reference internal" href="#combination-operators">Combination Operators</a></li>
+<li><a class="reference internal" href="#condition-operators">Condition Operators</a></li>
+<li><a class="reference internal" href="#creating-selector-expressions">Creating Selector Expressions</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#sort-syntax">Sort Syntax</a></li>
+<li><a class="reference internal" href="#filtering-fields">Filtering Fields</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#db-index">10.3.5. <tt class="docutils literal"><span class="pre">/db/_index</span></tt></a></li>
+<li><a class="reference internal" href="#db-explain">10.3.6. <tt class="docutils literal"><span class="pre">/db/_explain</span></tt></a><ul>
+<li><a class="reference internal" href="#index-selection">Index selection</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="bulk-api.html"
+                        title="previous chapter">10.3.2. <tt class="docutils literal"><span class="pre">/db/_all_docs</span></tt></a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="changes.html"
+                        title="next chapter">10.3.7. <tt class="docutils literal"><span class="pre">/db/_changes</span></tt></a></p><!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+
+<h3>Utilities</h3>
+
+<ul>
+<li><a href="../">Fauxton</a></li>
+</ul>
+<!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+<h3>More Help</h3>
+
+<ul>
+<li><a href="https://couchdb.apache.org/">Homepage</a></li>
+<li><a href="https://cwiki.apache.org/confluence/display/COUCHDB/">Wiki</a></li>
+<li><a href="https://couchdb.apache.org/#mailing-list">Mailing Lists</a></li>
+<li><a href="http://webchat.freenode.net/?channels=couchdb">IRC</a></li>
+<li><a href="https://issues.apache.org/jira/browse/CouchDB">Issues</a></li>
+<li><a href="../../download.html">Download</a></li>
+<li><a href="https://github.com/apache/couchdb-documentation/blob/master/src/api/database/find.rst"
+       rel="nofollow">Show on GitHub</a></li>
+<li><a href="https://github.com/apache/couchdb-documentation/edit/master/src/api/database/find.rst"
+       rel="nofollow">Edit on GitHub</a></li>
+</ul><!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../http-api.html" title="HTTP API Reference"
+             >API Reference</a></li>
+        <li class="right" >
+          <a href="../../config-ref.html" title="Configuration Reference"
+             >Config Reference</a> |</li>
+        <li class="right" >
+          <a href="changes.html" title="10.3.7. /db/_changes"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="bulk-api.html" title="10.3.2. /db/_all_docs"
+             >previous</a> |</li>
+  <li><a href="../../index.html">Apache CouchDB 2.0 Documentation</a> &raquo;</li>
+          <li><a href="../index.html" >10. API Reference</a> &raquo;</li>
+          <li><a href="index.html" >10.3. Databases</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2016, Apache Software Foundation.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
+    </div>
+  </body>
+</html>

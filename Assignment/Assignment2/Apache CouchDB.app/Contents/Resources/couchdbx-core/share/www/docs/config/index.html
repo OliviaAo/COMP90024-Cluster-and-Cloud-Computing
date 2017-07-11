@@ -1,0 +1,295 @@
+<!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>3. Configuring CouchDB &mdash; Apache CouchDB 2.0 Documentation</title>
+    
+    <link rel="stylesheet" href="../_static/rtd.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '2.0.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+    <link rel="author" title="About these documents" href="../about.html" />
+    <link rel="top" title="Apache CouchDB 2.0 Documentation" href="../index.html" />
+    <link rel="next" title="3.1. Introduction Into Configuring" href="intro.html" />
+    <link rel="prev" title="2.5. Troubleshooting an Installation" href="../install/troubleshooting.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../http-api.html" title="HTTP API Reference"
+             >API Reference</a></li>
+        <li class="right" >
+          <a href="../config-ref.html" title="Configuration Reference"
+             >Config Reference</a> |</li>
+        <li class="right" >
+          <a href="intro.html" title="3.1. Introduction Into Configuring"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="../install/troubleshooting.html" title="2.5. Troubleshooting an Installation"
+             accesskey="P">previous</a> |</li>
+  <li><a href="../index.html">Apache CouchDB 2.0 Documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="configuring-couchdb">
+<span id="config"></span><h1>3. Configuring CouchDB<a class="headerlink" href="#configuring-couchdb" title="Permalink to this headline">¶</a></h1>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="intro.html">3.1. Introduction Into Configuring</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="intro.html#configuration-files">3.1.1. Configuration files</a></li>
+<li class="toctree-l2"><a class="reference internal" href="intro.html#parameter-names-and-values">3.1.2. Parameter names and values</a></li>
+<li class="toctree-l2"><a class="reference internal" href="intro.html#setting-parameters-via-the-configuration-file">3.1.3. Setting parameters via the configuration file</a></li>
+<li class="toctree-l2"><a class="reference internal" href="intro.html#setting-parameters-via-the-http-api">3.1.4. Setting parameters via the HTTP API</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="couchdb.html">3.2. Base Configuration</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="couchdb.html#base-couchdb-options">3.2.1. Base CouchDB Options</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="couch-peruser.html">3.3. couch_peruser</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="couch-peruser.html#couch-peruser-options">3.3.1. couch_peruser Options</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="http.html">3.4. CouchDB HTTP Server</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="http.html#http-server-options">3.4.1. HTTP Server Options</a></li>
+<li class="toctree-l2"><a class="reference internal" href="http.html#secure-socket-level-options">3.4.2. Secure Socket Level Options</a></li>
+<li class="toctree-l2"><a class="reference internal" href="http.html#cross-origin-resource-sharing">3.4.3. Cross-Origin Resource Sharing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="http.html#virtual-hosts">3.4.4. Virtual Hosts</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="auth.html">3.5. Authentication and Authorization</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="auth.html#server-administrators">3.5.1. Server Administrators</a></li>
+<li class="toctree-l2"><a class="reference internal" href="auth.html#authentication-configuration">3.5.2. Authentication Configuration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="auth.html#http-oauth-configuration">3.5.3. HTTP OAuth Configuration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="auth.html#oauth-configuration">3.5.4. OAuth Configuration</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="compaction.html">3.6. Compaction Configuration</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="compaction.html#database-compaction-options">3.6.1. Database Compaction Options</a></li>
+<li class="toctree-l2"><a class="reference internal" href="compaction.html#compaction-daemon-rules">3.6.2. Compaction Daemon Rules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="compaction.html#configuration-of-compaction-daemon">3.6.3. Configuration of Compaction Daemon</a></li>
+<li class="toctree-l2"><a class="reference internal" href="compaction.html#views-compaction-options">3.6.4. Views Compaction Options</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="logging.html">3.7. Logging</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="logging.html#logging-options">3.7.1. Logging options</a></li>
+<li class="toctree-l2"><a class="reference internal" href="logging.html#per-module-logging">3.7.2. Per module logging</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="replicator.html">3.8. Replicator</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="replicator.html#replicator-database-configuration">3.8.1. Replicator Database Configuration</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="query-servers.html">3.9. Query Servers</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="query-servers.html#query-servers-definition">3.9.1. Query Servers Definition</a></li>
+<li class="toctree-l2"><a class="reference internal" href="query-servers.html#query-servers-configuration">3.9.2. Query Servers Configuration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="query-servers.html#native-erlang-query-server">3.9.3. Native Erlang Query Server</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="externals.html">3.10. External Processes</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="externals.html#os-daemons">3.10.1. OS Daemons</a></li>
+<li class="toctree-l2"><a class="reference internal" href="externals.html#os-daemons-settings">3.10.2. OS Daemons settings</a></li>
+<li class="toctree-l2"><a class="reference internal" href="externals.html#config-update-notification">3.10.3. Update notifications</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="http-handlers.html">3.11. HTTP Resource Handlers</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="http-handlers.html#global-http-handlers">3.11.1. Global HTTP Handlers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="http-handlers.html#database-http-handlers">3.11.2. Database HTTP Handlers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="http-handlers.html#design-documents-http-handlers">3.11.3. Design Documents HTTP Handlers</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="services.html">3.12. CouchDB Internal Services</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="services.html#couchdb-daemonized-mini-apps">3.12.1. CouchDB Daemonized Mini Apps</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="misc.html">3.13. Miscellaneous Parameters</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="misc.html#configuration-of-attachment-storage">3.13.1. Configuration of Attachment Storage</a></li>
+<li class="toctree-l2"><a class="reference internal" href="misc.html#statistic-calculation">3.13.2. Statistic Calculation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="misc.html#uuids-configuration">3.13.3. UUIDs Configuration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="misc.html#vendor-information">3.13.4. Vendor information</a></li>
+<li class="toctree-l2"><a class="reference internal" href="misc.html#content-security-policy">3.13.5. Content-Security-Policy</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="proxying.html">3.14. Proxying Configuration</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="proxying.html#couchdb-as-proxy">3.14.1. CouchDB As Proxy</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+    <p class="logo"><a href="../index.html">
+      <img class="logo" src="../_static/logo.png" alt="Logo"/>
+    </a></p><!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+<div id="searchbox" style="display: none">
+
+<h3>Quick Search</h3>
+
+<form class="search" action="../search.html" method="get">
+<input type="text" name="q" style="width:115px">
+<input type="submit" value="Go">
+<input type="hidden" name="check_keywords" value="yes">
+<input type="hidden" name="area" value="default">
+</form>
+
+<br>
+
+</div>
+
+<script type="text/javascript">$('#searchbox').show(0);</script>
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="../install/troubleshooting.html"
+                        title="previous chapter">2.5. Troubleshooting an Installation</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="intro.html"
+                        title="next chapter">3.1. Introduction Into Configuring</a></p><!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+
+<h3>Utilities</h3>
+
+<ul>
+<li><a href="../">Fauxton</a></li>
+</ul>
+<!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+<h3>More Help</h3>
+
+<ul>
+<li><a href="https://couchdb.apache.org/">Homepage</a></li>
+<li><a href="https://cwiki.apache.org/confluence/display/COUCHDB/">Wiki</a></li>
+<li><a href="https://couchdb.apache.org/#mailing-list">Mailing Lists</a></li>
+<li><a href="http://webchat.freenode.net/?channels=couchdb">IRC</a></li>
+<li><a href="https://issues.apache.org/jira/browse/CouchDB">Issues</a></li>
+<li><a href="../download.html">Download</a></li>
+<li><a href="https://github.com/apache/couchdb-documentation/blob/master/src/config/index.rst"
+       rel="nofollow">Show on GitHub</a></li>
+<li><a href="https://github.com/apache/couchdb-documentation/edit/master/src/config/index.rst"
+       rel="nofollow">Edit on GitHub</a></li>
+</ul><!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../http-api.html" title="HTTP API Reference"
+             >API Reference</a></li>
+        <li class="right" >
+          <a href="../config-ref.html" title="Configuration Reference"
+             >Config Reference</a> |</li>
+        <li class="right" >
+          <a href="intro.html" title="3.1. Introduction Into Configuring"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="../install/troubleshooting.html" title="2.5. Troubleshooting an Installation"
+             >previous</a> |</li>
+  <li><a href="../index.html">Apache CouchDB 2.0 Documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2016, Apache Software Foundation.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,13 @@
+{application,mem3,
+             [{description,"CouchDB Cluster Membership"},
+              {vsn,"252467c"},
+              {modules,[mem3,mem3_app,mem3_epi,mem3_httpd,mem3_httpd_handlers,
+                        mem3_nodes,mem3_rep,mem3_rpc,mem3_shards,mem3_sup,
+                        mem3_sync,mem3_sync_event,mem3_sync_event_listener,
+                        mem3_sync_nodes,mem3_sync_security,mem3_util]},
+              {mod,{mem3_app,[]}},
+              {registered,[mem3_events,mem3_nodes,mem3_shards,mem3_sync,
+                           mem3_sync_nodes,mem3_sup]},
+              {applications,[kernel,stdlib,config,sasl,crypto,mochiweb,
+                             couch_epi,couch,rexi,couch_log,couch_event,
+                             couch_stats]}]}.

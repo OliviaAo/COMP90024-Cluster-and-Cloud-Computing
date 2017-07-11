@@ -1,0 +1,469 @@
+<!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>1.2. Why CouchDB? &mdash; Apache CouchDB 2.0 Documentation</title>
+    
+    <link rel="stylesheet" href="../_static/rtd.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '2.0.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+    <link rel="author" title="About these documents" href="../about.html" />
+    <link rel="top" title="Apache CouchDB 2.0 Documentation" href="../index.html" />
+    <link rel="up" title="1. Introduction" href="index.html" />
+    <link rel="next" title="1.3. Eventual Consistency" href="consistency.html" />
+    <link rel="prev" title="1.1. Technical Overview" href="overview.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../http-api.html" title="HTTP API Reference"
+             >API Reference</a></li>
+        <li class="right" >
+          <a href="../config-ref.html" title="Configuration Reference"
+             >Config Reference</a> |</li>
+        <li class="right" >
+          <a href="consistency.html" title="1.3. Eventual Consistency"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="overview.html" title="1.1. Technical Overview"
+             accesskey="P">previous</a> |</li>
+  <li><a href="../index.html">Apache CouchDB 2.0 Documentation</a> &raquo;</li>
+          <li><a href="index.html" accesskey="U">1. Introduction</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="why-couchdb">
+<span id="intro-why"></span><h1>1.2. Why CouchDB?<a class="headerlink" href="#why-couchdb" title="Permalink to this headline">¶</a></h1>
+<p>Apache CouchDB is one of a new breed of database management systems.
+This topic explains why there&#8217;s a need for new systems as well as the
+motivations behind building CouchDB.</p>
+<p>As CouchDB developers, we&#8217;re naturally very excited to be using CouchDB.
+In this topic we&#8217;ll share with you the reasons for our enthusiasm.
+We&#8217;ll show you how CouchDB&#8217;s schema-free document model is a better fit
+for common applications, how the built-in query engine is a powerful way
+to use and process your data, and how CouchDB&#8217;s design lends itself
+to modularization and scalability.</p>
+<div class="section" id="relax">
+<h2>1.2.1. Relax<a class="headerlink" href="#relax" title="Permalink to this headline">¶</a></h2>
+<p>If there&#8217;s one word to describe CouchDB, it is <em>relax</em>. It is the byline
+to CouchDB&#8217;s official logo and when you start CouchDB, you see:</p>
+<div class="highlight-python"><div class="highlight"><pre>Apache CouchDB has started. Time to relax.
+</pre></div>
+</div>
+<p>Why is relaxation important? Developer productivity roughly doubled in the
+last five years. The chief reason for the boost is more powerful tools that
+are easier to use. Take Ruby on Rails as an example. It is an infinitely
+complex framework, but it&#8217;s easy to get started with. Rails is a success
+story because of the core design focus on ease of use. This is one reason why
+CouchDB is relaxing: learning CouchDB and understanding its core concepts
+should feel natural to most everybody who has been doing any work on the Web.
+And it is still pretty easy to explain to non-technical people.</p>
+<p>Getting out of the way when creative people try to build specialized
+solutions is in itself a core feature and one thing that CouchDB aims to get
+right. We found existing tools too cumbersome to work with during development
+or in production, and decided to focus on making CouchDB easy, even a pleasure,
+to use.</p>
+<p>Another area of relaxation for CouchDB users is the production setting.
+If you have a live running application, CouchDB again goes out of its way
+to avoid troubling you. Its internal architecture is fault-tolerant,
+and failures occur in a controlled environment and are dealt with gracefully.
+Single problems do not cascade through an entire server system but stay
+isolated in single requests.</p>
+<p>CouchDB&#8217;s core concepts are simple (yet powerful) and well understood.
+Operations teams (if you have a team; otherwise, that&#8217;s you) do not have to
+fear random behavior and untraceable errors. If anything should go wrong,
+you can easily find out what the problem is, but these situations are rare.</p>
+<p>CouchDB is also designed to handle varying traffic gracefully. For instance,
+if a website is experiencing a sudden spike in traffic, CouchDB will generally
+absorb a lot of concurrent requests without falling over. It may take a little
+more time for each request, but they all get answered. When the spike is over,
+CouchDB will work with regular speed again.</p>
+<p>The third area of relaxation is growing and shrinking the underlying hardware
+of your application. This is commonly referred to as scaling. CouchDB enforces
+a set of limits on the programmer. On first look, CouchDB might seem
+inflexible, but some features are left out by design for the simple reason
+that if CouchDB supported them, it would allow a programmer to create
+applications that couldn&#8217;t deal with scaling up or down.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">CouchDB doesn&#8217;t let you do things that would get you in trouble later on.
+This sometimes means you&#8217;ll have to unlearn best practices you might have
+picked up in your current or past work.</p>
+</div>
+</div>
+<div class="section" id="a-different-way-to-model-your-data">
+<h2>1.2.2. A Different Way to Model Your Data<a class="headerlink" href="#a-different-way-to-model-your-data" title="Permalink to this headline">¶</a></h2>
+<p>We believe that CouchDB will drastically change the way you build
+document-based applications. CouchDB combines an intuitive document storage
+model with a powerful query engine in a way that&#8217;s so simple you&#8217;ll probably
+be tempted to ask, “Why has no one built something like this before?”</p>
+<blockquote>
+<div><p>Django may be built for the Web, but CouchDB is built of the Web. I&#8217;ve
+never seen software that so completely embraces the philosophies behind
+HTTP. CouchDB makes Django look old-school in the same way that Django
+makes ASP look outdated.</p>
+<p class="attribution">&mdash;Jacob Kaplan-Moss, Django developer</p>
+</div></blockquote>
+<p>CouchDB&#8217;s design borrows heavily from web architecture and the concepts of
+resources, methods, and representations. It augments this with powerful ways
+to query, map, combine, and filter your data. Add fault tolerance, extreme
+scalability, and incremental replication, and CouchDB defines a sweet spot
+for document databases.</p>
+</div>
+<div class="section" id="a-better-fit-for-common-applications">
+<h2>1.2.3. A Better Fit for Common Applications<a class="headerlink" href="#a-better-fit-for-common-applications" title="Permalink to this headline">¶</a></h2>
+<p>We write software to improve our lives and the lives of others. Usually this
+involves taking some mundane information such as contacts, invoices,
+or receipts and manipulating it using a computer application. CouchDB is a
+great fit for common applications like this because it embraces the natural
+idea of evolving, self-contained documents as the very core of its data model.</p>
+<div class="section" id="self-contained-data">
+<h3>Self-Contained Data<a class="headerlink" href="#self-contained-data" title="Permalink to this headline">¶</a></h3>
+<p>An invoice contains all the pertinent information about a single transaction
+the seller, the buyer, the date, and a list of the items or services sold.
+As shown in <a class="reference internal" href="#intro-why-01"><em>Figure 1. Self-contained documents</em></a>, there&#8217;s no abstract reference on this
+piece of paper that points to some other piece of paper with the seller&#8217;s
+name and address. Accountants appreciate the simplicity of having everything
+in one place. And given the choice, programmers appreciate that, too.</p>
+<div class="figure align-center" id="intro-why-01">
+<img alt="Self-contained documents" src="../_images/intro-why-01.png" />
+<p class="caption">Figure 1. Self-contained documents</p>
+</div>
+<p>Yet using references is exactly how we model our data in a relational
+database! Each invoice is stored in a table as a row that refers to other
+rows in other tables one row for seller information, one for the buyer,
+one row for each item billed, and more rows still to describe the item
+details, manufacturer details, and so on and so forth.</p>
+<p>This isn&#8217;t meant as a detraction of the relational model, which is widely
+applicable and extremely useful for a number of reasons. Hopefully, though, it
+illustrates the point that sometimes your model may not “fit” your data
+in the way it occurs in the real world.</p>
+<p>Let&#8217;s take a look at the humble contact database to illustrate a different
+way of modeling data, one that more closely “fits” its real-world counterpart
+&#8211; a pile of business cards. Much like our invoice example, a business card
+contains all the important information, right there on the cardstock.
+We call this “self-contained” data, and it&#8217;s an important concept
+in understanding document databases like CouchDB.</p>
+</div>
+<div class="section" id="syntax-and-semantics">
+<h3>Syntax and Semantics<a class="headerlink" href="#syntax-and-semantics" title="Permalink to this headline">¶</a></h3>
+<p>Most business cards contain roughly the same information &#8211; someone&#8217;s identity,
+an affiliation, and some contact information. While the exact form of this
+information can vary between business cards, the general information being
+conveyed remains the same, and we&#8217;re easily able to recognize it as a
+business card. In this sense, we can describe a business card as a <em>real-world
+document</em>.</p>
+<p>Jan&#8217;s business card might contain a phone number but no fax number,
+whereas J. Chris&#8217;s business card contains both a phone and a fax number. Jan
+does not have to make his lack of a fax machine explicit by writing something
+as ridiculous as “Fax: None” on the business card. Instead, simply omitting
+a fax number implies that he doesn&#8217;t have one.</p>
+<p>We can see that real-world documents of the same type, such as business cards,
+tend to be very similar in <em>semantics</em> &#8211; the sort of information they carry,
+but can vary hugely in <em>syntax</em>, or how that information is structured. As human
+beings, we&#8217;re naturally comfortable dealing with this kind of variation.</p>
+<p>While a traditional relational database requires you to model your data
+<em>up front</em>, CouchDB&#8217;s schema-free design unburdens you with a powerful way to
+aggregate your data <em>after the fact</em>, just like we do with real-world
+documents. We&#8217;ll look in depth at how to design applications with this
+underlying storage paradigm.</p>
+</div>
+</div>
+<div class="section" id="building-blocks-for-larger-systems">
+<h2>1.2.4. Building Blocks for Larger Systems<a class="headerlink" href="#building-blocks-for-larger-systems" title="Permalink to this headline">¶</a></h2>
+<p>CouchDB is a storage system useful on its own. You can build many applications
+with the tools CouchDB gives you. But CouchDB is designed with a bigger picture
+in mind. Its components can be used as building blocks that solve storage
+problems in slightly different ways for larger and more complex systems.</p>
+<p>Whether you need a system that&#8217;s crazy fast but isn&#8217;t too concerned with
+reliability (think logging), or one that guarantees storage in two or more
+physically separated locations for reliability, but you&#8217;re willing to take a
+performance hit, CouchDB lets you build these systems.</p>
+<p>There are a multitude of knobs you could turn to make a system work better in
+one area, but you&#8217;ll affect another area when doing so. One example would be
+the CAP theorem discussed in <a class="reference internal" href="consistency.html#intro-consistency"><em>Eventual Consistency</em></a>. To give you an idea of
+other things that affect storage systems, see
+<a class="reference internal" href="#intro-why-figure-02"><em>Figure 2</em></a> and <a class="reference internal" href="#intro-why-figure-03"><em>Figure 3</em></a>.</p>
+<p>By reducing latency for a given system (and that is true not only for storage
+systems), you affect concurrency and throughput capabilities.</p>
+<div class="figure align-center" id="intro-why-figure-02">
+<img alt="Throughput, latency, or concurrency" src="../_images/intro-why-02.png" />
+<p class="caption">Figure 2. Throughput, latency, or concurrency</p>
+</div>
+<div class="figure align-center" id="intro-why-figure-03">
+<img alt="Scaling: read requests, write requests, or data" src="../_images/intro-why-03.png" />
+<p class="caption">Figure 3. Scaling: read requests, write requests, or data</p>
+</div>
+<p>When you want to scale out, there are three distinct issues to deal with:
+scaling read requests, write requests, and data. Orthogonal to all three and
+to the items shown in <a class="reference internal" href="#intro-why-figure-02"><em>Figure 2</em></a> and <a class="reference internal" href="#intro-why-figure-03"><em>Figure 3</em></a> are many more attributes like reliability or simplicity.
+You can draw many of these graphs that show how different features or attributes
+pull into different directions and thus shape the system they describe.</p>
+<p>CouchDB is very flexible and gives you enough building blocks to create a
+system shaped to suit your exact problem. That&#8217;s not saying that CouchDB can
+be bent to solve any problem &#8211; CouchDB is no silver bullet &#8211; but in the
+area of data storage, it can get you a long way.</p>
+</div>
+<div class="section" id="couchdb-replication">
+<h2>1.2.5. CouchDB Replication<a class="headerlink" href="#couchdb-replication" title="Permalink to this headline">¶</a></h2>
+<p>CouchDB replication is one of these building blocks. Its fundamental function
+is to synchronize two or more CouchDB databases. This may sound simple,
+but the simplicity is key to allowing replication to solve a number of
+problems: reliably synchronize databases between multiple machines for
+redundant data storage; distribute data to a cluster of CouchDB instances
+that share a subset of the total number of requests that hit the cluster
+(load balancing); and distribute data between physically distant locations,
+such as one office in New York and another in Tokyo.</p>
+<p>CouchDB replication uses the same REST API all clients use. HTTP is
+ubiquitous and well understood. Replication works incrementally; that is,
+if during replication anything goes wrong, like dropping your network
+connection, it will pick up where it left off the next time it runs. It also
+only transfers data that is needed to synchronize databases.</p>
+<p>A core assumption CouchDB makes is that things can go wrong,
+like network connection troubles, and it is designed for graceful error
+recovery instead of assuming all will be well. The replication system&#8217;s
+incremental design shows that best. The ideas behind “things that can go
+wrong” are embodied in the <a class="reference external" href="http://en.wikipedia.org/wiki/Fallacies_of_Distributed_Computing">Fallacies of Distributed Computing</a>:</p>
+<ul class="simple">
+<li>The network is reliable.</li>
+<li>Latency is zero.</li>
+<li>Bandwidth is infinite.</li>
+<li>The network is secure.</li>
+<li>Topology doesn&#8217;t change.</li>
+<li>There is one administrator.</li>
+<li>Transport cost is zero.</li>
+<li>The network is homogeneous.</li>
+</ul>
+<p>Existing tools often try to hide the fact that there is a network and that
+any or all of the previous conditions don&#8217;t exist for a particular system.
+This usually results in fatal error scenarios when something finally goes
+wrong. In contrast, CouchDB doesn&#8217;t try to hide the network; it just handles
+errors gracefully and lets you know when actions on your end are required.</p>
+</div>
+<div class="section" id="local-data-is-king">
+<h2>1.2.6. Local Data Is King<a class="headerlink" href="#local-data-is-king" title="Permalink to this headline">¶</a></h2>
+<p>CouchDB takes quite a few lessons learned from the Web,
+but there is one thing that could be improved about the Web: latency.
+Whenever you have to wait for an application to respond or a website to
+render, you almost always wait for a network connection that isn&#8217;t as fast as
+you want it at that point. Waiting a few seconds instead of milliseconds
+greatly affects user experience and thus user satisfaction.</p>
+<p>What do you do when you are offline? This happens all the time &#8211; your DSL or
+cable provider has issues, or your iPhone, G1, or Blackberry has no bars,
+and no connectivity means no way to get to your data.</p>
+<p>CouchDB can solve this scenario as well, and this is where scaling is
+important again. This time it is scaling down. Imagine CouchDB installed on
+phones and other mobile devices that can synchronize data with centrally
+hosted CouchDBs when they are on a network. The synchronization is not bound
+by user interface constraints like subsecond response times. It is easier to
+tune for high bandwidth and higher latency than for low bandwidth and very
+low latency. Mobile applications can then use the local CouchDB to fetch
+data, and since no remote networking is required for that,
+latency is low by default.</p>
+<p>Can you really use CouchDB on a phone? Erlang, CouchDB&#8217;s implementation
+language has been designed to run on embedded devices magnitudes smaller and
+less powerful than today&#8217;s phones.</p>
+</div>
+<div class="section" id="wrapping-up">
+<h2>1.2.7. Wrapping Up<a class="headerlink" href="#wrapping-up" title="Permalink to this headline">¶</a></h2>
+<p>The next document <a class="reference internal" href="consistency.html#intro-consistency"><em>Eventual Consistency</em></a> further explores the distributed
+nature of CouchDB. We should have given you enough bites to whet your interest.
+Let&#8217;s go!</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+    <p class="logo"><a href="../index.html">
+      <img class="logo" src="../_static/logo.png" alt="Logo"/>
+    </a></p><!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+<div id="searchbox" style="display: none">
+
+<h3>Quick Search</h3>
+
+<form class="search" action="../search.html" method="get">
+<input type="text" name="q" style="width:115px">
+<input type="submit" value="Go">
+<input type="hidden" name="check_keywords" value="yes">
+<input type="hidden" name="area" value="default">
+</form>
+
+<br>
+
+</div>
+
+<script type="text/javascript">$('#searchbox').show(0);</script>
+  <h3><a href="../contents.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">1.2. Why CouchDB?</a><ul>
+<li><a class="reference internal" href="#relax">1.2.1. Relax</a></li>
+<li><a class="reference internal" href="#a-different-way-to-model-your-data">1.2.2. A Different Way to Model Your Data</a></li>
+<li><a class="reference internal" href="#a-better-fit-for-common-applications">1.2.3. A Better Fit for Common Applications</a><ul>
+<li><a class="reference internal" href="#self-contained-data">Self-Contained Data</a></li>
+<li><a class="reference internal" href="#syntax-and-semantics">Syntax and Semantics</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#building-blocks-for-larger-systems">1.2.4. Building Blocks for Larger Systems</a></li>
+<li><a class="reference internal" href="#couchdb-replication">1.2.5. CouchDB Replication</a></li>
+<li><a class="reference internal" href="#local-data-is-king">1.2.6. Local Data Is King</a></li>
+<li><a class="reference internal" href="#wrapping-up">1.2.7. Wrapping Up</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="overview.html"
+                        title="previous chapter">1.1. Technical Overview</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="consistency.html"
+                        title="next chapter">1.3. Eventual Consistency</a></p><!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+
+<h3>Utilities</h3>
+
+<ul>
+<li><a href="../">Fauxton</a></li>
+</ul>
+<!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+<h3>More Help</h3>
+
+<ul>
+<li><a href="https://couchdb.apache.org/">Homepage</a></li>
+<li><a href="https://cwiki.apache.org/confluence/display/COUCHDB/">Wiki</a></li>
+<li><a href="https://couchdb.apache.org/#mailing-list">Mailing Lists</a></li>
+<li><a href="http://webchat.freenode.net/?channels=couchdb">IRC</a></li>
+<li><a href="https://issues.apache.org/jira/browse/CouchDB">Issues</a></li>
+<li><a href="../download.html">Download</a></li>
+<li><a href="https://github.com/apache/couchdb-documentation/blob/master/src/intro/why.rst"
+       rel="nofollow">Show on GitHub</a></li>
+<li><a href="https://github.com/apache/couchdb-documentation/edit/master/src/intro/why.rst"
+       rel="nofollow">Edit on GitHub</a></li>
+</ul><!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../http-api.html" title="HTTP API Reference"
+             >API Reference</a></li>
+        <li class="right" >
+          <a href="../config-ref.html" title="Configuration Reference"
+             >Config Reference</a> |</li>
+        <li class="right" >
+          <a href="consistency.html" title="1.3. Eventual Consistency"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="overview.html" title="1.1. Technical Overview"
+             >previous</a> |</li>
+  <li><a href="../index.html">Apache CouchDB 2.0 Documentation</a> &raquo;</li>
+          <li><a href="index.html" >1. Introduction</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2016, Apache Software Foundation.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
+    </div>
+  </body>
+</html>

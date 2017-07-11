@@ -1,0 +1,12 @@
+{application,ddoc_cache,
+             [{description,"Design Document Cache"},
+              {vsn,"c762e90"},
+              {modules,[ddoc_cache,ddoc_cache_app,ddoc_cache_opener,
+                        ddoc_cache_sup,ddoc_cache_util]},
+              {registered,[ddoc_cache_lru,ddoc_cache_opener]},
+              {applications,[kernel,stdlib,crypto,couch_event,ets_lru,mem3,
+                             fabric,couch_log,couch_stats]},
+              {mod,{ddoc_cache_app,[]}},
+              {env,[{max_objects,unlimited},
+                    {max_size,104857600},
+                    {max_lifetime,60000}]}]}.

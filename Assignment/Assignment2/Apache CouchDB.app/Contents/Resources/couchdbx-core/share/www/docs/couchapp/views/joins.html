@@ -1,0 +1,604 @@
+<!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>6.2.3. Joins With Views &mdash; Apache CouchDB 2.0 Documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/rtd.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '2.0.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <link rel="author" title="About these documents" href="../../about.html" />
+    <link rel="top" title="Apache CouchDB 2.0 Documentation" href="../../index.html" />
+    <link rel="up" title="6.2. Guide to Views" href="index.html" />
+    <link rel="next" title="6.2.4. View Cookbook for SQL Jockeys" href="nosql.html" />
+    <link rel="prev" title="6.2.2. Views Collation" href="collation.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../http-api.html" title="HTTP API Reference"
+             >API Reference</a></li>
+        <li class="right" >
+          <a href="../../config-ref.html" title="Configuration Reference"
+             >Config Reference</a> |</li>
+        <li class="right" >
+          <a href="nosql.html" title="6.2.4. View Cookbook for SQL Jockeys"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="collation.html" title="6.2.2. Views Collation"
+             accesskey="P">previous</a> |</li>
+  <li><a href="../../index.html">Apache CouchDB 2.0 Documentation</a> &raquo;</li>
+          <li><a href="../index.html" >6. CouchApp</a> &raquo;</li>
+          <li><a href="index.html" accesskey="U">6.2. Guide to Views</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="joins-with-views">
+<span id="views-json"></span><h1>6.2.3. Joins With Views<a class="headerlink" href="#joins-with-views" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="linked-documents">
+<h2>Linked Documents<a class="headerlink" href="#linked-documents" title="Permalink to this headline">¶</a></h2>
+<p>If your <a class="reference internal" href="../ddocs.html#mapfun"><em>map function</em></a> emits an object value which has
+<tt class="docutils literal"><span class="pre">{'_id':</span> <span class="pre">XXX}</span></tt> and you <a class="reference internal" href="../../api/ddoc/views.html#api-ddoc-view"><em>query view</em></a> with
+<tt class="docutils literal"><span class="pre">include_docs=true</span></tt> parameter, then CouchDB will fetch the document with id
+<tt class="docutils literal"><span class="pre">XXX</span></tt> rather than the document which was processed to emit the key/value pair.</p>
+<p>This means that if one document contains the ids of other documents, it can
+cause those documents to be fetched in the view too, adjacent to the same key
+if required.</p>
+<p>For example, if you have the following hierarchically-linked documents:</p>
+<div class="highlight-javascript"><div class="highlight"><pre><span class="p">[</span>
+    <span class="p">{</span> <span class="s2">&quot;_id&quot;</span><span class="o">:</span> <span class="s2">&quot;11111&quot;</span> <span class="p">},</span>
+    <span class="p">{</span> <span class="s2">&quot;_id&quot;</span><span class="o">:</span> <span class="s2">&quot;22222&quot;</span><span class="p">,</span> <span class="s2">&quot;ancestors&quot;</span><span class="o">:</span> <span class="p">[</span><span class="s2">&quot;11111&quot;</span><span class="p">],</span> <span class="s2">&quot;value&quot;</span><span class="o">:</span> <span class="s2">&quot;hello&quot;</span> <span class="p">},</span>
+    <span class="p">{</span> <span class="s2">&quot;_id&quot;</span><span class="o">:</span> <span class="s2">&quot;33333&quot;</span><span class="p">,</span> <span class="s2">&quot;ancestors&quot;</span><span class="o">:</span> <span class="p">[</span><span class="s2">&quot;22222&quot;</span><span class="p">,</span><span class="s2">&quot;11111&quot;</span><span class="p">],</span> <span class="s2">&quot;value&quot;</span><span class="o">:</span> <span class="s2">&quot;world&quot;</span> <span class="p">}</span>
+<span class="p">]</span>
+</pre></div>
+</div>
+<p>You can emit the values with the ancestor documents adjacent to them in the view
+like this:</p>
+<div class="highlight-javascript"><div class="highlight"><pre><span class="kd">function</span><span class="p">(</span><span class="nx">doc</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nx">doc</span><span class="p">.</span><span class="nx">value</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">emit</span><span class="p">([</span><span class="nx">doc</span><span class="p">.</span><span class="nx">value</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="kc">null</span><span class="p">);</span>
+        <span class="k">if</span> <span class="p">(</span><span class="nx">doc</span><span class="p">.</span><span class="nx">ancestors</span><span class="p">)</span> <span class="p">{</span>
+            <span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">i</span> <span class="k">in</span> <span class="nx">doc</span><span class="p">.</span><span class="nx">ancestors</span><span class="p">)</span> <span class="p">{</span>
+                <span class="nx">emit</span><span class="p">([</span><span class="nx">doc</span><span class="p">.</span><span class="nx">value</span><span class="p">,</span> <span class="nb">Number</span><span class="p">(</span><span class="nx">i</span><span class="p">)</span><span class="o">+</span><span class="mi">1</span><span class="p">],</span> <span class="p">{</span><span class="nx">_id</span><span class="o">:</span> <span class="nx">doc</span><span class="p">.</span><span class="nx">ancestors</span><span class="p">[</span><span class="nx">i</span><span class="p">]});</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>The result you get is:</p>
+<div class="highlight-javascript"><div class="highlight"><pre><span class="p">{</span>
+    <span class="s2">&quot;total_rows&quot;</span><span class="o">:</span> <span class="mi">5</span><span class="p">,</span>
+    <span class="s2">&quot;offset&quot;</span><span class="o">:</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="s2">&quot;rows&quot;</span><span class="o">:</span> <span class="p">[</span>
+        <span class="p">{</span>
+            <span class="s2">&quot;id&quot;</span><span class="o">:</span> <span class="s2">&quot;22222&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;key&quot;</span><span class="o">:</span> <span class="p">[</span>
+                <span class="s2">&quot;hello&quot;</span><span class="p">,</span>
+                <span class="mi">0</span>
+            <span class="p">],</span>
+            <span class="s2">&quot;value&quot;</span><span class="o">:</span> <span class="kc">null</span><span class="p">,</span>
+            <span class="s2">&quot;doc&quot;</span><span class="o">:</span> <span class="p">{</span>
+                <span class="s2">&quot;_id&quot;</span><span class="o">:</span> <span class="s2">&quot;22222&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;_rev&quot;</span><span class="o">:</span> <span class="s2">&quot;1-0eee81fecb5aa4f51e285c621271ff02&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;ancestors&quot;</span><span class="o">:</span> <span class="p">[</span>
+                    <span class="s2">&quot;11111&quot;</span>
+                <span class="p">],</span>
+                <span class="s2">&quot;value&quot;</span><span class="o">:</span> <span class="s2">&quot;hello&quot;</span>
+            <span class="p">}</span>
+        <span class="p">},</span>
+        <span class="p">{</span>
+            <span class="s2">&quot;id&quot;</span><span class="o">:</span> <span class="s2">&quot;22222&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;key&quot;</span><span class="o">:</span> <span class="p">[</span>
+                <span class="s2">&quot;hello&quot;</span><span class="p">,</span>
+                <span class="mi">1</span>
+            <span class="p">],</span>
+            <span class="s2">&quot;value&quot;</span><span class="o">:</span> <span class="p">{</span>
+                <span class="s2">&quot;_id&quot;</span><span class="o">:</span> <span class="s2">&quot;11111&quot;</span>
+            <span class="p">},</span>
+            <span class="s2">&quot;doc&quot;</span><span class="o">:</span> <span class="p">{</span>
+                <span class="s2">&quot;_id&quot;</span><span class="o">:</span> <span class="s2">&quot;11111&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;_rev&quot;</span><span class="o">:</span> <span class="s2">&quot;1-967a00dff5e02add41819138abb3284d&quot;</span>
+            <span class="p">}</span>
+        <span class="p">},</span>
+        <span class="p">{</span>
+            <span class="s2">&quot;id&quot;</span><span class="o">:</span> <span class="s2">&quot;33333&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;key&quot;</span><span class="o">:</span> <span class="p">[</span>
+                <span class="s2">&quot;world&quot;</span><span class="p">,</span>
+                <span class="mi">0</span>
+            <span class="p">],</span>
+            <span class="s2">&quot;value&quot;</span><span class="o">:</span> <span class="kc">null</span><span class="p">,</span>
+            <span class="s2">&quot;doc&quot;</span><span class="o">:</span> <span class="p">{</span>
+                <span class="s2">&quot;_id&quot;</span><span class="o">:</span> <span class="s2">&quot;33333&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;_rev&quot;</span><span class="o">:</span> <span class="s2">&quot;1-11e42b44fdb3d3784602eca7c0332a43&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;ancestors&quot;</span><span class="o">:</span> <span class="p">[</span>
+                    <span class="s2">&quot;22222&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;11111&quot;</span>
+                <span class="p">],</span>
+                <span class="s2">&quot;value&quot;</span><span class="o">:</span> <span class="s2">&quot;world&quot;</span>
+            <span class="p">}</span>
+        <span class="p">},</span>
+        <span class="p">{</span>
+            <span class="s2">&quot;id&quot;</span><span class="o">:</span> <span class="s2">&quot;33333&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;key&quot;</span><span class="o">:</span> <span class="p">[</span>
+                <span class="s2">&quot;world&quot;</span><span class="p">,</span>
+                <span class="mi">1</span>
+            <span class="p">],</span>
+            <span class="s2">&quot;value&quot;</span><span class="o">:</span> <span class="p">{</span>
+                <span class="s2">&quot;_id&quot;</span><span class="o">:</span> <span class="s2">&quot;22222&quot;</span>
+            <span class="p">},</span>
+            <span class="s2">&quot;doc&quot;</span><span class="o">:</span> <span class="p">{</span>
+                <span class="s2">&quot;_id&quot;</span><span class="o">:</span> <span class="s2">&quot;22222&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;_rev&quot;</span><span class="o">:</span> <span class="s2">&quot;1-0eee81fecb5aa4f51e285c621271ff02&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;ancestors&quot;</span><span class="o">:</span> <span class="p">[</span>
+                    <span class="s2">&quot;11111&quot;</span>
+                <span class="p">],</span>
+                <span class="s2">&quot;value&quot;</span><span class="o">:</span> <span class="s2">&quot;hello&quot;</span>
+            <span class="p">}</span>
+        <span class="p">},</span>
+        <span class="p">{</span>
+            <span class="s2">&quot;id&quot;</span><span class="o">:</span> <span class="s2">&quot;33333&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;key&quot;</span><span class="o">:</span> <span class="p">[</span>
+                <span class="s2">&quot;world&quot;</span><span class="p">,</span>
+                <span class="mi">2</span>
+            <span class="p">],</span>
+            <span class="s2">&quot;value&quot;</span><span class="o">:</span> <span class="p">{</span>
+                <span class="s2">&quot;_id&quot;</span><span class="o">:</span> <span class="s2">&quot;11111&quot;</span>
+            <span class="p">},</span>
+            <span class="s2">&quot;doc&quot;</span><span class="o">:</span> <span class="p">{</span>
+                <span class="s2">&quot;_id&quot;</span><span class="o">:</span> <span class="s2">&quot;11111&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;_rev&quot;</span><span class="o">:</span> <span class="s2">&quot;1-967a00dff5e02add41819138abb3284d&quot;</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+    <span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>which makes it very cheap to fetch a document plus all its ancestors in one
+query.</p>
+<p>Note that the <tt class="docutils literal"><span class="pre">&quot;id&quot;</span></tt> in the row is still that of the originating document.
+The only difference is that <tt class="docutils literal"><span class="pre">include_docs</span></tt> fetches a different doc.</p>
+<p>The current revision of the document is resolved at query time, not at the time
+the view is generated. This means that if a new revision of the linked document
+is added later, it will appear in view queries even though the view itself
+hasn&#8217;t changed. To force a specific revision of a linked document to be used,
+emit a <tt class="docutils literal"><span class="pre">&quot;_rev&quot;</span></tt> property as well as <tt class="docutils literal"><span class="pre">&quot;_id&quot;</span></tt>.</p>
+</div>
+<div class="section" id="using-view-collation">
+<h2>Using View Collation<a class="headerlink" href="#using-view-collation" title="Permalink to this headline">¶</a></h2>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Author:</th><td class="field-body">Christopher Lenz</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Date:</th><td class="field-body">2007-10-05</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Source:</th><td class="field-body"><a class="reference external" href="http://www.cmlenz.net/archives/2007/10/couchdb-joins">http://www.cmlenz.net/archives/2007/10/couchdb-joins</a></td>
+</tr>
+</tbody>
+</table>
+<p>Just today, there was a discussion on IRC on how you&#8217;d go about modeling a
+simple blogging system with “post” and “comment” entities, where any blog
+post might have N comments. If you&#8217;d be using an SQL database, you&#8217;d obviously
+have two tables with foreign keys and you&#8217;d be using joins. (At least until you
+needed to add some <a class="reference external" href="http://en.wikipedia.org/wiki/Denormalization">denormalization</a>).</p>
+<p>But what would the “obvious” approach in CouchDB look like?</p>
+<div class="section" id="approach-1-comments-inlined">
+<h3>Approach #1: Comments Inlined<a class="headerlink" href="#approach-1-comments-inlined" title="Permalink to this headline">¶</a></h3>
+<p>A simple approach would be to have one document per blog post, and store the
+comments inside that document:</p>
+<div class="highlight-javascript"><div class="highlight"><pre><span class="p">{</span>
+    <span class="s2">&quot;_id&quot;</span><span class="o">:</span> <span class="s2">&quot;myslug&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;_rev&quot;</span><span class="o">:</span> <span class="s2">&quot;123456&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;author&quot;</span><span class="o">:</span> <span class="s2">&quot;john&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;title&quot;</span><span class="o">:</span> <span class="s2">&quot;My blog post&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;content&quot;</span><span class="o">:</span> <span class="s2">&quot;Bla bla bla …&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;comments&quot;</span><span class="o">:</span> <span class="p">[</span>
+        <span class="p">{</span><span class="s2">&quot;author&quot;</span><span class="o">:</span> <span class="s2">&quot;jack&quot;</span><span class="p">,</span> <span class="s2">&quot;content&quot;</span><span class="o">:</span> <span class="s2">&quot;…&quot;</span><span class="p">},</span>
+        <span class="p">{</span><span class="s2">&quot;author&quot;</span><span class="o">:</span> <span class="s2">&quot;jane&quot;</span><span class="p">,</span> <span class="s2">&quot;content&quot;</span><span class="o">:</span> <span class="s2">&quot;…&quot;</span><span class="p">}</span>
+    <span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Of course the model of an actual blogging system would be more extensive,
+you&#8217;d have tags, timestamps, etc, etc. This is just to demonstrate the basics.</p>
+</div>
+<p>The obvious advantage of this approach is that the data that belongs together
+is stored in one place. Delete the post, and you automatically delete the
+corresponding comments, and so on.</p>
+<p>You may be thinking that putting the comments inside the blog post document
+would not allow us to query for the comments themselves, but you&#8217;d be wrong.
+You could trivially write a CouchDB view that would return all comments across
+all blog posts, keyed by author:</p>
+<div class="highlight-javascript"><div class="highlight"><pre><span class="kd">function</span><span class="p">(</span><span class="nx">doc</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">i</span> <span class="k">in</span> <span class="nx">doc</span><span class="p">.</span><span class="nx">comments</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">emit</span><span class="p">(</span><span class="nx">doc</span><span class="p">.</span><span class="nx">comments</span><span class="p">[</span><span class="nx">i</span><span class="p">].</span><span class="nx">author</span><span class="p">,</span> <span class="nx">doc</span><span class="p">.</span><span class="nx">comments</span><span class="p">[</span><span class="nx">i</span><span class="p">].</span><span class="nx">content</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Now you could list all comments by a particular user by invoking the view and
+passing it a <tt class="docutils literal"><span class="pre">?key=&quot;username&quot;</span></tt> query string parameter.</p>
+<p>However, this approach has a drawback that can be quite significant for many
+applications: To add a comment to a post, you need to:</p>
+<ul class="simple">
+<li>Fetch the blog post document</li>
+<li>Add the new comment to the JSON structure</li>
+<li>Send the updated document to the server</li>
+</ul>
+<p>Now if you have multiple client processes adding comments at roughly the same
+time, some of them will get a <cite>HTTP 409 Conflict</cite> error on step 3 (that&#8217;s
+optimistic concurrency in action). For some applications this makes sense, but
+in many other apps, you&#8217;d want to append new related data regardless of whether
+other data has been added in the meantime.</p>
+<p>The only way to allow non-conflicting addition of related data is by putting
+that related data into separate documents.</p>
+</div>
+<div class="section" id="approach-2-comments-separate">
+<h3>Approach #2: Comments Separate<a class="headerlink" href="#approach-2-comments-separate" title="Permalink to this headline">¶</a></h3>
+<p>Using this approach you&#8217;d have one document per blog post, and one document per
+comment. The comment documents would have a “backlink” to the post they belong
+to.</p>
+<p>The blog post document would look similar to the above, minus the comments
+property. Also, we&#8217;d now have a type property on all our documents so that we
+can tell the difference between posts and comments:</p>
+<div class="highlight-javascript"><div class="highlight"><pre><span class="p">{</span>
+    <span class="s2">&quot;_id&quot;</span><span class="o">:</span> <span class="s2">&quot;myslug&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;_rev&quot;</span><span class="o">:</span> <span class="s2">&quot;123456&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;type&quot;</span><span class="o">:</span> <span class="s2">&quot;post&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;author&quot;</span><span class="o">:</span> <span class="s2">&quot;john&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;title&quot;</span><span class="o">:</span> <span class="s2">&quot;My blog post&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;content&quot;</span><span class="o">:</span> <span class="s2">&quot;Bla bla bla …&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>The comments themselves are stored in separate documents, which also have a type
+property (this time with the value “comment”), and additionally feature a post
+property containing the ID of the post document they belong to:</p>
+<div class="highlight-javascript"><div class="highlight"><pre><span class="p">{</span>
+    <span class="s2">&quot;_id&quot;</span><span class="o">:</span> <span class="s2">&quot;ABCDEF&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;_rev&quot;</span><span class="o">:</span> <span class="s2">&quot;123456&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;type&quot;</span><span class="o">:</span> <span class="s2">&quot;comment&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;post&quot;</span><span class="o">:</span> <span class="s2">&quot;myslug&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;author&quot;</span><span class="o">:</span> <span class="s2">&quot;jack&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;content&quot;</span><span class="o">:</span> <span class="s2">&quot;…&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<div class="highlight-javascript"><div class="highlight"><pre><span class="p">{</span>
+    <span class="s2">&quot;_id&quot;</span><span class="o">:</span> <span class="s2">&quot;DEFABC&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;_rev&quot;</span><span class="o">:</span> <span class="s2">&quot;123456&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;type&quot;</span><span class="o">:</span> <span class="s2">&quot;comment&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;post&quot;</span><span class="o">:</span> <span class="s2">&quot;myslug&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;author&quot;</span><span class="o">:</span> <span class="s2">&quot;jane&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;content&quot;</span><span class="o">:</span> <span class="s2">&quot;…&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>To list all comments per blog post, you&#8217;d add a simple view, keyed by blog post
+ID:</p>
+<div class="highlight-javascript"><div class="highlight"><pre><span class="kd">function</span><span class="p">(</span><span class="nx">doc</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nx">doc</span><span class="p">.</span><span class="nx">type</span> <span class="o">==</span> <span class="s2">&quot;comment&quot;</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">emit</span><span class="p">(</span><span class="nx">doc</span><span class="p">.</span><span class="nx">post</span><span class="p">,</span> <span class="p">{</span><span class="nx">author</span><span class="o">:</span> <span class="nx">doc</span><span class="p">.</span><span class="nx">author</span><span class="p">,</span> <span class="nx">content</span><span class="o">:</span> <span class="nx">doc</span><span class="p">.</span><span class="nx">content</span><span class="p">});</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>And you&#8217;d invoke that view passing it a <tt class="docutils literal"><span class="pre">?key=&quot;post_id&quot;</span></tt> query string
+parameter.</p>
+<p>Viewing all comments by author is just as easy as before:</p>
+<div class="highlight-javascript"><div class="highlight"><pre><span class="kd">function</span><span class="p">(</span><span class="nx">doc</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nx">doc</span><span class="p">.</span><span class="nx">type</span> <span class="o">==</span> <span class="s2">&quot;comment&quot;</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">emit</span><span class="p">(</span><span class="nx">doc</span><span class="p">.</span><span class="nx">author</span><span class="p">,</span> <span class="p">{</span><span class="nx">post</span><span class="o">:</span> <span class="nx">doc</span><span class="p">.</span><span class="nx">post</span><span class="p">,</span> <span class="nx">content</span><span class="o">:</span> <span class="nx">doc</span><span class="p">.</span><span class="nx">content</span><span class="p">});</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>So this is better in some ways, but it also has a disadvantage.
+Imagine you want to display a blog post with all the associated comments on the
+same web page. With our first approach, we needed just a single request to the
+CouchDB server, namely a <tt class="docutils literal"><span class="pre">GET</span></tt> request to the document. With this second
+approach, we need two requests: a <tt class="docutils literal"><span class="pre">GET</span></tt> request to the post document, and a
+<tt class="docutils literal"><span class="pre">GET</span></tt> request to the view that returns all comments for the post.</p>
+<p>That is okay, but not quite satisfactory. Just imagine you wanted to add
+threaded comments: you&#8217;d now need an additional fetch per comment. What we&#8217;d
+probably want then would be a way to join the blog post and the various comments
+together to be able to retrieve them with a single HTTP request.</p>
+<p>This was when Damien Katz, the author of CouchDB, chimed in to the discussion
+on IRC to show us the way.</p>
+</div>
+<div class="section" id="optimization-using-the-power-of-view-collation">
+<h3>Optimization: Using the Power of View Collation<a class="headerlink" href="#optimization-using-the-power-of-view-collation" title="Permalink to this headline">¶</a></h3>
+<p>Obvious to Damien, but not at all obvious to the rest of us: it&#8217;s fairly simple
+to make a view that includes both the content of the blog post document, and
+the content of all the comments associated with that post. The way you do that
+is by using <cite>complex keys</cite>. Until now we&#8217;ve been using simple string values for
+the view keys, but in fact they can be arbitrary JSON values, so let&#8217;s make
+some use of that:</p>
+<div class="highlight-javascript"><div class="highlight"><pre><span class="kd">function</span><span class="p">(</span><span class="nx">doc</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nx">doc</span><span class="p">.</span><span class="nx">type</span> <span class="o">==</span> <span class="s2">&quot;post&quot;</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">emit</span><span class="p">([</span><span class="nx">doc</span><span class="p">.</span><span class="nx">_id</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="nx">doc</span><span class="p">);</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="nx">doc</span><span class="p">.</span><span class="nx">type</span> <span class="o">==</span> <span class="s2">&quot;comment&quot;</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">emit</span><span class="p">([</span><span class="nx">doc</span><span class="p">.</span><span class="nx">post</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="nx">doc</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Okay, this may be confusing at first. Let&#8217;s take a step back and look at what
+views in CouchDB are really about.</p>
+<p>CouchDB views are basically highly efficient on-disk dictionaries that map keys
+to values, where the key is automatically indexed and can be used to filter
+and/or sort the results you get back from your views. When you “invoke” a view,
+you can say that you&#8217;re only interested in a subset of the view rows by
+specifying a <tt class="docutils literal"><span class="pre">?key=foo</span></tt> query string parameter. Or you can specify
+<tt class="docutils literal"><span class="pre">?startkey=foo</span></tt> and/or <tt class="docutils literal"><span class="pre">?endkey=bar</span></tt> query string parameters to fetch rows
+over a range of keys.</p>
+<p>It&#8217;s also important to note that keys are always used for collating (i.e.
+sorting) the rows. CouchDB has well defined (but as of yet undocumented) rules
+for comparing arbitrary JSON objects for collation. For example, the JSON value
+<tt class="docutils literal"><span class="pre">[&quot;foo&quot;,</span> <span class="pre">2]</span></tt> is sorted after (considered “greater than”) the values
+<tt class="docutils literal"><span class="pre">[&quot;foo&quot;]</span></tt> or <tt class="docutils literal"><span class="pre">[&quot;foo&quot;,</span> <span class="pre">1,</span> <span class="pre">&quot;bar&quot;]</span></tt>, but before e.g. <tt class="docutils literal"><span class="pre">[&quot;foo&quot;,</span> <span class="pre">2,</span> <span class="pre">&quot;bar&quot;]</span></tt>.
+This feature enables a whole class of tricks that are rather non-obvious...</p>
+<div class="admonition seealso">
+<p class="first admonition-title">See also</p>
+<p class="last"><a class="reference internal" href="collation.html#views-collation"><em>Views Collation</em></a></p>
+</div>
+<p>With that in mind, let&#8217;s return to the view function above. First note that,
+unlike the previous view functions we&#8217;ve used here, this view handles both
+&#8220;post&#8221; and &#8220;comment&#8221; documents, and both of them end up as rows in the same
+view. Also, the key in this view is not just a simple string, but an array.
+The first element in that array is always the ID of the post, regardless of
+whether we&#8217;re processing an actual post document, or a comment associated with
+a post. The second element is 0 for post documents, and 1 for comment documents.</p>
+<p>Let&#8217;s assume we have two blog posts in our database. Without limiting the view
+results via <tt class="docutils literal"><span class="pre">key</span></tt>, <tt class="docutils literal"><span class="pre">startkey</span></tt>, or <tt class="docutils literal"><span class="pre">endkey</span></tt>, we&#8217;d get back something like
+the following:</p>
+<div class="highlight-javascript"><div class="highlight"><pre><span class="p">{</span>
+    <span class="s2">&quot;total_rows&quot;</span><span class="o">:</span> <span class="mi">5</span><span class="p">,</span> <span class="s2">&quot;offset&quot;</span><span class="o">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;rows&quot;</span><span class="o">:</span> <span class="p">[{</span>
+            <span class="s2">&quot;id&quot;</span><span class="o">:</span> <span class="s2">&quot;myslug&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;key&quot;</span><span class="o">:</span> <span class="p">[</span><span class="s2">&quot;myslug&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
+            <span class="s2">&quot;value&quot;</span><span class="o">:</span> <span class="p">{...}</span>
+        <span class="p">},</span> <span class="p">{</span>
+            <span class="s2">&quot;id&quot;</span><span class="o">:</span> <span class="s2">&quot;ABCDEF&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;key&quot;</span><span class="o">:</span> <span class="p">[</span><span class="s2">&quot;myslug&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span>
+            <span class="s2">&quot;value&quot;</span><span class="o">:</span> <span class="p">{...}</span>
+        <span class="p">},</span> <span class="p">{</span>
+            <span class="s2">&quot;id&quot;</span><span class="o">:</span> <span class="s2">&quot;DEFABC&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;key&quot;</span><span class="o">:</span> <span class="p">[</span><span class="s2">&quot;myslug&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span>
+            <span class="s2">&quot;value&quot;</span><span class="o">:</span> <span class="p">{...}</span>
+        <span class="p">},</span> <span class="p">{</span>
+            <span class="s2">&quot;id&quot;</span><span class="o">:</span> <span class="s2">&quot;other_slug&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;key&quot;</span><span class="o">:</span> <span class="p">[</span><span class="s2">&quot;other_slug&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
+            <span class="s2">&quot;value&quot;</span><span class="o">:</span> <span class="p">{...}</span>
+        <span class="p">},</span> <span class="p">{</span>
+            <span class="s2">&quot;id&quot;</span><span class="o">:</span> <span class="s2">&quot;CDEFAB&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;key&quot;</span><span class="o">:</span> <span class="p">[</span><span class="s2">&quot;other_slug&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span>
+            <span class="s2">&quot;value&quot;</span><span class="o">:</span> <span class="p">{...}</span>
+        <span class="p">},</span>
+    <span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">The <tt class="docutils literal"><span class="pre">...</span></tt> placeholders here would contain the complete JSON encoding of the
+corresponding documents</p>
+</div>
+<p>Now, to get a specific blog post and all associated comments, we&#8217;d invoke that
+view with the query string:</p>
+<div class="highlight-python"><div class="highlight"><pre>?startkey=[&quot;myslug&quot;]&amp;endkey;=[&quot;myslug&quot;, 2]
+</pre></div>
+</div>
+<p>We&#8217;d get back the first three rows, those that belong to the <tt class="docutils literal"><span class="pre">myslug</span></tt> post,
+but not the others. Et voila, we now have the data we need to display a post
+with all associated comments, retrieved via a single <tt class="docutils literal"><span class="pre">GET</span></tt> request.</p>
+<p>You may be asking what the 0 and 1 parts of the keys are for. They&#8217;re simply
+to ensure that the post document is always sorted before the the associated
+comment documents. So when you get back the results from this view for a
+specific post, you&#8217;ll know that the first row contains the data for the blog
+post itself, and the remaining rows contain the comment data.</p>
+<p>One remaining problem with this model is that comments are not ordered, but
+that&#8217;s simply because we don&#8217;t have date/time information associated with them.
+If we had, we&#8217;d add the timestamp as third element of the key array, probably
+as ISO date/time strings. Now we would continue using the query string
+<tt class="docutils literal"><span class="pre">?startkey=[&quot;myslug&quot;]&amp;endkey=[&quot;myslug&quot;,</span> <span class="pre">2]</span></tt> to fetch the blog post and all
+associated comments, only now they&#8217;d be in chronological order.</p>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+    <p class="logo"><a href="../../index.html">
+      <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+    </a></p><!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+<div id="searchbox" style="display: none">
+
+<h3>Quick Search</h3>
+
+<form class="search" action="../../search.html" method="get">
+<input type="text" name="q" style="width:115px">
+<input type="submit" value="Go">
+<input type="hidden" name="check_keywords" value="yes">
+<input type="hidden" name="area" value="default">
+</form>
+
+<br>
+
+</div>
+
+<script type="text/javascript">$('#searchbox').show(0);</script>
+  <h3><a href="../../contents.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">6.2.3. Joins With Views</a><ul>
+<li><a class="reference internal" href="#linked-documents">Linked Documents</a></li>
+<li><a class="reference internal" href="#using-view-collation">Using View Collation</a><ul>
+<li><a class="reference internal" href="#approach-1-comments-inlined">Approach #1: Comments Inlined</a></li>
+<li><a class="reference internal" href="#approach-2-comments-separate">Approach #2: Comments Separate</a></li>
+<li><a class="reference internal" href="#optimization-using-the-power-of-view-collation">Optimization: Using the Power of View Collation</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="collation.html"
+                        title="previous chapter">6.2.2. Views Collation</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="nosql.html"
+                        title="next chapter">6.2.4. View Cookbook for SQL Jockeys</a></p><!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+
+<h3>Utilities</h3>
+
+<ul>
+<li><a href="../">Fauxton</a></li>
+</ul>
+<!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+<h3>More Help</h3>
+
+<ul>
+<li><a href="https://couchdb.apache.org/">Homepage</a></li>
+<li><a href="https://cwiki.apache.org/confluence/display/COUCHDB/">Wiki</a></li>
+<li><a href="https://couchdb.apache.org/#mailing-list">Mailing Lists</a></li>
+<li><a href="http://webchat.freenode.net/?channels=couchdb">IRC</a></li>
+<li><a href="https://issues.apache.org/jira/browse/CouchDB">Issues</a></li>
+<li><a href="../../download.html">Download</a></li>
+<li><a href="https://github.com/apache/couchdb-documentation/blob/master/src/couchapp/views/joins.rst"
+       rel="nofollow">Show on GitHub</a></li>
+<li><a href="https://github.com/apache/couchdb-documentation/edit/master/src/couchapp/views/joins.rst"
+       rel="nofollow">Edit on GitHub</a></li>
+</ul><!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../http-api.html" title="HTTP API Reference"
+             >API Reference</a></li>
+        <li class="right" >
+          <a href="../../config-ref.html" title="Configuration Reference"
+             >Config Reference</a> |</li>
+        <li class="right" >
+          <a href="nosql.html" title="6.2.4. View Cookbook for SQL Jockeys"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="collation.html" title="6.2.2. Views Collation"
+             >previous</a> |</li>
+  <li><a href="../../index.html">Apache CouchDB 2.0 Documentation</a> &raquo;</li>
+          <li><a href="../index.html" >6. CouchApp</a> &raquo;</li>
+          <li><a href="index.html" >6.2. Guide to Views</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2016, Apache Software Foundation.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
+    </div>
+  </body>
+</html>

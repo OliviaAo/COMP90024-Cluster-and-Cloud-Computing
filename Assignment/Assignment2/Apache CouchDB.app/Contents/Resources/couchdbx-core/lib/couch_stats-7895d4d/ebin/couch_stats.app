@@ -1,0 +1,11 @@
+{application,couch_stats,
+             [{description,"Simple statistics collection"},
+              {vsn,"7895d4d"},
+              {registered,[couch_stats_aggregator,
+                           couch_stats_process_tracker]},
+              {applications,[kernel,stdlib,folsom,couch_log]},
+              {mod,{couch_stats_app,[]}},
+              {env,[{collection_interval,10}]},
+              {modules,[couch_stats,couch_stats_aggregator,couch_stats_app,
+                        couch_stats_httpd,couch_stats_process_tracker,
+                        couch_stats_sup]}]}.

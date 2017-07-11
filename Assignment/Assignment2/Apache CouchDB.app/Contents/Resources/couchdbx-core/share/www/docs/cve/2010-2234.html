@@ -1,0 +1,267 @@
+<!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>16.2. CVE-2010-2234: Apache CouchDB Cross Site Request Forgery Attack &mdash; Apache CouchDB 2.0 Documentation</title>
+    
+    <link rel="stylesheet" href="../_static/rtd.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '2.0.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+    <link rel="author" title="About these documents" href="../about.html" />
+    <link rel="top" title="Apache CouchDB 2.0 Documentation" href="../index.html" />
+    <link rel="up" title="16. Security Issues Information" href="index.html" />
+    <link rel="next" title="16.3. CVE-2010-3854: Apache CouchDB Cross Site Scripting Issue" href="2010-3854.html" />
+    <link rel="prev" title="16.1. CVE-2010-0009: Apache CouchDB Timing Attack Vulnerability" href="2010-0009.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../http-api.html" title="HTTP API Reference"
+             >API Reference</a></li>
+        <li class="right" >
+          <a href="../config-ref.html" title="Configuration Reference"
+             >Config Reference</a> |</li>
+        <li class="right" >
+          <a href="2010-3854.html" title="16.3. CVE-2010-3854: Apache CouchDB Cross Site Scripting Issue"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="2010-0009.html" title="16.1. CVE-2010-0009: Apache CouchDB Timing Attack Vulnerability"
+             accesskey="P">previous</a> |</li>
+  <li><a href="../index.html">Apache CouchDB 2.0 Documentation</a> &raquo;</li>
+          <li><a href="index.html" accesskey="U">16. Security Issues Information</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="cve-2010-2234-apache-couchdb-cross-site-request-forgery-attack">
+<span id="cve-2010-2234"></span><h1>16.2. CVE-2010-2234: Apache CouchDB Cross Site Request Forgery Attack<a class="headerlink" href="#cve-2010-2234-apache-couchdb-cross-site-request-forgery-attack" title="Permalink to this headline">¶</a></h1>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Date:</th><td class="field-body">21.02.2010</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Affected:</th><td class="field-body">Apache CouchDB 0.8.0 to 0.11.1</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Severity:</th><td class="field-body">Important</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Vendor:</th><td class="field-body">The Apache Software Foundation</td>
+</tr>
+</tbody>
+</table>
+<div class="section" id="description">
+<h2>16.2.1. Description<a class="headerlink" href="#description" title="Permalink to this headline">¶</a></h2>
+<p>Apache CouchDB versions prior to version <a class="reference internal" href="../whatsnew/0.11.html#release-0-11-1"><em>0.11.1</em></a> are
+vulnerable to <a class="reference external" href="http://en.wikipedia.org/wiki/Cross-site_request_forgery">Cross Site Request Forgery</a> (CSRF) attacks.</p>
+</div>
+<div class="section" id="mitigation">
+<h2>16.2.2. Mitigation<a class="headerlink" href="#mitigation" title="Permalink to this headline">¶</a></h2>
+<p>All users should upgrade to CouchDB <a class="reference internal" href="../whatsnew/0.11.html#release-0-11-2"><em>0.11.2</em></a>
+or <a class="reference internal" href="../whatsnew/1.0.html#release-1-0-1"><em>1.0.1</em></a>.</p>
+<p>Upgrades from the <a class="reference internal" href="../whatsnew/0.11.html#release-0-11-x"><em>0.11.x</em></a> and
+<a class="reference internal" href="../whatsnew/0.10.html#release-0-10-x"><em>0.10.x</em></a> series should be seamless.</p>
+<p>Users on earlier versions should consult with upgrade notes.</p>
+</div>
+<div class="section" id="example">
+<h2>16.2.3. Example<a class="headerlink" href="#example" title="Permalink to this headline">¶</a></h2>
+<p>A malicious website can <cite>POST</cite> arbitrary JavaScript code to well
+known CouchDB installation URLs (like <a class="reference external" href="http://localhost:5984/">http://localhost:5984/</a>)
+and make the browser execute the injected JavaScript in the
+security context of CouchDB&#8217;s admin interface Futon.</p>
+<p>Unrelated, but in addition the JSONP API has been turned off
+by default to avoid potential information leakage.</p>
+</div>
+<div class="section" id="credit">
+<h2>16.2.4. Credit<a class="headerlink" href="#credit" title="Permalink to this headline">¶</a></h2>
+<p>This CSRF issue was discovered by a source that wishes to stay
+anonymous.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+    <p class="logo"><a href="../index.html">
+      <img class="logo" src="../_static/logo.png" alt="Logo"/>
+    </a></p><!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+<div id="searchbox" style="display: none">
+
+<h3>Quick Search</h3>
+
+<form class="search" action="../search.html" method="get">
+<input type="text" name="q" style="width:115px">
+<input type="submit" value="Go">
+<input type="hidden" name="check_keywords" value="yes">
+<input type="hidden" name="area" value="default">
+</form>
+
+<br>
+
+</div>
+
+<script type="text/javascript">$('#searchbox').show(0);</script>
+  <h3><a href="../contents.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">16.2. CVE-2010-2234: Apache CouchDB Cross Site Request Forgery Attack</a><ul>
+<li><a class="reference internal" href="#description">16.2.1. Description</a></li>
+<li><a class="reference internal" href="#mitigation">16.2.2. Mitigation</a></li>
+<li><a class="reference internal" href="#example">16.2.3. Example</a></li>
+<li><a class="reference internal" href="#credit">16.2.4. Credit</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="2010-0009.html"
+                        title="previous chapter">16.1. CVE-2010-0009: Apache CouchDB Timing Attack Vulnerability</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="2010-3854.html"
+                        title="next chapter">16.3. CVE-2010-3854: Apache CouchDB Cross Site Scripting Issue</a></p><!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+
+<h3>Utilities</h3>
+
+<ul>
+<li><a href="../">Fauxton</a></li>
+</ul>
+<!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+<h3>More Help</h3>
+
+<ul>
+<li><a href="https://couchdb.apache.org/">Homepage</a></li>
+<li><a href="https://cwiki.apache.org/confluence/display/COUCHDB/">Wiki</a></li>
+<li><a href="https://couchdb.apache.org/#mailing-list">Mailing Lists</a></li>
+<li><a href="http://webchat.freenode.net/?channels=couchdb">IRC</a></li>
+<li><a href="https://issues.apache.org/jira/browse/CouchDB">Issues</a></li>
+<li><a href="../download.html">Download</a></li>
+<li><a href="https://github.com/apache/couchdb-documentation/blob/master/src/cve/2010-2234.rst"
+       rel="nofollow">Show on GitHub</a></li>
+<li><a href="https://github.com/apache/couchdb-documentation/edit/master/src/cve/2010-2234.rst"
+       rel="nofollow">Edit on GitHub</a></li>
+</ul><!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../http-api.html" title="HTTP API Reference"
+             >API Reference</a></li>
+        <li class="right" >
+          <a href="../config-ref.html" title="Configuration Reference"
+             >Config Reference</a> |</li>
+        <li class="right" >
+          <a href="2010-3854.html" title="16.3. CVE-2010-3854: Apache CouchDB Cross Site Scripting Issue"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="2010-0009.html" title="16.1. CVE-2010-0009: Apache CouchDB Timing Attack Vulnerability"
+             >previous</a> |</li>
+  <li><a href="../index.html">Apache CouchDB 2.0 Documentation</a> &raquo;</li>
+          <li><a href="index.html" >16. Security Issues Information</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2016, Apache Software Foundation.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
+    </div>
+  </body>
+</html>

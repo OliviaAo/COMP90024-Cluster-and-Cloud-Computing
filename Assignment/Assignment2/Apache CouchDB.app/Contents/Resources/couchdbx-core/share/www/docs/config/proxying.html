@@ -1,0 +1,289 @@
+<!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>3.14. Proxying Configuration &mdash; Apache CouchDB 2.0 Documentation</title>
+    
+    <link rel="stylesheet" href="../_static/rtd.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '2.0.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+    <link rel="author" title="About these documents" href="../about.html" />
+    <link rel="top" title="Apache CouchDB 2.0 Documentation" href="../index.html" />
+    <link rel="up" title="3. Configuring CouchDB" href="index.html" />
+    <link rel="next" title="4. Replication" href="../replication/index.html" />
+    <link rel="prev" title="3.13. Miscellaneous Parameters" href="misc.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../http-api.html" title="HTTP API Reference"
+             >API Reference</a></li>
+        <li class="right" >
+          <a href="../config-ref.html" title="Configuration Reference"
+             >Config Reference</a> |</li>
+        <li class="right" >
+          <a href="../replication/index.html" title="4. Replication"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="misc.html" title="3.13. Miscellaneous Parameters"
+             accesskey="P">previous</a> |</li>
+  <li><a href="../index.html">Apache CouchDB 2.0 Documentation</a> &raquo;</li>
+          <li><a href="index.html" accesskey="U">3. Configuring CouchDB</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="proxying-configuration">
+<span id="config-proxy"></span><h1>3.14. Proxying Configuration<a class="headerlink" href="#proxying-configuration" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="couchdb-as-proxy">
+<span id="config-proxy-couchdb"></span><span id="http-proxying"></span><h2>3.14.1. CouchDB As Proxy<a class="headerlink" href="#couchdb-as-proxy" title="Permalink to this headline">¶</a></h2>
+<p>The HTTP proxy feature makes it easy to map and redirect different content
+through your CouchDB URL. The proxy works by mapping a pathname and passing all
+content after that prefix through to the configured proxy address.</p>
+<p>Configuration of the proxy redirect is handled through the
+<tt class="docutils literal"><span class="pre">[httpd_global_handlers]</span></tt> section of the CouchDB configuration file
+(typically <tt class="docutils literal"><span class="pre">local.ini</span></tt>). The format is:</p>
+<div class="highlight-ini"><div class="highlight"><pre><span class="k">[httpd_global_handlers]</span>
+<span class="na">PREFIX</span> <span class="o">=</span> <span class="s">{couch_httpd_proxy, handle_proxy_req, &lt;&lt;&quot;DESTINATION&quot;&gt;&gt;}</span>
+</pre></div>
+</div>
+<p>Where:</p>
+<ul>
+<li><p class="first"><tt class="docutils literal"><span class="pre">PREFIX</span></tt></p>
+<p>Is the string that will be matched. The string can be any valid qualifier,
+although to ensure that existing database names are not overridden by a proxy
+configuration, you can use an underscore prefix.</p>
+</li>
+<li><p class="first"><tt class="docutils literal"><span class="pre">DESTINATION</span></tt></p>
+<p>The fully-qualified URL to which the request should be sent. The destination
+must include the <tt class="docutils literal"><span class="pre">http</span></tt> prefix. The content is used verbatim in the
+original request, so you can also forward to servers on different ports and
+to specific paths on the target host.</p>
+</li>
+</ul>
+<p>The proxy process then translates requests of the form:</p>
+<div class="highlight-text"><div class="highlight"><pre>http://couchdb:5984/PREFIX/path
+</pre></div>
+</div>
+<p>To:</p>
+<div class="highlight-text"><div class="highlight"><pre>DESTINATION/path
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Everything after <tt class="docutils literal"><span class="pre">PREFIX</span></tt> including the required forward slash will be
+appended to the <tt class="docutils literal"><span class="pre">DESTINATION</span></tt>.</p>
+</div>
+<p>The response is then communicated back to the original client.</p>
+<p>For example, the following configuration:</p>
+<div class="highlight-ini"><div class="highlight"><pre><span class="k">[httpd_global_handlers]</span>
+<span class="na">_google</span> <span class="o">=</span> <span class="s">{couch_httpd_proxy, handle_proxy_req, &lt;&lt;&quot;http://www.google.com&quot;&gt;&gt;}</span>
+</pre></div>
+</div>
+<p>Would forward all requests for <tt class="docutils literal"><span class="pre">http://couchdb:5984/_google</span></tt> to the
+Google website.</p>
+<p>The service can also be used to forward to related CouchDB services,
+such as <cite>Lucene</cite>:</p>
+<div class="highlight-ini"><div class="highlight"><pre><span class="k">[httpd_global_handlers]</span>
+<span class="na">_fti</span> <span class="o">=</span> <span class="s">{couch_httpd_proxy, handle_proxy_req, &lt;&lt;&quot;http://127.0.0.1:5985&quot;&gt;&gt;}</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p>The proxy service is basic. If the request is not identified by the
+<tt class="docutils literal"><span class="pre">DESTINATION</span></tt>, or the remainder of the <tt class="docutils literal"><span class="pre">PATH</span></tt> specification is
+incomplete, the original request URL is interpreted as if the
+<tt class="docutils literal"><span class="pre">PREFIX</span></tt> component of that URL does not exist.</p>
+<p class="last">For example, requesting <tt class="docutils literal"><span class="pre">http://couchdb:5984/_intranet/media</span></tt> when
+<tt class="docutils literal"><span class="pre">/media</span></tt> on the proxy destination does not exist, will cause the request
+URL to be interpreted as <tt class="docutils literal"><span class="pre">http://couchdb:5984/media</span></tt>. Care should be
+taken to ensure that both requested URLs and destination URLs are able to
+cope.</p>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+    <p class="logo"><a href="../index.html">
+      <img class="logo" src="../_static/logo.png" alt="Logo"/>
+    </a></p><!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+<div id="searchbox" style="display: none">
+
+<h3>Quick Search</h3>
+
+<form class="search" action="../search.html" method="get">
+<input type="text" name="q" style="width:115px">
+<input type="submit" value="Go">
+<input type="hidden" name="check_keywords" value="yes">
+<input type="hidden" name="area" value="default">
+</form>
+
+<br>
+
+</div>
+
+<script type="text/javascript">$('#searchbox').show(0);</script>
+  <h3><a href="../contents.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">3.14. Proxying Configuration</a><ul>
+<li><a class="reference internal" href="#couchdb-as-proxy">3.14.1. CouchDB As Proxy</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="misc.html"
+                        title="previous chapter">3.13. Miscellaneous Parameters</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="../replication/index.html"
+                        title="next chapter">4. Replication</a></p><!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+
+<h3>Utilities</h3>
+
+<ul>
+<li><a href="../">Fauxton</a></li>
+</ul>
+<!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+<h3>More Help</h3>
+
+<ul>
+<li><a href="https://couchdb.apache.org/">Homepage</a></li>
+<li><a href="https://cwiki.apache.org/confluence/display/COUCHDB/">Wiki</a></li>
+<li><a href="https://couchdb.apache.org/#mailing-list">Mailing Lists</a></li>
+<li><a href="http://webchat.freenode.net/?channels=couchdb">IRC</a></li>
+<li><a href="https://issues.apache.org/jira/browse/CouchDB">Issues</a></li>
+<li><a href="../download.html">Download</a></li>
+<li><a href="https://github.com/apache/couchdb-documentation/blob/master/src/config/proxying.rst"
+       rel="nofollow">Show on GitHub</a></li>
+<li><a href="https://github.com/apache/couchdb-documentation/edit/master/src/config/proxying.rst"
+       rel="nofollow">Edit on GitHub</a></li>
+</ul><!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../http-api.html" title="HTTP API Reference"
+             >API Reference</a></li>
+        <li class="right" >
+          <a href="../config-ref.html" title="Configuration Reference"
+             >Config Reference</a> |</li>
+        <li class="right" >
+          <a href="../replication/index.html" title="4. Replication"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="misc.html" title="3.13. Miscellaneous Parameters"
+             >previous</a> |</li>
+  <li><a href="../index.html">Apache CouchDB 2.0 Documentation</a> &raquo;</li>
+          <li><a href="index.html" >3. Configuring CouchDB</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2016, Apache Software Foundation.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
+    </div>
+  </body>
+</html>

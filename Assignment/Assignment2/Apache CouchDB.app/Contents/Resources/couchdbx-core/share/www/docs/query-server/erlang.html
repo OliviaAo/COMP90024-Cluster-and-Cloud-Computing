@@ -1,0 +1,363 @@
+<!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>8.3. Erlang &mdash; Apache CouchDB 2.0 Documentation</title>
+    
+    <link rel="stylesheet" href="../_static/rtd.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '2.0.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+    <link rel="author" title="About these documents" href="../about.html" />
+    <link rel="top" title="Apache CouchDB 2.0 Documentation" href="../index.html" />
+    <link rel="up" title="8. Query Server" href="index.html" />
+    <link rel="next" title="9. Fauxton" href="../fauxton/index.html" />
+    <link rel="prev" title="8.2. JavaScript" href="javascript.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../http-api.html" title="HTTP API Reference"
+             >API Reference</a></li>
+        <li class="right" >
+          <a href="../config-ref.html" title="Configuration Reference"
+             >Config Reference</a> |</li>
+        <li class="right" >
+          <a href="../fauxton/index.html" title="9. Fauxton"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="javascript.html" title="8.2. JavaScript"
+             accesskey="P">previous</a> |</li>
+  <li><a href="../index.html">Apache CouchDB 2.0 Documentation</a> &raquo;</li>
+          <li><a href="index.html" accesskey="U">8. Query Server</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="erlang">
+<span id="query-server-erlang"></span><h1>8.3. Erlang<a class="headerlink" href="#erlang" title="Permalink to this headline">¶</a></h1>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">The Erlang query server is disabled by default.
+Read <a class="reference internal" href="../config/query-servers.html#config-native-query-servers"><em>configuration guide</em></a> about
+reasons why and how to enable it.</p>
+</div>
+<dl class="function">
+<dt id="Emit">
+<tt class="descname">Emit</tt><big>(</big><em>Id</em>, <em>Value</em><big>)</big><a class="headerlink" href="#Emit" title="Permalink to this definition">¶</a></dt>
+<dd><p>Emits <cite>key</cite>-<cite>value</cite> pairs to view indexer process.</p>
+<div class="highlight-erlang"><div class="highlight"><pre><span class="k">fun</span><span class="p">({</span><span class="nv">Doc</span><span class="p">})</span> <span class="o">-&gt;</span>
+    <span class="o">&lt;&lt;</span><span class="nv">K</span><span class="p">,_</span><span class="o">/</span><span class="n">binary</span><span class="o">&gt;&gt;</span> <span class="o">=</span> <span class="nn">proplists</span><span class="p">:</span><span class="nf">get_value</span><span class="p">(</span><span class="o">&lt;&lt;</span><span class="s">&quot;_rev&quot;</span><span class="o">&gt;&gt;</span><span class="p">,</span> <span class="nv">Doc</span><span class="p">,</span> <span class="n">null</span><span class="p">),</span>
+    <span class="nv">V</span> <span class="o">=</span> <span class="nn">proplists</span><span class="p">:</span><span class="nf">get_value</span><span class="p">(</span><span class="o">&lt;&lt;</span><span class="s">&quot;_id&quot;</span><span class="o">&gt;&gt;</span><span class="p">,</span> <span class="nv">Doc</span><span class="p">,</span> <span class="n">null</span><span class="p">),</span>
+    <span class="nv">Emit</span><span class="p">(</span><span class="o">&lt;&lt;</span><span class="nv">K</span><span class="o">&gt;&gt;</span><span class="p">,</span> <span class="nv">V</span><span class="p">)</span>
+<span class="k">end</span><span class="p">.</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="FoldRows">
+<tt class="descname">FoldRows</tt><big>(</big><em>Fun</em>, <em>Acc</em><big>)</big><a class="headerlink" href="#FoldRows" title="Permalink to this definition">¶</a></dt>
+<dd><p>Helper to iterate over all rows in a list function.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first last simple">
+<li><strong>Fun</strong> &#8211; Function object.</li>
+<li><strong>Acc</strong> &#8211; The value previously returned by <cite>Fun</cite>.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="highlight-erlang"><div class="highlight"><pre><span class="k">fun</span><span class="p">(</span><span class="nv">Head</span><span class="p">,</span> <span class="p">{</span><span class="nv">Req</span><span class="p">})</span> <span class="o">-&gt;</span>
+    <span class="nv">Fun</span> <span class="o">=</span> <span class="k">fun</span><span class="p">({</span><span class="nv">Row</span><span class="p">},</span> <span class="nv">Acc</span><span class="p">)</span> <span class="o">-&gt;</span>
+        <span class="nv">Id</span> <span class="o">=</span> <span class="nn">couch_util</span><span class="p">:</span><span class="nf">get_value</span><span class="p">(</span><span class="o">&lt;&lt;</span><span class="s">&quot;id&quot;</span><span class="o">&gt;&gt;</span><span class="p">,</span> <span class="nv">Row</span><span class="p">),</span>
+        <span class="nv">Send</span><span class="p">(</span><span class="nb">list_to_binary</span><span class="p">(</span><span class="nn">io_lib</span><span class="p">:</span><span class="nf">format</span><span class="p">(</span><span class="s">&quot;Previous doc id: </span><span class="si">~p~n</span><span class="s">&quot;</span><span class="p">,</span> <span class="p">[</span><span class="nv">Acc</span><span class="p">]))),</span>
+        <span class="nv">Send</span><span class="p">(</span><span class="nb">list_to_binary</span><span class="p">(</span><span class="nn">io_lib</span><span class="p">:</span><span class="nf">format</span><span class="p">(</span><span class="s">&quot;Current  doc id: </span><span class="si">~p~n</span><span class="s">&quot;</span><span class="p">,</span> <span class="p">[</span><span class="nv">Id</span><span class="p">]))),</span>
+        <span class="p">{</span><span class="n">ok</span><span class="p">,</span> <span class="nv">Id</span><span class="p">}</span>
+    <span class="k">end</span><span class="p">,</span>
+    <span class="nv">FoldRows</span><span class="p">(</span><span class="nv">Fun</span><span class="p">,</span> <span class="n">nil</span><span class="p">),</span>
+    <span class="s">&quot;&quot;</span>
+<span class="k">end</span><span class="p">.</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="GetRow">
+<tt class="descname">GetRow</tt><big>(</big><big>)</big><a class="headerlink" href="#GetRow" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieves the next row from a related view result.</p>
+<div class="highlight-erlang"><div class="highlight"><pre><span class="c">%% FoldRows background implementation.</span>
+<span class="c">%% https://git-wip-us.apache.org/repos/asf?p=couchdb.git;a=blob;f=src/couchdb/couch_native_process.erl;hb=HEAD#l368</span>
+<span class="c">%%</span>
+<span class="nf">foldrows</span><span class="p">(</span><span class="nv">GetRow</span><span class="p">,</span> <span class="nv">ProcRow</span><span class="p">,</span> <span class="nv">Acc</span><span class="p">)</span> <span class="o">-&gt;</span>
+    <span class="k">case</span> <span class="nv">GetRow</span><span class="p">()</span> <span class="k">of</span>
+        <span class="n">nil</span> <span class="o">-&gt;</span>
+            <span class="p">{</span><span class="n">ok</span><span class="p">,</span> <span class="nv">Acc</span><span class="p">};</span>
+        <span class="nv">Row</span> <span class="o">-&gt;</span>
+            <span class="k">case</span> <span class="p">(</span><span class="k">catch</span> <span class="nv">ProcRow</span><span class="p">(</span><span class="nv">Row</span><span class="p">,</span> <span class="nv">Acc</span><span class="p">))</span> <span class="k">of</span>
+                <span class="p">{</span><span class="n">ok</span><span class="p">,</span> <span class="nv">Acc2</span><span class="p">}</span> <span class="o">-&gt;</span>
+                    <span class="n">foldrows</span><span class="p">(</span><span class="nv">GetRow</span><span class="p">,</span> <span class="nv">ProcRow</span><span class="p">,</span> <span class="nv">Acc2</span><span class="p">);</span>
+                <span class="p">{</span><span class="n">stop</span><span class="p">,</span> <span class="nv">Acc2</span><span class="p">}</span> <span class="o">-&gt;</span>
+                    <span class="p">{</span><span class="n">ok</span><span class="p">,</span> <span class="nv">Acc2</span><span class="p">}</span>
+            <span class="k">end</span>
+<span class="k">end</span><span class="p">.</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="Log">
+<tt class="descname">Log</tt><big>(</big><em>Msg</em><big>)</big><a class="headerlink" href="#Log" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first last simple">
+<li><strong>Msg</strong> &#8211; Log a message at the <cite>INFO</cite> level.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="highlight-erlang"><div class="highlight"><pre><span class="k">fun</span><span class="p">({</span><span class="nv">Doc</span><span class="p">})</span> <span class="o">-&gt;</span>
+    <span class="o">&lt;&lt;</span><span class="nv">K</span><span class="p">,_</span><span class="o">/</span><span class="n">binary</span><span class="o">&gt;&gt;</span> <span class="o">=</span> <span class="nn">proplists</span><span class="p">:</span><span class="nf">get_value</span><span class="p">(</span><span class="o">&lt;&lt;</span><span class="s">&quot;_rev&quot;</span><span class="o">&gt;&gt;</span><span class="p">,</span> <span class="nv">Doc</span><span class="p">,</span> <span class="n">null</span><span class="p">),</span>
+    <span class="nv">V</span> <span class="o">=</span> <span class="nn">proplists</span><span class="p">:</span><span class="nf">get_value</span><span class="p">(</span><span class="o">&lt;&lt;</span><span class="s">&quot;_id&quot;</span><span class="o">&gt;&gt;</span><span class="p">,</span> <span class="nv">Doc</span><span class="p">,</span> <span class="n">null</span><span class="p">),</span>
+    <span class="nv">Log</span><span class="p">(</span><span class="nn">lists</span><span class="p">:</span><span class="nf">flatten</span><span class="p">(</span><span class="nn">io_lib</span><span class="p">:</span><span class="nf">format</span><span class="p">(</span><span class="s">&quot;Hello from </span><span class="si">~s</span><span class="s"> doc!&quot;</span><span class="p">,</span> <span class="p">[</span><span class="nv">V</span><span class="p">]))),</span>
+    <span class="nv">Emit</span><span class="p">(</span><span class="o">&lt;&lt;</span><span class="nv">K</span><span class="o">&gt;&gt;</span><span class="p">,</span> <span class="nv">V</span><span class="p">)</span>
+<span class="k">end</span><span class="p">.</span>
+</pre></div>
+</div>
+<p>After the map function has run, the following line can be found in
+CouchDB logs (e.g. at <cite>/var/log/couchdb/couch.log</cite>):</p>
+<div class="highlight-text"><div class="highlight"><pre>[Sun, 04 Nov 2012 11:33:58 GMT] [info] [&lt;0.9144.2&gt;] Hello from 8d300b86622d67953d102165dbe99467 doc!
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="Send">
+<tt class="descname">Send</tt><big>(</big><em>Chunk</em><big>)</big><a class="headerlink" href="#Send" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sends a single string <cite>Chunk</cite> in response.</p>
+<div class="highlight-erlang"><div class="highlight"><pre><span class="k">fun</span><span class="p">(</span><span class="nv">Head</span><span class="p">,</span> <span class="p">{</span><span class="nv">Req</span><span class="p">})</span> <span class="o">-&gt;</span>
+    <span class="nv">Send</span><span class="p">(</span><span class="s">&quot;Hello,&quot;</span><span class="p">),</span>
+    <span class="nv">Send</span><span class="p">(</span><span class="s">&quot; &quot;</span><span class="p">),</span>
+    <span class="nv">Send</span><span class="p">(</span><span class="s">&quot;Couch&quot;</span><span class="p">),</span>
+    <span class="s">&quot;!&quot;</span>
+<span class="k">end</span><span class="p">.</span>
+</pre></div>
+</div>
+<p>The function above produces the following response:</p>
+<div class="highlight-text"><div class="highlight"><pre>Hello, Couch!
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="Start">
+<tt class="descname">Start</tt><big>(</big><em>Headers</em><big>)</big><a class="headerlink" href="#Start" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first last simple">
+<li><strong>Headers</strong> &#8211; Proplist of <a class="reference internal" href="../json-structure.html#response-object"><em>response object</em></a>.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p>Initialize <a class="reference internal" href="../couchapp/ddocs.html#listfun"><em>List Functions</em></a> response. At this point, response code and headers
+may be defined. For example, this function redirects to the CouchDB
+web site:</p>
+<div class="highlight-erlang"><div class="highlight"><pre><span class="k">fun</span><span class="p">(</span><span class="nv">Head</span><span class="p">,</span> <span class="p">{</span><span class="nv">Req</span><span class="p">})</span> <span class="o">-&gt;</span>
+    <span class="nv">Start</span><span class="p">({[{</span><span class="o">&lt;&lt;</span><span class="s">&quot;code&quot;</span><span class="o">&gt;&gt;</span><span class="p">,</span> <span class="mi">302</span><span class="p">},</span>
+            <span class="p">{</span><span class="o">&lt;&lt;</span><span class="s">&quot;headers&quot;</span><span class="o">&gt;&gt;</span><span class="p">,</span> <span class="p">{[</span>
+                <span class="p">{</span><span class="o">&lt;&lt;</span><span class="s">&quot;Location&quot;</span><span class="o">&gt;&gt;</span><span class="p">,</span> <span class="o">&lt;&lt;</span><span class="s">&quot;http://couchdb.apache.org&quot;</span><span class="o">&gt;&gt;</span><span class="p">}]</span>
+            <span class="p">}}</span>
+        <span class="p">]}),</span>
+    <span class="s">&quot;Relax!&quot;</span>
+<span class="k">end</span><span class="p">.</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+    <p class="logo"><a href="../index.html">
+      <img class="logo" src="../_static/logo.png" alt="Logo"/>
+    </a></p><!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+<div id="searchbox" style="display: none">
+
+<h3>Quick Search</h3>
+
+<form class="search" action="../search.html" method="get">
+<input type="text" name="q" style="width:115px">
+<input type="submit" value="Go">
+<input type="hidden" name="check_keywords" value="yes">
+<input type="hidden" name="area" value="default">
+</form>
+
+<br>
+
+</div>
+
+<script type="text/javascript">$('#searchbox').show(0);</script>
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="javascript.html"
+                        title="previous chapter">8.2. JavaScript</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="../fauxton/index.html"
+                        title="next chapter">9. Fauxton</a></p><!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+
+<h3>Utilities</h3>
+
+<ul>
+<li><a href="../">Fauxton</a></li>
+</ul>
+<!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+<h3>More Help</h3>
+
+<ul>
+<li><a href="https://couchdb.apache.org/">Homepage</a></li>
+<li><a href="https://cwiki.apache.org/confluence/display/COUCHDB/">Wiki</a></li>
+<li><a href="https://couchdb.apache.org/#mailing-list">Mailing Lists</a></li>
+<li><a href="http://webchat.freenode.net/?channels=couchdb">IRC</a></li>
+<li><a href="https://issues.apache.org/jira/browse/CouchDB">Issues</a></li>
+<li><a href="../download.html">Download</a></li>
+<li><a href="https://github.com/apache/couchdb-documentation/blob/master/src/query-server/erlang.rst"
+       rel="nofollow">Show on GitHub</a></li>
+<li><a href="https://github.com/apache/couchdb-documentation/edit/master/src/query-server/erlang.rst"
+       rel="nofollow">Edit on GitHub</a></li>
+</ul><!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../http-api.html" title="HTTP API Reference"
+             >API Reference</a></li>
+        <li class="right" >
+          <a href="../config-ref.html" title="Configuration Reference"
+             >Config Reference</a> |</li>
+        <li class="right" >
+          <a href="../fauxton/index.html" title="9. Fauxton"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="javascript.html" title="8.2. JavaScript"
+             >previous</a> |</li>
+  <li><a href="../index.html">Apache CouchDB 2.0 Documentation</a> &raquo;</li>
+          <li><a href="index.html" >8. Query Server</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2016, Apache Software Foundation.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,665 @@
+<!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>10.2.13. Authentication &mdash; Apache CouchDB 2.0 Documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/rtd.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '2.0.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <link rel="author" title="About these documents" href="../../about.html" />
+    <link rel="top" title="Apache CouchDB 2.0 Documentation" href="../../index.html" />
+    <link rel="up" title="10.2. Server" href="index.html" />
+    <link rel="next" title="10.2.14. Configuration" href="configuration.html" />
+    <link rel="prev" title="10.2.1. /" href="common.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../http-api.html" title="HTTP API Reference"
+             >API Reference</a></li>
+        <li class="right" >
+          <a href="../../config-ref.html" title="Configuration Reference"
+             >Config Reference</a> |</li>
+        <li class="right" >
+          <a href="configuration.html" title="10.2.14. Configuration"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="common.html" title="10.2.1. /"
+             accesskey="P">previous</a> |</li>
+  <li><a href="../../index.html">Apache CouchDB 2.0 Documentation</a> &raquo;</li>
+          <li><a href="../index.html" >10. API Reference</a> &raquo;</li>
+          <li><a href="index.html" accesskey="U">10.2. Server</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="authentication">
+<span id="api-auth"></span><h1>10.2.13. Authentication<a class="headerlink" href="#authentication" title="Permalink to this headline">¶</a></h1>
+<p>Interfaces for obtaining session and authorization data.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">We also strongly recommend you <a class="reference internal" href="../../config/http.html#config-ssl"><em>set up SSL</em></a> to
+improve all authentication methods&#8217; security.</p>
+</div>
+<div class="section" id="basic-authentication">
+<span id="api-auth-basic"></span><h2>Basic Authentication<a class="headerlink" href="#basic-authentication" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="http://en.wikipedia.org/wiki/Basic_access_authentication">Basic authentication</a> (<span class="target" id="index-0"></span><a class="rfc reference external" href="http://tools.ietf.org/html/rfc2617.html"><strong>RFC 2617</strong></a>) is a quick and simple way to authenticate
+with CouchDB. The main drawback is the need to send user credentials with each
+request which may be insecure and could hurt operation performance (since
+CouchDB must compute the password hash with every request):</p>
+<p><strong>Request</strong>:</p>
+<div class="highlight-http"><div class="highlight"><pre><span class="nf">GET</span> <span class="nn">/</span> <span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span>
+<span class="na">Accept</span><span class="o">:</span> <span class="l">application/json</span>
+<span class="na">Authorization</span><span class="o">:</span> <span class="l">Basic cm9vdDpyZWxheA==</span>
+<span class="na">Host</span><span class="o">:</span> <span class="l">localhost:5984</span>
+</pre></div>
+</div>
+<p><strong>Response</strong>:</p>
+<div class="highlight-http"><div class="highlight"><pre><span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span> <span class="m">200</span> <span class="ne">OK</span>
+<span class="na">Cache-Control</span><span class="o">:</span> <span class="l">must-revalidate</span>
+<span class="na">Content-Length</span><span class="o">:</span> <span class="l">177</span>
+<span class="na">Content-Type</span><span class="o">:</span> <span class="l">application/json</span>
+<span class="na">Date</span><span class="o">:</span> <span class="l">Mon, 03 Dec 2012 00:44:47 GMT</span>
+<span class="na">Server</span><span class="o">:</span> <span class="l">CouchDB (Erlang/OTP)</span>
+
+<span class="p">{</span>
+    <span class="nt">&quot;couchdb&quot;</span><span class="p">:</span><span class="s2">&quot;Welcome&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;uuid&quot;</span><span class="p">:</span><span class="s2">&quot;0a959b9b8227188afc2ac26ccdf345a6&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;version&quot;</span><span class="p">:</span><span class="s2">&quot;1.3.0&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;vendor&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;version&quot;</span><span class="p">:</span><span class="s2">&quot;1.3.0&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="s2">&quot;The Apache Software Foundation&quot;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="cookie-authentication">
+<span id="api-auth-cookie"></span><h2>Cookie Authentication<a class="headerlink" href="#cookie-authentication" title="Permalink to this headline">¶</a></h2>
+<p>For cookie authentication (<span class="target" id="index-1"></span><a class="rfc reference external" href="http://tools.ietf.org/html/rfc2109.html"><strong>RFC 2109</strong></a>) CouchDB generates a token that the
+client can use for the next few requests to CouchDB. Tokens are valid until
+a timeout. When CouchDB sees a valid token in a subsequent request, it will
+authenticate the user by this token without requesting the password again. By
+default, cookies are valid for 10 minutes, but it&#8217;s <a class="reference internal" href="../../config/auth.html#couch_httpd_auth/timeout" title="timeout"><tt class="xref config config-option docutils literal"><span class="pre">adjustable</span></tt></a>. Also it&#8217;s possible to make cookies
+<a class="reference internal" href="../../config/auth.html#couch_httpd_auth/allow_persistent_cookies" title="allow_persistent_cookies"><tt class="xref config config-option docutils literal"><span class="pre">persistent</span></tt></a>.</p>
+<p>To obtain the first token and thus authenticate a user for the first time, the
+<cite>username</cite> and <cite>password</cite> must be sent to the <a class="reference internal" href="#api-auth-session"><em>_session API</em></a>.</p>
+<div class="section" id="session">
+<span id="api-auth-session"></span><h3><tt class="docutils literal"><span class="pre">/_session</span></tt><a class="headerlink" href="#session" title="Permalink to this headline">¶</a></h3>
+<dl class="post">
+<dt id="post--_session">
+<tt class="descname">POST </tt><tt class="descname">/_session</tt><a class="headerlink" href="#post--_session" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initiates new session for specified user credentials by providing <cite>Cookie</cite>
+value.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name" colspan="2">Request Headers:</th></tr>
+<tr class="field-odd field"><td>&nbsp;</td><td class="field-body"><ul class="first simple">
+<li><a class="reference external" href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.17">Content-Type</a> &#8211; <ul>
+<li><em class="mimetype">application/x-www-form-urlencoded</em></li>
+<li><em class="mimetype">application/json</em></li>
+</ul>
+</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name" colspan="2">Query Parameters:</th></tr>
+<tr class="field-even field"><td>&nbsp;</td><td class="field-body"><ul class="first simple">
+<li><strong>next</strong> (<em>string</em>) &#8211; Enforces redirect after successful login to the
+specified location. This location is relative from server root.
+<em>Optional</em>.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name" colspan="2">Form Parameters:</th></tr>
+<tr class="field-odd field"><td>&nbsp;</td><td class="field-body"><ul class="first simple">
+<li><strong>name</strong> &#8211; User name</li>
+<li><strong>password</strong> &#8211; Password</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name" colspan="2">Response Headers:</th></tr>
+<tr class="field-even field"><td>&nbsp;</td><td class="field-body"><ul class="first simple">
+<li><a class="reference external" href="http://tools.ietf.org/html/rfc2109#section-4.2.2">Set-Cookie</a> &#8211; Authorization token</li>
+</ul>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name" colspan="2">Response JSON Object:</th></tr>
+<tr class="field-odd field"><td>&nbsp;</td><td class="field-body"><ul class="first simple">
+<li><strong>ok</strong> (<em>boolean</em>) &#8211; Operation status</li>
+<li><strong>name</strong> (<em>string</em>) &#8211; Username</li>
+<li><strong>roles</strong> (<em>array</em>) &#8211; List of user roles</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Status Codes:</th><td class="field-body"><ul class="first last simple">
+<li><a class="reference external" href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.2.1">200 OK</a> &#8211; Successfully authenticated</li>
+<li><a class="reference external" href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.3.3">302 Found</a> &#8211; Redirect after successful authentication</li>
+<li><a class="reference external" href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.4.2">401 Unauthorized</a> &#8211; Username or password wasn&#8217;t recognized</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Request</strong>:</p>
+<div class="highlight-http"><div class="highlight"><pre><span class="nf">POST</span> <span class="nn">/_session</span> <span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span>
+<span class="na">Accept</span><span class="o">:</span> <span class="l">application/json</span>
+<span class="na">Content-Length</span><span class="o">:</span> <span class="l">24</span>
+<span class="na">Content-Type</span><span class="o">:</span> <span class="l">application/x-www-form-urlencoded</span>
+<span class="na">Host</span><span class="o">:</span> <span class="l">localhost:5984</span>
+
+name=root&amp;password=relax
+</pre></div>
+</div>
+<p>It&#8217;s also possible to send data as JSON:</p>
+<div class="highlight-http"><div class="highlight"><pre><span class="nf">POST</span> <span class="nn">/_session</span> <span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span>
+<span class="na">Accept</span><span class="o">:</span> <span class="l">application/json</span>
+<span class="na">Content-Length</span><span class="o">:</span> <span class="l">37</span>
+<span class="na">Content-Type</span><span class="o">:</span> <span class="l">application/json</span>
+<span class="na">Host</span><span class="o">:</span> <span class="l">localhost:5984</span>
+
+<span class="p">{</span>
+    <span class="nt">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;root&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;password&quot;</span><span class="p">:</span> <span class="s2">&quot;relax&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p><strong>Response</strong>:</p>
+<div class="highlight-http"><div class="highlight"><pre><span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span> <span class="m">200</span> <span class="ne">OK</span>
+<span class="na">Cache-Control</span><span class="o">:</span> <span class="l">must-revalidate</span>
+<span class="na">Content-Length</span><span class="o">:</span> <span class="l">43</span>
+<span class="na">Content-Type</span><span class="o">:</span> <span class="l">application/json</span>
+<span class="na">Date</span><span class="o">:</span> <span class="l">Mon, 03 Dec 2012 01:23:14 GMT</span>
+<span class="na">Server</span><span class="o">:</span> <span class="l">CouchDB (Erlang/OTP)</span>
+<span class="na">Set-Cookie</span><span class="o">:</span> <span class="l">AuthSession=cm9vdDo1MEJCRkYwMjq0LO0ylOIwShrgt8y-UkhI-c6BGw; Version=1; Path=/; HttpOnly</span>
+
+<span class="p">{</span><span class="nt">&quot;ok&quot;</span><span class="p">:</span><span class="kc">true</span><span class="p">,</span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="s2">&quot;root&quot;</span><span class="p">,</span><span class="nt">&quot;roles&quot;</span><span class="p">:[</span><span class="s2">&quot;_admin&quot;</span><span class="p">]}</span>
+</pre></div>
+</div>
+<p>If <tt class="docutils literal"><span class="pre">next</span></tt> query parameter was provided the response will trigger
+redirection to the specified location in case of successful authentication:</p>
+<p><strong>Request</strong>:</p>
+<div class="highlight-http"><div class="highlight"><pre><span class="nf">POST</span> <span class="nn">/_session?next=/blog/_design/sofa/_rewrite/recent-posts</span> <span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span>
+<span class="na">Accept</span><span class="o">:</span> <span class="l">application/json</span>
+<span class="na">Content-Type</span><span class="o">:</span> <span class="l">application/x-www-form-urlencoded</span>
+<span class="na">Host</span><span class="o">:</span> <span class="l">localhost:5984</span>
+
+name=root&amp;password=relax
+</pre></div>
+</div>
+<p><strong>Response</strong>:</p>
+<div class="highlight-http"><div class="highlight"><pre><span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span> <span class="m">302</span> <span class="ne">Moved Temporarily</span>
+<span class="na">Cache-Control</span><span class="o">:</span> <span class="l">must-revalidate</span>
+<span class="na">Content-Length</span><span class="o">:</span> <span class="l">43</span>
+<span class="na">Content-Type</span><span class="o">:</span> <span class="l">application/json</span>
+<span class="na">Date</span><span class="o">:</span> <span class="l">Mon, 03 Dec 2012 01:32:46 GMT</span>
+<span class="na">Location</span><span class="o">:</span> <span class="l">http://localhost:5984/blog/_design/sofa/_rewrite/recent-posts</span>
+<span class="na">Server</span><span class="o">:</span> <span class="l">CouchDB (Erlang/OTP)</span>
+<span class="na">Set-Cookie</span><span class="o">:</span> <span class="l">AuthSession=cm9vdDo1MEJDMDEzRTp7Vu5GKCkTxTVxwXbpXsBARQWnhQ; Version=1; Path=/; HttpOnly</span>
+
+<span class="p">{</span><span class="nt">&quot;ok&quot;</span><span class="p">:</span><span class="kc">true</span><span class="p">,</span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="kc">null</span><span class="p">,</span><span class="nt">&quot;roles&quot;</span><span class="p">:[</span><span class="s2">&quot;_admin&quot;</span><span class="p">]}</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="get">
+<dt id="get--_session">
+<tt class="descname">GET </tt><tt class="descname">/_session</tt><a class="headerlink" href="#get--_session" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns complete information about authenticated user.
+This information contains <a class="reference internal" href="../../json-structure.html#userctx-object"><em>User Context Object</em></a>, authentication method and
+available ones and authentication database.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name" colspan="2">Query Parameters:</th></tr>
+<tr class="field-odd field"><td>&nbsp;</td><td class="field-body"><ul class="first simple">
+<li><strong>basic</strong> (<em>boolean</em>) &#8211; Accept <cite>Basic Auth</cite> by requesting this resource.
+<em>Optional</em>.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Status Codes:</th><td class="field-body"><ul class="first last simple">
+<li><a class="reference external" href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.2.1">200 OK</a> &#8211; Successfully authenticated.</li>
+<li><a class="reference external" href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.4.2">401 Unauthorized</a> &#8211; Username or password wasn&#8217;t recognized.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Request</strong>:</p>
+<div class="highlight-http"><div class="highlight"><pre><span class="nf">GET</span> <span class="nn">/_session</span> <span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span>
+<span class="na">Host</span><span class="o">:</span> <span class="l">localhost:5984</span>
+<span class="na">Accept</span><span class="o">:</span> <span class="l">application/json</span>
+<span class="na">Cookie</span><span class="o">:</span> <span class="l">AuthSession=cm9vdDo1MEJDMDQxRDpqb-Ta9QfP9hpdPjHLxNTKg_Hf9w</span>
+</pre></div>
+</div>
+<p><strong>Response</strong>:</p>
+<div class="highlight-http"><div class="highlight"><pre><span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span> <span class="m">200</span> <span class="ne">OK</span>
+<span class="na">Cache-Control</span><span class="o">:</span> <span class="l">must-revalidate</span>
+<span class="na">Content-Length</span><span class="o">:</span> <span class="l">175</span>
+<span class="na">Content-Type</span><span class="o">:</span> <span class="l">application/json</span>
+<span class="na">Date</span><span class="o">:</span> <span class="l">Fri, 09 Aug 2013 20:27:45 GMT</span>
+<span class="na">Server</span><span class="o">:</span> <span class="l">CouchDB (Erlang/OTP)</span>
+<span class="na">Set-Cookie</span><span class="o">:</span> <span class="l">AuthSession=cm9vdDo1MjA1NTBDMTqmX2qKt1KDR--GUC80DQ6-Ew_XIw; Version=1; Path=/; HttpOnly</span>
+
+<span class="p">{</span>
+    <span class="nt">&quot;info&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;authenticated&quot;</span><span class="p">:</span> <span class="s2">&quot;cookie&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;authentication_db&quot;</span><span class="p">:</span> <span class="s2">&quot;_users&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;authentication_handlers&quot;</span><span class="p">:</span> <span class="p">[</span>
+            <span class="s2">&quot;oauth&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;cookie&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;default&quot;</span>
+        <span class="p">]</span>
+    <span class="p">},</span>
+    <span class="nt">&quot;ok&quot;</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
+    <span class="nt">&quot;userCtx&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;root&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;roles&quot;</span><span class="p">:</span> <span class="p">[</span>
+            <span class="s2">&quot;_admin&quot;</span>
+        <span class="p">]</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="delete">
+<dt id="delete--_session">
+<tt class="descname">DELETE </tt><tt class="descname">/_session</tt><a class="headerlink" href="#delete--_session" title="Permalink to this definition">¶</a></dt>
+<dd><p>Closes user&#8217;s session.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Status Codes:</th><td class="field-body"><ul class="first last simple">
+<li><a class="reference external" href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.2.1">200 OK</a> &#8211; Successfully close session.</li>
+<li><a class="reference external" href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.4.2">401 Unauthorized</a> &#8211; User wasn&#8217;t authenticated.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Request</strong>:</p>
+<div class="highlight-http"><div class="highlight"><pre><span class="nf">DELETE</span> <span class="nn">/_session</span> <span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span>
+<span class="na">Accept</span><span class="o">:</span> <span class="l">application/json</span>
+<span class="na">Cookie</span><span class="o">:</span> <span class="l">AuthSession=cm9vdDo1MjA1NEVGMDo1QXNQkqC_0Qmgrk8Fw61_AzDeXw</span>
+<span class="na">Host</span><span class="o">:</span> <span class="l">localhost:5984</span>
+</pre></div>
+</div>
+<p><strong>Response</strong>:</p>
+<div class="highlight-http"><div class="highlight"><pre><span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span> <span class="m">200</span> <span class="ne">OK</span>
+<span class="na">Cache-Control</span><span class="o">:</span> <span class="l">must-revalidate</span>
+<span class="na">Content-Length</span><span class="o">:</span> <span class="l">12</span>
+<span class="na">Content-Type</span><span class="o">:</span> <span class="l">application/json</span>
+<span class="na">Date</span><span class="o">:</span> <span class="l">Fri, 09 Aug 2013 20:30:12 GMT</span>
+<span class="na">Server</span><span class="o">:</span> <span class="l">CouchDB (Erlang/OTP)</span>
+<span class="na">Set-Cookie</span><span class="o">:</span> <span class="l">AuthSession=; Version=1; Path=/; HttpOnly</span>
+
+<span class="p">{</span>
+    <span class="nt">&quot;ok&quot;</span><span class="p">:</span> <span class="kc">true</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</div>
+</div>
+<div class="section" id="proxy-authentication">
+<span id="api-auth-proxy"></span><h2>Proxy Authentication<a class="headerlink" href="#proxy-authentication" title="Permalink to this headline">¶</a></h2>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p>To use this authentication method make sure that the
+<tt class="docutils literal"><span class="pre">{couch_httpd_auth,</span> <span class="pre">proxy_authentication_handler}</span></tt> value in added to the
+list of the active <a class="reference internal" href="../../config/http.html#httpd/authentication_handlers" title="authentication_handlers"><tt class="xref config config-option docutils literal"><span class="pre">httpd/authentication_handlers</span></tt></a>:</p>
+<div class="last highlight-ini"><div class="highlight"><pre><span class="k">[httpd]</span>
+<span class="na">authentication_handlers</span> <span class="o">=</span> <span class="s">{couch_httpd_oauth, oauth_authentication_handler}, {couch_httpd_auth, cookie_authentication_handler}, {couch_httpd_auth, proxy_authentication_handler}, {couch_httpd_auth, default_authentication_handler}</span>
+</pre></div>
+</div>
+</div>
+<p><cite>Proxy authentication</cite> is very useful in case your application already uses
+some external authentication service and you don&#8217;t want to duplicate users and
+their roles in CouchDB.</p>
+<p>This authentication method allows creation of a <a class="reference internal" href="../../json-structure.html#userctx-object"><em>User Context Object</em></a> for
+remotely authenticated user. By default, the client just need to pass specific
+headers to CouchDB with related request:</p>
+<ul class="simple">
+<li><a class="reference internal" href="../../config/auth.html#couch_httpd_auth/x_auth_username" title="x_auth_username"><tt class="xref config config-option docutils literal"><span class="pre">X-Auth-CouchDB-UserName</span></tt></a>:
+username;</li>
+<li><a class="reference internal" href="../../config/auth.html#couch_httpd_auth/x_auth_roles" title="x_auth_roles"><tt class="xref config config-option docutils literal"><span class="pre">X-Auth-CouchDB-Roles</span></tt></a>:
+list of user roles separated by a comma (<tt class="docutils literal"><span class="pre">,</span></tt>);</li>
+<li><a class="reference internal" href="../../config/auth.html#couch_httpd_auth/x_auth_token" title="x_auth_token"><tt class="xref config config-option docutils literal"><span class="pre">X-Auth-CouchDB-Token</span></tt></a>:
+authentication token. Optional, but strongly recommended to
+<a class="reference internal" href="../../config/auth.html#couch_httpd_auth/proxy_use_secret" title="proxy_use_secret"><tt class="xref config config-option docutils literal"><span class="pre">force</span> <span class="pre">token</span> <span class="pre">be</span> <span class="pre">required</span></tt></a>
+to prevent requests from untrusted sources.</li>
+</ul>
+<p><strong>Request</strong>:</p>
+<div class="highlight-http"><div class="highlight"><pre><span class="nf">GET</span> <span class="nn">/_session</span> <span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span>
+<span class="na">Host</span><span class="o">:</span> <span class="l">localhost:5984</span>
+<span class="na">Accept</span><span class="o">:</span> <span class="l">application/json</span>
+<span class="na">Content-Type</span><span class="o">:</span> <span class="l">application/json; charset=utf-8</span>
+<span class="na">X-Auth-CouchDB-Roles</span><span class="o">:</span> <span class="l">users,blogger</span>
+<span class="na">X-Auth-CouchDB-UserName</span><span class="o">:</span> <span class="l">foo</span>
+</pre></div>
+</div>
+<p><strong>Response</strong>:</p>
+<div class="highlight-http"><div class="highlight"><pre><span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span> <span class="m">200</span> <span class="ne">OK</span>
+<span class="na">Cache-Control</span><span class="o">:</span> <span class="l">must-revalidate</span>
+<span class="na">Content-Length</span><span class="o">:</span> <span class="l">190</span>
+<span class="na">Content-Type</span><span class="o">:</span> <span class="l">application/json</span>
+<span class="na">Date</span><span class="o">:</span> <span class="l">Fri, 14 Jun 2013 10:16:03 GMT</span>
+<span class="na">Server</span><span class="o">:</span> <span class="l">CouchDB (Erlang/OTP)</span>
+
+<span class="p">{</span>
+    <span class="nt">&quot;info&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;authenticated&quot;</span><span class="p">:</span> <span class="s2">&quot;proxy&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;authentication_db&quot;</span><span class="p">:</span> <span class="s2">&quot;_users&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;authentication_handlers&quot;</span><span class="p">:</span> <span class="p">[</span>
+            <span class="s2">&quot;oauth&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;cookie&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;proxy&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;default&quot;</span>
+        <span class="p">]</span>
+    <span class="p">},</span>
+    <span class="nt">&quot;ok&quot;</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
+    <span class="nt">&quot;userCtx&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;foo&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;roles&quot;</span><span class="p">:</span> <span class="p">[</span>
+            <span class="s2">&quot;users&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;blogger&quot;</span>
+        <span class="p">]</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Note that you don&#8217;t need to request <a class="reference internal" href="#api-auth-session"><em>session</em></a>
+to be authenticated by this method if all required HTTP headers are provided.</p>
+</div>
+<div class="section" id="oauth-authentication">
+<span id="api-auth-oauth"></span><h2>OAuth Authentication<a class="headerlink" href="#oauth-authentication" title="Permalink to this headline">¶</a></h2>
+<p>CouchDB supports OAuth 1.0 authentication (<span class="target" id="index-2"></span><a class="rfc reference external" href="http://tools.ietf.org/html/rfc5849.html"><strong>RFC 5849</strong></a>). OAuth provides a
+method for clients to access server resources  without sharing real credentials
+(username and password).</p>
+<p>First, <a class="reference internal" href="../../config/auth.html#config-oauth"><em>configure oauth</em></a>, by setting consumer and token
+with their secrets and binding token to real CouchDB username.</p>
+<p>Probably, it&#8217;s not good idea to work with plain curl, let use some scripting
+language like Python:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c">#!/usr/bin/env python2</span>
+<span class="kn">from</span> <span class="nn">oauth</span> <span class="kn">import</span> <span class="n">oauth</span> <span class="c"># pip install oauth</span>
+<span class="kn">import</span> <span class="nn">httplib</span>
+
+<span class="n">URL</span> <span class="o">=</span> <span class="s">&#39;http://localhost:5984/_session&#39;</span>
+<span class="n">CONSUMER_KEY</span> <span class="o">=</span> <span class="s">&#39;consumer1&#39;</span>
+<span class="n">CONSUMER_SECRET</span> <span class="o">=</span> <span class="s">&#39;sekr1t&#39;</span>
+<span class="n">TOKEN</span> <span class="o">=</span> <span class="s">&#39;token1&#39;</span>
+<span class="n">SECRET</span> <span class="o">=</span> <span class="s">&#39;tokensekr1t&#39;</span>
+
+<span class="n">consumer</span> <span class="o">=</span> <span class="n">oauth</span><span class="o">.</span><span class="n">OAuthConsumer</span><span class="p">(</span><span class="n">CONSUMER_KEY</span><span class="p">,</span> <span class="n">CONSUMER_SECRET</span><span class="p">)</span>
+<span class="n">token</span> <span class="o">=</span> <span class="n">oauth</span><span class="o">.</span><span class="n">OAuthToken</span><span class="p">(</span><span class="n">TOKEN</span><span class="p">,</span> <span class="n">SECRET</span><span class="p">)</span>
+<span class="n">req</span> <span class="o">=</span> <span class="n">oauth</span><span class="o">.</span><span class="n">OAuthRequest</span><span class="o">.</span><span class="n">from_consumer_and_token</span><span class="p">(</span>
+    <span class="n">consumer</span><span class="p">,</span>
+    <span class="n">token</span><span class="o">=</span><span class="n">token</span><span class="p">,</span>
+    <span class="n">http_method</span><span class="o">=</span><span class="s">&#39;GET&#39;</span><span class="p">,</span>
+    <span class="n">http_url</span><span class="o">=</span><span class="n">URL</span><span class="p">,</span>
+    <span class="n">parameters</span><span class="o">=</span><span class="p">{}</span>
+<span class="p">)</span>
+<span class="n">req</span><span class="o">.</span><span class="n">sign_request</span><span class="p">(</span><span class="n">oauth</span><span class="o">.</span><span class="n">OAuthSignatureMethod_HMAC_SHA1</span><span class="p">(),</span> <span class="n">consumer</span><span class="p">,</span><span class="n">token</span><span class="p">)</span>
+
+<span class="n">headers</span> <span class="o">=</span> <span class="n">req</span><span class="o">.</span><span class="n">to_header</span><span class="p">()</span>
+<span class="n">headers</span><span class="p">[</span><span class="s">&#39;Accept&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s">&#39;application/json&#39;</span>
+
+<span class="n">con</span> <span class="o">=</span> <span class="n">httplib</span><span class="o">.</span><span class="n">HTTPConnection</span><span class="p">(</span><span class="s">&#39;localhost&#39;</span><span class="p">,</span> <span class="mi">5984</span><span class="p">)</span>
+<span class="n">con</span><span class="o">.</span><span class="n">request</span><span class="p">(</span><span class="s">&#39;GET&#39;</span><span class="p">,</span> <span class="n">URL</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">)</span>
+<span class="n">resp</span> <span class="o">=</span> <span class="n">con</span><span class="o">.</span><span class="n">getresponse</span><span class="p">()</span>
+<span class="k">print</span> <span class="n">resp</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>or Ruby:</p>
+<div class="highlight-ruby"><div class="highlight"><pre><span class="c1">#!/usr/bin/env ruby</span>
+
+<span class="nb">require</span> <span class="s1">&#39;oauth&#39;</span> <span class="c1"># gem install oauth</span>
+
+<span class="no">URL</span> <span class="o">=</span> <span class="s1">&#39;http://localhost:5984&#39;</span>
+<span class="no">CONSUMER_KEY</span> <span class="o">=</span> <span class="s1">&#39;consumer1&#39;</span>
+<span class="no">CONSUMER_SECRET</span> <span class="o">=</span> <span class="s1">&#39;sekr1t&#39;</span>
+<span class="no">TOKEN</span> <span class="o">=</span> <span class="s1">&#39;token1&#39;</span>
+<span class="no">SECRET</span> <span class="o">=</span> <span class="s1">&#39;tokensekr1t&#39;</span>
+
+<span class="vi">@consumer</span> <span class="o">=</span> <span class="no">OAuth</span><span class="o">::</span><span class="no">Consumer</span><span class="o">.</span><span class="n">new</span> <span class="no">CONSUMER_KEY</span><span class="p">,</span>
+                                <span class="no">CONSUMER_SECRET</span><span class="p">,</span>
+                                <span class="p">{</span><span class="ss">:site</span> <span class="o">=&gt;</span> <span class="no">URL</span><span class="p">}</span>
+
+<span class="vi">@access_token</span> <span class="o">=</span> <span class="no">OAuth</span><span class="o">::</span><span class="no">AccessToken</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="vi">@consumer</span><span class="p">,</span> <span class="no">TOKEN</span><span class="p">,</span> <span class="no">SECRET</span><span class="p">)</span>
+
+<span class="nb">puts</span> <span class="vi">@access_token</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;/_session&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">body</span>
+</pre></div>
+</div>
+<p>Both snippets produces similar request and response pair:</p>
+<div class="highlight-http"><div class="highlight"><pre><span class="nf">GET</span> <span class="nn">/_session</span> <span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span>
+<span class="na">Host</span><span class="o">:</span> <span class="l">localhost:5984</span>
+<span class="na">Accept</span><span class="o">:</span> <span class="l">application/json</span>
+<span class="na">Authorization</span><span class="o">:</span> <span class="l">OAuth realm=&quot;&quot;, oauth_nonce=&quot;81430018&quot;, oauth_timestamp=&quot;1374561749&quot;, oauth_consumer_key=&quot;consumer1&quot;, oauth_signature_method=&quot;HMAC-SHA1&quot;, oauth_version=&quot;1.0&quot;, oauth_token=&quot;token1&quot;, oauth_signature=&quot;o4FqJ8%2B9IzUpXH%2Bk4rgnv7L6eTY%3D&quot;</span>
+</pre></div>
+</div>
+<div class="highlight-http"><div class="highlight"><pre><span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span> <span class="m">200</span> <span class="ne">OK</span>
+<span class="na">Cache-Control</span> <span class="o">:</span> <span class="l">must-revalidate</span>
+<span class="na">Content-Length</span> <span class="o">:</span> <span class="l">167</span>
+<span class="na">Content-Type</span> <span class="o">:</span> <span class="l">application/json</span>
+<span class="na">Date</span> <span class="o">:</span> <span class="l">Tue, 23 Jul 2013 06:51:15 GMT</span>
+<span class="na">Server</span><span class="o">:</span> <span class="l">CouchDB (Erlang/OTP)</span>
+
+<span class="p">{</span>
+    <span class="nt">&quot;ok&quot;</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
+    <span class="nt">&quot;info&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;authenticated&quot;</span><span class="p">:</span> <span class="s2">&quot;oauth&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;authentication_db&quot;</span><span class="p">:</span> <span class="s2">&quot;_users&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;authentication_handlers&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;oauth&quot;</span><span class="p">,</span> <span class="s2">&quot;cookie&quot;</span><span class="p">,</span> <span class="s2">&quot;default&quot;</span><span class="p">]</span>
+    <span class="p">},</span>
+    <span class="nt">&quot;userCtx&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;couchdb_username&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;roles&quot;</span><span class="p">:</span> <span class="p">[]</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>There we request the <a class="reference internal" href="#api-auth-session"><em>_session</em></a> resource to ensure
+that authentication was successful and the target CouchDB username is correct.
+Change the target URL to request required resource.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+    <p class="logo"><a href="../../index.html">
+      <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+    </a></p><!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+<div id="searchbox" style="display: none">
+
+<h3>Quick Search</h3>
+
+<form class="search" action="../../search.html" method="get">
+<input type="text" name="q" style="width:115px">
+<input type="submit" value="Go">
+<input type="hidden" name="check_keywords" value="yes">
+<input type="hidden" name="area" value="default">
+</form>
+
+<br>
+
+</div>
+
+<script type="text/javascript">$('#searchbox').show(0);</script>
+  <h3><a href="../../contents.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">10.2.13. Authentication</a><ul>
+<li><a class="reference internal" href="#basic-authentication">Basic Authentication</a></li>
+<li><a class="reference internal" href="#cookie-authentication">Cookie Authentication</a><ul>
+<li><a class="reference internal" href="#session"><tt class="docutils literal"><span class="pre">/_session</span></tt></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#proxy-authentication">Proxy Authentication</a></li>
+<li><a class="reference internal" href="#oauth-authentication">OAuth Authentication</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="common.html"
+                        title="previous chapter">10.2.1. <tt class="docutils literal"><span class="pre">/</span></tt></a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="configuration.html"
+                        title="next chapter">10.2.14. Configuration</a></p><!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+
+<h3>Utilities</h3>
+
+<ul>
+<li><a href="../">Fauxton</a></li>
+</ul>
+<!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+<h3>More Help</h3>
+
+<ul>
+<li><a href="https://couchdb.apache.org/">Homepage</a></li>
+<li><a href="https://cwiki.apache.org/confluence/display/COUCHDB/">Wiki</a></li>
+<li><a href="https://couchdb.apache.org/#mailing-list">Mailing Lists</a></li>
+<li><a href="http://webchat.freenode.net/?channels=couchdb">IRC</a></li>
+<li><a href="https://issues.apache.org/jira/browse/CouchDB">Issues</a></li>
+<li><a href="../../download.html">Download</a></li>
+<li><a href="https://github.com/apache/couchdb-documentation/blob/master/src/api/server/authn.rst"
+       rel="nofollow">Show on GitHub</a></li>
+<li><a href="https://github.com/apache/couchdb-documentation/edit/master/src/api/server/authn.rst"
+       rel="nofollow">Edit on GitHub</a></li>
+</ul><!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../http-api.html" title="HTTP API Reference"
+             >API Reference</a></li>
+        <li class="right" >
+          <a href="../../config-ref.html" title="Configuration Reference"
+             >Config Reference</a> |</li>
+        <li class="right" >
+          <a href="configuration.html" title="10.2.14. Configuration"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="common.html" title="10.2.1. /"
+             >previous</a> |</li>
+  <li><a href="../../index.html">Apache CouchDB 2.0 Documentation</a> &raquo;</li>
+          <li><a href="../index.html" >10. API Reference</a> &raquo;</li>
+          <li><a href="index.html" >10.2. Server</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2016, Apache Software Foundation.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
+    </div>
+  </body>
+</html>

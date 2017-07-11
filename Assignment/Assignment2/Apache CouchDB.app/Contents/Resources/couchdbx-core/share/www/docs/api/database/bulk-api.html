@@ -1,0 +1,836 @@
+<!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>10.3.2. /db/_all_docs &mdash; Apache CouchDB 2.0 Documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/rtd.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '2.0.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <link rel="author" title="About these documents" href="../../about.html" />
+    <link rel="top" title="Apache CouchDB 2.0 Documentation" href="../../index.html" />
+    <link rel="up" title="10.3. Databases" href="index.html" />
+    <link rel="next" title="10.3.4. /db/_find" href="find.html" />
+    <link rel="prev" title="10.3.1. /db" href="common.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../http-api.html" title="HTTP API Reference"
+             >API Reference</a></li>
+        <li class="right" >
+          <a href="../../config-ref.html" title="Configuration Reference"
+             >Config Reference</a> |</li>
+        <li class="right" >
+          <a href="find.html" title="10.3.4. /db/_find"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="common.html" title="10.3.1. /db"
+             accesskey="P">previous</a> |</li>
+  <li><a href="../../index.html">Apache CouchDB 2.0 Documentation</a> &raquo;</li>
+          <li><a href="../index.html" >10. API Reference</a> &raquo;</li>
+          <li><a href="index.html" accesskey="U">10.3. Databases</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="db-all-docs">
+<span id="api-db-all-docs"></span><h1>10.3.2. <tt class="docutils literal"><span class="pre">/db/_all_docs</span></tt><a class="headerlink" href="#db-all-docs" title="Permalink to this headline">¶</a></h1>
+<dl class="get">
+<dt id="get--db-_all_docs">
+<tt class="descname">GET </tt><tt class="descname">/{db}/_all_docs</tt><a class="headerlink" href="#get--db-_all_docs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a JSON structure of all of the documents in a given database.
+The information is returned as a JSON structure containing meta
+information about the return structure, including a list of all documents
+and basic contents, consisting the ID, revision and key. The key is the
+from the document&#8217;s <tt class="docutils literal"><span class="pre">_id</span></tt>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>db</strong> &#8211; Database name</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name" colspan="2">Request Headers:</th></tr>
+<tr class="field-even field"><td>&nbsp;</td><td class="field-body"><ul class="first simple">
+<li><a class="reference external" href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.1">Accept</a> &#8211; <ul>
+<li><em class="mimetype">application/json</em></li>
+<li><em class="mimetype">text/plain</em></li>
+</ul>
+</li>
+</ul>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name" colspan="2">Query Parameters:</th></tr>
+<tr class="field-odd field"><td>&nbsp;</td><td class="field-body"><ul class="first simple">
+<li><strong>conflicts</strong> (<em>boolean</em>) &#8211; Includes <cite>conflicts</cite> information in response.
+Ignored if <cite>include_docs</cite> isn&#8217;t <tt class="docutils literal"><span class="pre">true</span></tt>. Default is <tt class="docutils literal"><span class="pre">false</span></tt>.</li>
+<li><strong>descending</strong> (<em>boolean</em>) &#8211; Return the documents in descending by key order.
+Default is <tt class="docutils literal"><span class="pre">false</span></tt>.</li>
+<li><strong>endkey</strong> (<em>string</em>) &#8211; Stop returning records when the specified key is
+reached. <em>Optional</em>.</li>
+<li><strong>end_key</strong> (<em>string</em>) &#8211; Alias for <cite>endkey</cite> param.</li>
+<li><strong>endkey_docid</strong> (<em>string</em>) &#8211; Stop returning records when the specified
+document ID is reached. <em>Optional</em>.</li>
+<li><strong>end_key_doc_id</strong> (<em>string</em>) &#8211; Alias for <cite>endkey_docid</cite> param.</li>
+<li><strong>include_docs</strong> (<em>boolean</em>) &#8211; Include the full content of the documents in
+the return. Default is <tt class="docutils literal"><span class="pre">false</span></tt>.</li>
+<li><strong>inclusive_end</strong> (<em>boolean</em>) &#8211; Specifies whether the specified end key
+should be included in the result. Default is <tt class="docutils literal"><span class="pre">true</span></tt>.</li>
+<li><strong>key</strong> (<em>string</em>) &#8211; Return only documents that match the specified key.
+<em>Optional</em>.</li>
+<li><strong>keys</strong> (<em>string</em>) &#8211; Return only documents that match the specified keys.
+<em>Optional</em>.</li>
+<li><strong>limit</strong> (<em>number</em>) &#8211; Limit the number of the returned documents to the
+specified number. <em>Optional</em>.</li>
+<li><strong>skip</strong> (<em>number</em>) &#8211; Skip this number of records before starting to return
+the results. Default is <tt class="docutils literal"><span class="pre">0</span></tt>.</li>
+<li><strong>stale</strong> (<em>string</em>) &#8211; Allow the results from a stale view to be used,
+without triggering a rebuild of all views within the encompassing design
+doc. Supported values: <tt class="docutils literal"><span class="pre">ok</span></tt> and <tt class="docutils literal"><span class="pre">update_after</span></tt>. <em>Optional</em>.</li>
+<li><strong>startkey</strong> (<em>string</em>) &#8211; Return records starting with the specified key.
+<em>Optional</em>.</li>
+<li><strong>start_key</strong> (<em>string</em>) &#8211; Alias for <cite>startkey</cite> param.</li>
+<li><strong>startkey_docid</strong> (<em>string</em>) &#8211; Return records starting with the specified
+document ID. <em>Optional</em>.</li>
+<li><strong>start_key_doc_id</strong> (<em>string</em>) &#8211; Alias for <cite>startkey_docid</cite> param.</li>
+<li><strong>update_seq</strong> (<em>boolean</em>) &#8211; Response includes an <tt class="docutils literal"><span class="pre">update_seq</span></tt> value
+indicating which sequence id of the underlying database the view
+reflects. Default is <tt class="docutils literal"><span class="pre">false</span></tt>.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name" colspan="2">Response Headers:</th></tr>
+<tr class="field-even field"><td>&nbsp;</td><td class="field-body"><ul class="first simple">
+<li><a class="reference external" href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.17">Content-Type</a> &#8211; <ul>
+<li><em class="mimetype">application/json</em></li>
+<li><em class="mimetype">text/plain; charset=utf-8</em></li>
+</ul>
+</li>
+<li><a class="reference external" href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.19">ETag</a> &#8211; Response signature</li>
+</ul>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name" colspan="2">Response JSON Object:</th></tr>
+<tr class="field-odd field"><td>&nbsp;</td><td class="field-body"><ul class="first simple">
+<li><strong>offset</strong> (<em>number</em>) &#8211; Offset where the document list started</li>
+<li><strong>rows</strong> (<em>array</em>) &#8211; Array of view row objects. By default the information
+returned contains only the document ID and revision.</li>
+<li><strong>total_rows</strong> (<em>number</em>) &#8211; Number of documents in the database/view. Note
+that this is not the number of rows returned in the actual query.</li>
+<li><strong>update_seq</strong> (<em>number</em>) &#8211; Current update sequence for the database</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Status Codes:</th><td class="field-body"><ul class="first last simple">
+<li><a class="reference external" href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.2.1">200 OK</a> &#8211; Request completed successfully</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Request</strong>:</p>
+<div class="highlight-http"><div class="highlight"><pre><span class="nf">GET</span> <span class="nn">/db/_all_docs</span> <span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span>
+<span class="na">Accept</span><span class="o">:</span> <span class="l">application/json</span>
+<span class="na">Host</span><span class="o">:</span> <span class="l">localhost:5984</span>
+</pre></div>
+</div>
+<p><strong>Response</strong>:</p>
+<div class="highlight-http"><div class="highlight"><pre><span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span> <span class="m">200</span> <span class="ne">OK</span>
+<span class="na">Cache-Control</span><span class="o">:</span> <span class="l">must-revalidate</span>
+<span class="na">Content-Type</span><span class="o">:</span> <span class="l">application/json</span>
+<span class="na">Date</span><span class="o">:</span> <span class="l">Sat, 10 Aug 2013 16:22:56 GMT</span>
+<span class="na">ETag</span><span class="o">:</span> <span class="l">&quot;1W2DJUZFZSZD9K78UFA3GZWB4&quot;</span>
+<span class="na">Server</span><span class="o">:</span> <span class="l">CouchDB (Erlang/OTP)</span>
+<span class="na">Transfer-Encoding</span><span class="o">:</span> <span class="l">chunked</span>
+
+<span class="p">{</span>
+    <span class="nt">&quot;offset&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="nt">&quot;rows&quot;</span><span class="p">:</span> <span class="p">[</span>
+        <span class="p">{</span>
+            <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;16e458537602f5ef2a710089dffd9453&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;key&quot;</span><span class="p">:</span> <span class="s2">&quot;16e458537602f5ef2a710089dffd9453&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;value&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="nt">&quot;rev&quot;</span><span class="p">:</span> <span class="s2">&quot;1-967a00dff5e02add41819138abb3284d&quot;</span>
+            <span class="p">}</span>
+        <span class="p">},</span>
+        <span class="p">{</span>
+            <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;a4c51cdfa2069f3e905c431114001aff&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;key&quot;</span><span class="p">:</span> <span class="s2">&quot;a4c51cdfa2069f3e905c431114001aff&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;value&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="nt">&quot;rev&quot;</span><span class="p">:</span> <span class="s2">&quot;1-967a00dff5e02add41819138abb3284d&quot;</span>
+            <span class="p">}</span>
+        <span class="p">},</span>
+        <span class="p">{</span>
+            <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;a4c51cdfa2069f3e905c4311140034aa&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;key&quot;</span><span class="p">:</span> <span class="s2">&quot;a4c51cdfa2069f3e905c4311140034aa&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;value&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="nt">&quot;rev&quot;</span><span class="p">:</span> <span class="s2">&quot;5-6182c9c954200ab5e3c6bd5e76a1549f&quot;</span>
+            <span class="p">}</span>
+        <span class="p">},</span>
+        <span class="p">{</span>
+            <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;a4c51cdfa2069f3e905c431114003597&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;key&quot;</span><span class="p">:</span> <span class="s2">&quot;a4c51cdfa2069f3e905c431114003597&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;value&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="nt">&quot;rev&quot;</span><span class="p">:</span> <span class="s2">&quot;2-7051cbe5c8faecd085a3fa619e6e6337&quot;</span>
+            <span class="p">}</span>
+        <span class="p">},</span>
+        <span class="p">{</span>
+            <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;f4ca7773ddea715afebc4b4b15d4f0b3&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;key&quot;</span><span class="p">:</span> <span class="s2">&quot;f4ca7773ddea715afebc4b4b15d4f0b3&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;value&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="nt">&quot;rev&quot;</span><span class="p">:</span> <span class="s2">&quot;2-7051cbe5c8faecd085a3fa619e6e6337&quot;</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+    <span class="p">],</span>
+    <span class="nt">&quot;total_rows&quot;</span><span class="p">:</span> <span class="mi">5</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="post">
+<dt id="post--db-_all_docs">
+<tt class="descname">POST </tt><tt class="descname">/{db}/_all_docs</tt><a class="headerlink" href="#post--db-_all_docs" title="Permalink to this definition">¶</a></dt>
+<dd><p>The <tt class="docutils literal"><span class="pre">POST</span></tt> to <tt class="docutils literal"><span class="pre">_all_docs</span></tt> allows to specify multiple keys to be
+selected from the database. This enables you to request multiple
+documents in a single request, in place of multiple <a class="reference internal" href="../document/common.html#get--db-docid" title="GET /{db}/{docid}"><tt class="xref http http-get docutils literal"><span class="pre">GET</span> <span class="pre">/{db}/{docid}</span></tt></a>
+requests.</p>
+<p>The request body should contain a list of the keys to be returned as an
+array to a <tt class="docutils literal"><span class="pre">keys</span></tt> object. For example:</p>
+<div class="highlight-http"><div class="highlight"><pre><span class="nf">POST</span> <span class="nn">/db/_all_docs</span> <span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span>
+<span class="na">Accept</span><span class="o">:</span> <span class="l">application/json</span>
+<span class="na">Content-Length</span><span class="o">:</span> <span class="l">70</span>
+<span class="na">Content-Type</span><span class="o">:</span> <span class="l">application/json</span>
+<span class="na">Host</span><span class="o">:</span> <span class="l">localhost:5984</span>
+
+<span class="p">{</span>
+    <span class="nt">&quot;keys&quot;</span> <span class="p">:</span> <span class="p">[</span>
+        <span class="s2">&quot;Zingylemontart&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;Yogurtraita&quot;</span>
+    <span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>The returned JSON is the all documents structure, but with only the
+selected keys in the output:</p>
+<div class="highlight-javascript"><div class="highlight"><pre><span class="p">{</span>
+    <span class="s2">&quot;total_rows&quot;</span> <span class="o">:</span> <span class="mi">2666</span><span class="p">,</span>
+    <span class="s2">&quot;rows&quot;</span> <span class="o">:</span> <span class="p">[</span>
+        <span class="p">{</span>
+            <span class="s2">&quot;value&quot;</span> <span class="o">:</span> <span class="p">{</span>
+                <span class="s2">&quot;rev&quot;</span> <span class="o">:</span> <span class="s2">&quot;1-a3544d296de19e6f5b932ea77d886942&quot;</span>
+            <span class="p">},</span>
+            <span class="s2">&quot;id&quot;</span> <span class="o">:</span> <span class="s2">&quot;Zingylemontart&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;key&quot;</span> <span class="o">:</span> <span class="s2">&quot;Zingylemontart&quot;</span>
+        <span class="p">},</span>
+        <span class="p">{</span>
+            <span class="s2">&quot;value&quot;</span> <span class="o">:</span> <span class="p">{</span>
+                <span class="s2">&quot;rev&quot;</span> <span class="o">:</span> <span class="s2">&quot;1-91635098bfe7d40197a1b98d7ee085fc&quot;</span>
+            <span class="p">},</span>
+            <span class="s2">&quot;id&quot;</span> <span class="o">:</span> <span class="s2">&quot;Yogurtraita&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;key&quot;</span> <span class="o">:</span> <span class="s2">&quot;Yogurtraita&quot;</span>
+        <span class="p">}</span>
+    <span class="p">],</span>
+    <span class="s2">&quot;offset&quot;</span> <span class="o">:</span> <span class="mi">0</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</div>
+<div class="section" id="db-bulk-docs">
+<span id="api-db-bulk-docs"></span><h1>10.3.3. <tt class="docutils literal"><span class="pre">/db/_bulk_docs</span></tt><a class="headerlink" href="#db-bulk-docs" title="Permalink to this headline">¶</a></h1>
+<dl class="post">
+<dt id="post--db-_bulk_docs">
+<tt class="descname">POST </tt><tt class="descname">/{db}/_bulk_docs</tt><a class="headerlink" href="#post--db-_bulk_docs" title="Permalink to this definition">¶</a></dt>
+<dd><p>The bulk document API allows you to create and update multiple documents
+at the same time within a single request. The basic operation is similar
+to creating or updating a single document, except that you batch the
+document structure and information.</p>
+<p>When creating new documents the document ID (<tt class="docutils literal"><span class="pre">_id</span></tt>) is optional.</p>
+<p>For updating existing documents, you must provide the document ID, revision
+information (<tt class="docutils literal"><span class="pre">_rev</span></tt>), and new document values.</p>
+<p>In case of batch deleting documents all fields as document ID, revision
+information and deletion status (<tt class="docutils literal"><span class="pre">_deleted</span></tt>) are required.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>db</strong> &#8211; Database name</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name" colspan="2">Request Headers:</th></tr>
+<tr class="field-even field"><td>&nbsp;</td><td class="field-body"><ul class="first simple">
+<li><a class="reference external" href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.1">Accept</a> &#8211; <ul>
+<li><em class="mimetype">application/json</em></li>
+<li><em class="mimetype">text/plain</em></li>
+</ul>
+</li>
+<li><a class="reference external" href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.17">Content-Type</a> &#8211; <em class="mimetype">application/json</em></li>
+<li><strong>X-Couch-Full-Commit</strong> &#8211; Overrides server&#8217;s
+<a class="reference internal" href="../../config/couchdb.html#couchdb/delayed_commits" title="delayed_commits"><tt class="xref config config-option docutils literal"><span class="pre">commit</span> <span class="pre">policy</span></tt></a>. Possible values
+are: <tt class="docutils literal"><span class="pre">false</span></tt> and <tt class="docutils literal"><span class="pre">true</span></tt>. <em>Optional</em></li>
+</ul>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name" colspan="2">Request JSON Object:</th></tr>
+<tr class="field-odd field"><td>&nbsp;</td><td class="field-body"><ul class="first simple">
+<li><strong>docs</strong> (<em>array</em>) &#8211; List of documents objects</li>
+<li><strong>new_edits</strong> (<em>boolean</em>) &#8211; If <tt class="docutils literal"><span class="pre">false</span></tt>, prevents the database from
+assigning them new revision IDs. Default is <tt class="docutils literal"><span class="pre">true</span></tt>. <em>Optional</em></li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name" colspan="2">Response Headers:</th></tr>
+<tr class="field-even field"><td>&nbsp;</td><td class="field-body"><ul class="first simple">
+<li><a class="reference external" href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.17">Content-Type</a> &#8211; <ul>
+<li><em class="mimetype">application/json</em></li>
+<li><em class="mimetype">text/plain; charset=utf-8</em></li>
+</ul>
+</li>
+</ul>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name" colspan="2">Response JSON Array of Objects:</th></tr>
+<tr class="field-odd field"><td>&nbsp;</td><td class="field-body"><ul class="first simple">
+<li><strong>id</strong> (<em>string</em>) &#8211; Document ID</li>
+<li><strong>rev</strong> (<em>string</em>) &#8211; New document revision token. Available
+if document have saved without errors. <em>Optional</em></li>
+<li><strong>error</strong> (<em>string</em>) &#8211; Error type. <em>Optional</em></li>
+<li><strong>reason</strong> (<em>string</em>) &#8211; Error reason. <em>Optional</em></li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Status Codes:</th><td class="field-body"><ul class="first last simple">
+<li><a class="reference external" href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.2.2">201 Created</a> &#8211; Document(s) have been created or updated</li>
+<li><a class="reference external" href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.4.1">400 Bad Request</a> &#8211; The request provided invalid JSON data</li>
+<li><a class="reference external" href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.4.18">417 Expectation Failed</a> &#8211; Occurs when at least one document was rejected by a
+<a class="reference internal" href="../../couchapp/ddocs.html#vdufun"><em>validation function</em></a></li>
+<li><a class="reference external" href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.5.1">500 Internal Server Error</a> &#8211; Malformed data provided, while it&#8217;s still valid JSON</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Request</strong>:</p>
+<div class="highlight-http"><div class="highlight"><pre><span class="nf">POST</span> <span class="nn">/db/_bulk_docs</span> <span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span>
+<span class="na">Accept</span><span class="o">:</span> <span class="l">application/json</span>
+<span class="na">Content-Length</span><span class="o">:</span> <span class="l">109</span>
+<span class="na">Content-Type</span><span class="o">:</span><span class="l">application/json</span>
+<span class="na">Host</span><span class="o">:</span> <span class="l">localhost:5984</span>
+
+<span class="p">{</span>
+    <span class="nt">&quot;docs&quot;</span><span class="p">:</span> <span class="p">[</span>
+        <span class="p">{</span>
+            <span class="nt">&quot;_id&quot;</span><span class="p">:</span> <span class="s2">&quot;FishStew&quot;</span>
+        <span class="p">},</span>
+        <span class="p">{</span>
+            <span class="nt">&quot;_id&quot;</span><span class="p">:</span> <span class="s2">&quot;LambStew&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;_rev&quot;</span><span class="p">:</span> <span class="s2">&quot;2-0786321986194c92dd3b57dfbfc741ce&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;_deleted&quot;</span><span class="p">:</span> <span class="kc">true</span>
+        <span class="p">}</span>
+    <span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p><strong>Response</strong>:</p>
+<div class="highlight-http"><div class="highlight"><pre><span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span> <span class="m">201</span> <span class="ne">Created</span>
+<span class="na">Cache-Control</span><span class="o">:</span> <span class="l">must-revalidate</span>
+<span class="na">Content-Length</span><span class="o">:</span> <span class="l">144</span>
+<span class="na">Content-Type</span><span class="o">:</span> <span class="l">application/json</span>
+<span class="na">Date</span><span class="o">:</span> <span class="l">Mon, 12 Aug 2013 00:15:05 GMT</span>
+<span class="na">Server</span><span class="o">:</span> <span class="l">CouchDB (Erlang/OTP)</span>
+
+<span class="p">[</span>
+    <span class="p">{</span>
+        <span class="nt">&quot;ok&quot;</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
+        <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;FishStew&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;rev&quot;</span><span class="p">:</span><span class="s2">&quot; 1-967a00dff5e02add41819138abb3284d&quot;</span>
+    <span class="p">},</span>
+    <span class="p">{</span>
+        <span class="nt">&quot;ok&quot;</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
+        <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;LambStew&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;rev&quot;</span><span class="p">:</span> <span class="s2">&quot;3-f9c62b2169d0999103e9f41949090807&quot;</span>
+    <span class="p">}</span>
+<span class="p">]</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<div class="section" id="inserting-documents-in-bulk">
+<h2>Inserting Documents in Bulk<a class="headerlink" href="#inserting-documents-in-bulk" title="Permalink to this headline">¶</a></h2>
+<p>Each time a document is stored or updated in CouchDB, the internal B-tree
+is updated. Bulk insertion provides efficiency gains in both storage space,
+and time, by consolidating many of the updates to intermediate B-tree nodes.</p>
+<p>It is not intended as a way to perform <tt class="docutils literal"><span class="pre">ACID</span></tt>-like transactions in CouchDB,
+the only transaction boundary within CouchDB is a single update to a single
+database. The constraints are detailed in <a class="reference internal" href="#api-db-bulk-docs-semantics"><em>Bulk Documents Transaction Semantics</em></a>.</p>
+<p>To insert documents in bulk into a database you need to supply a JSON
+structure with the array of documents that you want to add to the database.
+You can either include a document ID, or allow the document ID to be
+automatically generated.</p>
+<p>For example, the following update inserts three new documents, two with the
+supplied document IDs, and one which will have a document ID generated:</p>
+<div class="highlight-http"><div class="highlight"><pre><span class="nf">POST</span> <span class="nn">/source/_bulk_docs</span> <span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span>
+<span class="na">Accept</span><span class="o">:</span> <span class="l">application/json</span>
+<span class="na">Content-Length</span><span class="o">:</span> <span class="l">323</span>
+<span class="na">Content-Type</span><span class="o">:</span> <span class="l">application/json</span>
+<span class="na">Host</span><span class="o">:</span> <span class="l">localhost:5984</span>
+
+<span class="p">{</span>
+    <span class="nt">&quot;docs&quot;</span><span class="p">:</span> <span class="p">[</span>
+        <span class="p">{</span>
+            <span class="nt">&quot;_id&quot;</span><span class="p">:</span> <span class="s2">&quot;FishStew&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;servings&quot;</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span>
+            <span class="nt">&quot;subtitle&quot;</span><span class="p">:</span> <span class="s2">&quot;Delicious with freshly baked bread&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;title&quot;</span><span class="p">:</span> <span class="s2">&quot;FishStew&quot;</span>
+        <span class="p">},</span>
+        <span class="p">{</span>
+            <span class="nt">&quot;_id&quot;</span><span class="p">:</span> <span class="s2">&quot;LambStew&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;servings&quot;</span><span class="p">:</span> <span class="mi">6</span><span class="p">,</span>
+            <span class="nt">&quot;subtitle&quot;</span><span class="p">:</span> <span class="s2">&quot;Serve with a whole meal scone topping&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;title&quot;</span><span class="p">:</span> <span class="s2">&quot;LambStew&quot;</span>
+        <span class="p">},</span>
+        <span class="p">{</span>
+            <span class="nt">&quot;servings&quot;</span><span class="p">:</span> <span class="mi">8</span><span class="p">,</span>
+            <span class="nt">&quot;subtitle&quot;</span><span class="p">:</span> <span class="s2">&quot;Hand-made dumplings make a great accompaniment&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;title&quot;</span><span class="p">:</span> <span class="s2">&quot;BeefStew&quot;</span>
+        <span class="p">}</span>
+    <span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>The return type from a bulk insertion will be <a class="reference external" href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.2.2">201 Created</a>,
+with the content of the returned structure indicating specific success
+or otherwise messages on a per-document basis.</p>
+<p>The return structure from the example above contains a list of the
+documents created, here with the combination and their revision IDs:</p>
+<div class="highlight-http"><div class="highlight"><pre><span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span> <span class="m">201</span> <span class="ne">Created</span>
+<span class="na">Cache-Control</span><span class="o">:</span> <span class="l">must-revalidate</span>
+<span class="na">Content-Length</span><span class="o">:</span> <span class="l">215</span>
+<span class="na">Content-Type</span><span class="o">:</span> <span class="l">application/json</span>
+<span class="na">Date</span><span class="o">:</span> <span class="l">Sat, 26 Oct 2013 00:10:39 GMT</span>
+<span class="na">Server</span><span class="o">:</span> <span class="l">CouchDB (Erlang OTP)</span>
+
+<span class="p">[</span>
+    <span class="p">{</span>
+        <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;FishStew&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;ok&quot;</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
+        <span class="nt">&quot;rev&quot;</span><span class="p">:</span> <span class="s2">&quot;1-6a466d5dfda05e613ba97bd737829d67&quot;</span>
+    <span class="p">},</span>
+    <span class="p">{</span>
+        <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;LambStew&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;ok&quot;</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
+        <span class="nt">&quot;rev&quot;</span><span class="p">:</span> <span class="s2">&quot;1-648f1b989d52b8e43f05aa877092cc7c&quot;</span>
+    <span class="p">},</span>
+    <span class="p">{</span>
+        <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;00a271787f89c0ef2e10e88a0c0003f0&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;ok&quot;</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
+        <span class="nt">&quot;rev&quot;</span><span class="p">:</span> <span class="s2">&quot;1-e4602845fc4c99674f50b1d5a804fdfa&quot;</span>
+    <span class="p">}</span>
+<span class="p">]</span>
+</pre></div>
+</div>
+<p>The content and structure of the returned JSON will depend on the transaction
+semantics being used for the bulk update; see <a class="reference internal" href="#api-db-bulk-docs-semantics"><em>Bulk Documents Transaction Semantics</em></a>
+for more information. Conflicts and validation errors when updating documents
+in bulk must be handled separately; see <a class="reference internal" href="#api-db-bulk-docs-validation"><em>Bulk Document Validation and Conflict Errors</em></a>.</p>
+</div>
+<div class="section" id="updating-documents-in-bulk">
+<h2>Updating Documents in Bulk<a class="headerlink" href="#updating-documents-in-bulk" title="Permalink to this headline">¶</a></h2>
+<p>The bulk document update procedure is similar to the insertion
+procedure, except that you must specify the document ID and current
+revision for every document in the bulk update JSON string.</p>
+<p>For example, you could send the following request:</p>
+<div class="highlight-http"><div class="highlight"><pre><span class="nf">POST</span> <span class="nn">/recipes/_bulk_docs</span> <span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span>
+<span class="na">Accept</span><span class="o">:</span> <span class="l">application/json</span>
+<span class="na">Content-Length</span><span class="o">:</span> <span class="l">464</span>
+<span class="na">Content-Type</span><span class="o">:</span> <span class="l">application/json</span>
+<span class="na">Host</span><span class="o">:</span> <span class="l">localhost:5984</span>
+
+<span class="p">{</span>
+    <span class="nt">&quot;docs&quot;</span><span class="p">:</span> <span class="p">[</span>
+        <span class="p">{</span>
+            <span class="nt">&quot;_id&quot;</span><span class="p">:</span> <span class="s2">&quot;FishStew&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;_rev&quot;</span><span class="p">:</span> <span class="s2">&quot;1-6a466d5dfda05e613ba97bd737829d67&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;servings&quot;</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span>
+            <span class="nt">&quot;subtitle&quot;</span><span class="p">:</span> <span class="s2">&quot;Delicious with freshly baked bread&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;title&quot;</span><span class="p">:</span> <span class="s2">&quot;FishStew&quot;</span>
+        <span class="p">},</span>
+        <span class="p">{</span>
+            <span class="nt">&quot;_id&quot;</span><span class="p">:</span> <span class="s2">&quot;LambStew&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;_rev&quot;</span><span class="p">:</span> <span class="s2">&quot;1-648f1b989d52b8e43f05aa877092cc7c&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;servings&quot;</span><span class="p">:</span> <span class="mi">6</span><span class="p">,</span>
+            <span class="nt">&quot;subtitle&quot;</span><span class="p">:</span> <span class="s2">&quot;Serve with a whole meal scone topping&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;title&quot;</span><span class="p">:</span> <span class="s2">&quot;LambStew&quot;</span>
+        <span class="p">},</span>
+        <span class="p">{</span>
+            <span class="nt">&quot;_id&quot;</span><span class="p">:</span> <span class="s2">&quot;BeefStew&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;_rev&quot;</span><span class="p">:</span> <span class="s2">&quot;1-e4602845fc4c99674f50b1d5a804fdfa&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;servings&quot;</span><span class="p">:</span> <span class="mi">8</span><span class="p">,</span>
+            <span class="nt">&quot;subtitle&quot;</span><span class="p">:</span> <span class="s2">&quot;Hand-made dumplings make a great accompaniment&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;title&quot;</span><span class="p">:</span> <span class="s2">&quot;BeefStew&quot;</span>
+        <span class="p">}</span>
+    <span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>The return structure is the JSON of the updated documents, with the new
+revision and ID information:</p>
+<div class="highlight-http"><div class="highlight"><pre><span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span> <span class="m">201</span> <span class="ne">Created</span>
+<span class="na">Cache-Control</span><span class="o">:</span> <span class="l">must-revalidate</span>
+<span class="na">Content-Length</span><span class="o">:</span> <span class="l">215</span>
+<span class="na">Content-Type</span><span class="o">:</span> <span class="l">application/json</span>
+<span class="na">Date</span><span class="o">:</span> <span class="l">Sat, 26 Oct 2013 00:10:39 GMT</span>
+<span class="na">Server</span><span class="o">:</span> <span class="l">CouchDB (Erlang OTP)</span>
+
+<span class="p">[</span>
+    <span class="p">{</span>
+        <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;FishStew&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;ok&quot;</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
+        <span class="nt">&quot;rev&quot;</span><span class="p">:</span> <span class="s2">&quot;2-2bff94179917f1dec7cd7f0209066fb8&quot;</span>
+    <span class="p">},</span>
+    <span class="p">{</span>
+        <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;LambStew&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;ok&quot;</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
+        <span class="nt">&quot;rev&quot;</span><span class="p">:</span> <span class="s2">&quot;2-6a7aae7ac481aa98a2042718d09843c4&quot;</span>
+    <span class="p">},</span>
+    <span class="p">{</span>
+        <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;BeefStew&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;ok&quot;</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
+        <span class="nt">&quot;rev&quot;</span><span class="p">:</span> <span class="s2">&quot;2-9801936a42f06a16f16c30027980d96f&quot;</span>
+    <span class="p">}</span>
+<span class="p">]</span>
+</pre></div>
+</div>
+<p>You can optionally delete documents during a bulk update by adding the
+<tt class="docutils literal"><span class="pre">_deleted</span></tt> field with a value of <tt class="docutils literal"><span class="pre">true</span></tt> to each document ID/revision
+combination within the submitted JSON structure.</p>
+<p>The return type from a bulk insertion will be <a class="reference external" href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.2.2">201 Created</a>, with the
+content of the returned structure indicating specific success or otherwise
+messages on a per-document basis.</p>
+<p>The content and structure of the returned JSON will depend on the transaction
+semantics being used for the bulk update; see <a class="reference internal" href="#api-db-bulk-docs-semantics"><em>Bulk Documents Transaction Semantics</em></a>
+for more information. Conflicts and validation errors when updating documents
+in bulk must be handled separately; see <a class="reference internal" href="#api-db-bulk-docs-validation"><em>Bulk Document Validation and Conflict Errors</em></a>.</p>
+</div>
+<div class="section" id="bulk-documents-transaction-semantics">
+<span id="api-db-bulk-docs-semantics"></span><h2>Bulk Documents Transaction Semantics<a class="headerlink" href="#bulk-documents-transaction-semantics" title="Permalink to this headline">¶</a></h2>
+<p>CouchDB supports two different modes for updating (or inserting)
+documents using the bulk documentation system. Each mode affects both
+the state of the documents in the event of system failure, and the level
+of conflict checking performed on each document. The two modes are:</p>
+<ul>
+<li><p class="first"><strong>non-atomic</strong></p>
+<p>The default mode is <cite>non-atomic</cite>, that is, CouchDB will only guarantee
+that some of the documents will be saved when you send the request.
+The response will contain the list of documents successfully inserted
+or updated during the process. In the event of a crash, some of the
+documents may have been successfully saved, and some will have been
+lost.</p>
+<p>In this mode, the response structure will indicate whether the
+document was updated by supplying the new <tt class="docutils literal"><span class="pre">_rev</span></tt> parameter
+indicating a new document revision was created. If the update failed,
+then you will get an <tt class="docutils literal"><span class="pre">error</span></tt> of type <tt class="docutils literal"><span class="pre">conflict</span></tt>. For example:</p>
+<div class="highlight-javascript"><div class="highlight"><pre><span class="p">[</span>
+    <span class="p">{</span>
+        <span class="s2">&quot;id&quot;</span> <span class="o">:</span> <span class="s2">&quot;FishStew&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;error&quot;</span> <span class="o">:</span> <span class="s2">&quot;conflict&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;reason&quot;</span> <span class="o">:</span> <span class="s2">&quot;Document update conflict.&quot;</span>
+    <span class="p">},</span>
+    <span class="p">{</span>
+        <span class="s2">&quot;id&quot;</span> <span class="o">:</span> <span class="s2">&quot;LambStew&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;error&quot;</span> <span class="o">:</span> <span class="s2">&quot;conflict&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;reason&quot;</span> <span class="o">:</span> <span class="s2">&quot;Document update conflict.&quot;</span>
+    <span class="p">},</span>
+    <span class="p">{</span>
+        <span class="s2">&quot;id&quot;</span> <span class="o">:</span> <span class="s2">&quot;BeefStew&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;error&quot;</span> <span class="o">:</span> <span class="s2">&quot;conflict&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;reason&quot;</span> <span class="o">:</span> <span class="s2">&quot;Document update conflict.&quot;</span>
+    <span class="p">}</span>
+<span class="p">]</span>
+</pre></div>
+</div>
+<p>In this case no new revision has been created and you will need to
+submit the document update, with the correct revision tag, to update
+the document.</p>
+</li>
+</ul>
+<p>The effects of different database operations on the different modes are
+summarized below:</p>
+<ul class="simple">
+<li><strong>Transaction Mode</strong>: <tt class="docutils literal"><span class="pre">Non-atomic</span></tt><ul>
+<li><strong>Transaction</strong>: <tt class="docutils literal"><span class="pre">Insert</span></tt><ul>
+<li><strong>Cause</strong>: Requested document ID already exists</li>
+<li><strong>Resolution</strong>: Resubmit with different document ID, or update the
+existing document</li>
+</ul>
+</li>
+<li><strong>Transaction</strong>: <tt class="docutils literal"><span class="pre">Update</span></tt><ul>
+<li><strong>Cause</strong>: Revision missing or incorrect</li>
+<li><strong>Resolution</strong>: Resubmit with correct revision</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><strong>Transaction Mode</strong>: <tt class="docutils literal"><span class="pre">All-or-nothing</span></tt><ul>
+<li><strong>Transaction</strong>: <tt class="docutils literal"><span class="pre">Insert</span></tt> / <tt class="docutils literal"><span class="pre">Update</span></tt><ul>
+<li><strong>Cause</strong>: Additional revision inserted</li>
+<li><strong>Resolution</strong>: Resolve conflicted revisions</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p>Replication of documents is independent of the type of insert or update.
+The documents and revisions created during a bulk insert or update are
+replicated in the same way as any other document. This can mean that if
+you make use of the <cite>all-or-nothing</cite> mode the exact list of documents,
+revisions (and their conflict state) may or may not be replicated to
+other databases correctly.</p>
+</div>
+<div class="section" id="bulk-document-validation-and-conflict-errors">
+<span id="api-db-bulk-docs-validation"></span><h2>Bulk Document Validation and Conflict Errors<a class="headerlink" href="#bulk-document-validation-and-conflict-errors" title="Permalink to this headline">¶</a></h2>
+<p>The JSON returned by the <tt class="docutils literal"><span class="pre">_bulk_docs</span></tt> operation consists of an array
+of JSON structures, one for each document in the original submission.
+The returned JSON structure should be examined to ensure that all of the
+documents submitted in the original request were successfully added to
+the database.</p>
+<p>When a document (or document revision) is not correctly committed to the
+database because of an error, you should check the <tt class="docutils literal"><span class="pre">error</span></tt> field to
+determine error type and course of action. Errors will be one of the
+following type:</p>
+<ul>
+<li><p class="first"><strong>conflict</strong></p>
+<p>The document as submitted is in conflict. If you used the default
+bulk transaction mode then the new revision will not have been
+created and you will need to re-submit the document to the database.
+If you used <tt class="docutils literal"><span class="pre">all-or-nothing</span></tt> mode then you will need to manually
+resolve the conflicted revisions of the document.</p>
+<p>Conflict resolution of documents added using the bulk docs interface
+is identical to the resolution procedures used when resolving
+conflict errors during replication.</p>
+</li>
+<li><p class="first"><strong>forbidden</strong></p>
+<p>Entries with this error type indicate that the validation routine
+applied to the document during submission has returned an error.</p>
+<p>For example, if your <a class="reference internal" href="../../couchapp/ddocs.html#vdufun"><em>validation routine</em></a> includes
+the following:</p>
+<div class="highlight-javascript"><div class="highlight"><pre><span class="k">throw</span><span class="p">({</span><span class="nx">forbidden</span><span class="o">:</span> <span class="s1">&#39;invalid recipe ingredient&#39;</span><span class="p">});</span>
+</pre></div>
+</div>
+<p>The error response returned will be:</p>
+<div class="highlight-http"><div class="highlight"><pre><span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span> <span class="m">417</span> <span class="ne">Expectation Failed</span>
+<span class="na">Cache-Control</span><span class="o">:</span> <span class="l">must-revalidate</span>
+<span class="na">Content-Length</span><span class="o">:</span> <span class="l">120</span>
+<span class="na">Content-Type</span><span class="o">:</span> <span class="l">application/json</span>
+<span class="na">Date</span><span class="o">:</span> <span class="l">Sat, 26 Oct 2013 00:05:17 GMT</span>
+<span class="na">Server</span><span class="o">:</span> <span class="l">CouchDB (Erlang OTP)</span>
+
+<span class="p">{</span>
+    <span class="nt">&quot;error&quot;</span><span class="p">:</span> <span class="s2">&quot;forbidden&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;LambStew&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;reason&quot;</span><span class="p">:</span> <span class="s2">&quot;invalid recipe ingredient&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;rev&quot;</span><span class="p">:</span> <span class="s2">&quot;1-34c318924a8f327223eed702ddfdc66d&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</li>
+</ul>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+    <p class="logo"><a href="../../index.html">
+      <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+    </a></p><!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+<div id="searchbox" style="display: none">
+
+<h3>Quick Search</h3>
+
+<form class="search" action="../../search.html" method="get">
+<input type="text" name="q" style="width:115px">
+<input type="submit" value="Go">
+<input type="hidden" name="check_keywords" value="yes">
+<input type="hidden" name="area" value="default">
+</form>
+
+<br>
+
+</div>
+
+<script type="text/javascript">$('#searchbox').show(0);</script>
+  <h3><a href="../../contents.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">10.3.2. <tt class="docutils literal"><span class="pre">/db/_all_docs</span></tt></a></li>
+<li><a class="reference internal" href="#db-bulk-docs">10.3.3. <tt class="docutils literal"><span class="pre">/db/_bulk_docs</span></tt></a><ul>
+<li><a class="reference internal" href="#inserting-documents-in-bulk">Inserting Documents in Bulk</a></li>
+<li><a class="reference internal" href="#updating-documents-in-bulk">Updating Documents in Bulk</a></li>
+<li><a class="reference internal" href="#bulk-documents-transaction-semantics">Bulk Documents Transaction Semantics</a></li>
+<li><a class="reference internal" href="#bulk-document-validation-and-conflict-errors">Bulk Document Validation and Conflict Errors</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="common.html"
+                        title="previous chapter">10.3.1. <tt class="docutils literal"><span class="pre">/db</span></tt></a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="find.html"
+                        title="next chapter">10.3.4. <tt class="docutils literal"><span class="pre">/db/_find</span></tt></a></p><!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+
+<h3>Utilities</h3>
+
+<ul>
+<li><a href="../">Fauxton</a></li>
+</ul>
+<!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+<h3>More Help</h3>
+
+<ul>
+<li><a href="https://couchdb.apache.org/">Homepage</a></li>
+<li><a href="https://cwiki.apache.org/confluence/display/COUCHDB/">Wiki</a></li>
+<li><a href="https://couchdb.apache.org/#mailing-list">Mailing Lists</a></li>
+<li><a href="http://webchat.freenode.net/?channels=couchdb">IRC</a></li>
+<li><a href="https://issues.apache.org/jira/browse/CouchDB">Issues</a></li>
+<li><a href="../../download.html">Download</a></li>
+<li><a href="https://github.com/apache/couchdb-documentation/blob/master/src/api/database/bulk-api.rst"
+       rel="nofollow">Show on GitHub</a></li>
+<li><a href="https://github.com/apache/couchdb-documentation/edit/master/src/api/database/bulk-api.rst"
+       rel="nofollow">Edit on GitHub</a></li>
+</ul><!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../http-api.html" title="HTTP API Reference"
+             >API Reference</a></li>
+        <li class="right" >
+          <a href="../../config-ref.html" title="Configuration Reference"
+             >Config Reference</a> |</li>
+        <li class="right" >
+          <a href="find.html" title="10.3.4. /db/_find"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="common.html" title="10.3.1. /db"
+             >previous</a> |</li>
+  <li><a href="../../index.html">Apache CouchDB 2.0 Documentation</a> &raquo;</li>
+          <li><a href="../index.html" >10. API Reference</a> &raquo;</li>
+          <li><a href="index.html" >10.3. Databases</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2016, Apache Software Foundation.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
+    </div>
+  </body>
+</html>

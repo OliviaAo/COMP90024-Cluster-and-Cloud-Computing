@@ -1,0 +1,268 @@
+<!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>15.3. 1.5.x Branch &mdash; Apache CouchDB 2.0 Documentation</title>
+    
+    <link rel="stylesheet" href="../_static/rtd.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '2.0.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+    <link rel="author" title="About these documents" href="../about.html" />
+    <link rel="top" title="Apache CouchDB 2.0 Documentation" href="../index.html" />
+    <link rel="up" title="15. Release History" href="index.html" />
+    <link rel="next" title="15.4. 1.4.x Branch" href="1.4.html" />
+    <link rel="prev" title="15.2. 1.6.x Branch" href="1.6.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../http-api.html" title="HTTP API Reference"
+             >API Reference</a></li>
+        <li class="right" >
+          <a href="../config-ref.html" title="Configuration Reference"
+             >Config Reference</a> |</li>
+        <li class="right" >
+          <a href="1.4.html" title="15.4. 1.4.x Branch"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="1.6.html" title="15.2. 1.6.x Branch"
+             accesskey="P">previous</a> |</li>
+  <li><a href="../index.html">Apache CouchDB 2.0 Documentation</a> &raquo;</li>
+          <li><a href="index.html" accesskey="U">15. Release History</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="x-branch">
+<span id="release-1-5-x"></span><h1>15.3. 1.5.x Branch<a class="headerlink" href="#x-branch" title="Permalink to this headline">¶</a></h1>
+<div class="contents local topic" id="contents">
+<ul class="simple">
+<li><a class="reference internal" href="#version-1-5-1" id="id1">Version 1.5.1</a></li>
+<li><a class="reference internal" href="#version-1-5-0" id="id2">Version 1.5.0</a></li>
+</ul>
+</div>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last"><a class="reference internal" href="#release-1-5-1"><em>Version 1.5.1</em></a> contains important security fixes. Previous <cite>1.5.x</cite>
+releases are not recommended for regular usage.</p>
+</div>
+<div class="section" id="version-1-5-1">
+<span id="release-1-5-1"></span><h2><a class="toc-backref" href="#id1">15.3.1. Version 1.5.1</a><a class="headerlink" href="#version-1-5-1" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>Add the <tt class="docutils literal"><span class="pre">max_count</span></tt> option (<a class="reference internal" href="../config/misc.html#config-uuids"><em>UUIDs Configuration</em></a>) to allow rate-limiting
+the amount of UUIDs that can be requested from the <a class="reference internal" href="../api/server/common.html#api-server-uuids"><em>/_uuids</em></a>
+handler in a single request (<a class="reference internal" href="../cve/2014-2668.html#cve-2014-2668"><em>CVE 2014-2668</em></a>).</li>
+</ul>
+</div>
+<div class="section" id="version-1-5-0">
+<span id="release-1-5-0"></span><h2><a class="toc-backref" href="#id2">15.3.2. Version 1.5.0</a><a class="headerlink" href="#version-1-5-0" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><a class="reference external" href="https://issues.apache.org/jira/browse/COUCHDB-1781">COUCHDB-1781</a>: The official documentation has been overhauled. A lot of
+content from other sources have been merged, and the index page
+has been rebuilt to make the docs much more accessible.
+<a class="reference external" href="https://git-wip-us.apache.org/repos/asf?p=couchdb.git;a=commit;h=54813a7">#54813a7</a></li>
+<li>A new administration UI, codenamed Fauxton, has been included as an
+experimental preview. It can be accessed at <tt class="docutils literal"><span class="pre">/_utils/fauxton/</span></tt>. There
+are too many improvements here to list them all. We are looking for
+feedback from the community on this preview release.</li>
+<li><a class="reference external" href="https://issues.apache.org/jira/browse/COUCHDB-1888">COUCHDB-1888</a>: Fixed an issue where admin users would be restricted by
+the <tt class="docutils literal"><span class="pre">public_fields</span></tt> feature.</li>
+<li>Fixed an issue with the JavaScript CLI test runner. <a class="reference external" href="https://git-wip-us.apache.org/repos/asf?p=couchdb.git;a=commit;h=be76882">#be76882</a>,
+<a class="reference external" href="https://git-wip-us.apache.org/repos/asf?p=couchdb.git;a=commit;h=54813a7">#54813a7</a></li>
+<li><a class="reference external" href="https://issues.apache.org/jira/browse/COUCHDB-1867">COUCHDB-1867</a>: An experimental plugin feature has been added. See
+<tt class="docutils literal"><span class="pre">src/couch_plugin/README.md</span></tt> for details. We invite the community to
+test and report any findings.</li>
+<li><a class="reference external" href="https://issues.apache.org/jira/browse/COUCHDB-1894">COUCHDB-1894</a>: An experimental Node.js-based query server runtime
+has been added. See <a class="reference internal" href="../experimental.html#experimental"><em>Experimental Features</em></a> for details. We invite the
+community to test and report any findings.</li>
+<li><a class="reference external" href="https://issues.apache.org/jira/browse/COUCHDB-1901">COUCHDB-1901</a>: Better retry mechanism for transferring attachments
+during replication. <a class="reference external" href="https://git-wip-us.apache.org/repos/asf?p=couchdb.git;a=commit;h=4ca2cec">#4ca2cec</a></li>
+</ul>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+    <p class="logo"><a href="../index.html">
+      <img class="logo" src="../_static/logo.png" alt="Logo"/>
+    </a></p><!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+<div id="searchbox" style="display: none">
+
+<h3>Quick Search</h3>
+
+<form class="search" action="../search.html" method="get">
+<input type="text" name="q" style="width:115px">
+<input type="submit" value="Go">
+<input type="hidden" name="check_keywords" value="yes">
+<input type="hidden" name="area" value="default">
+</form>
+
+<br>
+
+</div>
+
+<script type="text/javascript">$('#searchbox').show(0);</script>
+  <h3><a href="../contents.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">15.3. 1.5.x Branch</a><ul>
+<li><a class="reference internal" href="#version-1-5-1">15.3.1. Version 1.5.1</a></li>
+<li><a class="reference internal" href="#version-1-5-0">15.3.2. Version 1.5.0</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="1.6.html"
+                        title="previous chapter">15.2. 1.6.x Branch</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="1.4.html"
+                        title="next chapter">15.4. 1.4.x Branch</a></p><!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+
+<h3>Utilities</h3>
+
+<ul>
+<li><a href="../">Fauxton</a></li>
+</ul>
+<!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+<h3>More Help</h3>
+
+<ul>
+<li><a href="https://couchdb.apache.org/">Homepage</a></li>
+<li><a href="https://cwiki.apache.org/confluence/display/COUCHDB/">Wiki</a></li>
+<li><a href="https://couchdb.apache.org/#mailing-list">Mailing Lists</a></li>
+<li><a href="http://webchat.freenode.net/?channels=couchdb">IRC</a></li>
+<li><a href="https://issues.apache.org/jira/browse/CouchDB">Issues</a></li>
+<li><a href="../download.html">Download</a></li>
+<li><a href="https://github.com/apache/couchdb-documentation/blob/master/src/whatsnew/1.5.rst"
+       rel="nofollow">Show on GitHub</a></li>
+<li><a href="https://github.com/apache/couchdb-documentation/edit/master/src/whatsnew/1.5.rst"
+       rel="nofollow">Edit on GitHub</a></li>
+</ul><!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../http-api.html" title="HTTP API Reference"
+             >API Reference</a></li>
+        <li class="right" >
+          <a href="../config-ref.html" title="Configuration Reference"
+             >Config Reference</a> |</li>
+        <li class="right" >
+          <a href="1.4.html" title="15.4. 1.4.x Branch"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="1.6.html" title="15.2. 1.6.x Branch"
+             >previous</a> |</li>
+  <li><a href="../index.html">Apache CouchDB 2.0 Documentation</a> &raquo;</li>
+          <li><a href="index.html" >15. Release History</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2016, Apache Software Foundation.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
+    </div>
+  </body>
+</html>

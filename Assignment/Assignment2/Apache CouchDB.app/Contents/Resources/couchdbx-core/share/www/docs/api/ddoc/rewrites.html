@@ -1,0 +1,435 @@
+<!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>10.5.11. /db/_design/design-doc/_rewrite/path &mdash; Apache CouchDB 2.0 Documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/rtd.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '2.0.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <link rel="author" title="About these documents" href="../../about.html" />
+    <link rel="top" title="Apache CouchDB 2.0 Documentation" href="../../index.html" />
+    <link rel="up" title="10.5. Design Documents" href="index.html" />
+    <link rel="next" title="10.6. Local (non-replicating) Documents" href="../local.html" />
+    <link rel="prev" title="10.5.5. /db/_design/design-doc/_show/show-name" href="render.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../http-api.html" title="HTTP API Reference"
+             >API Reference</a></li>
+        <li class="right" >
+          <a href="../../config-ref.html" title="Configuration Reference"
+             >Config Reference</a> |</li>
+        <li class="right" >
+          <a href="../local.html" title="10.6. Local (non-replicating) Documents"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="render.html" title="10.5.5. /db/_design/design-doc/_show/show-name"
+             accesskey="P">previous</a> |</li>
+  <li><a href="../../index.html">Apache CouchDB 2.0 Documentation</a> &raquo;</li>
+          <li><a href="../index.html" >10. API Reference</a> &raquo;</li>
+          <li><a href="index.html" accesskey="U">10.5. Design Documents</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="db-design-design-doc-rewrite-path">
+<span id="api-ddoc-rewrite"></span><h1>10.5.11. <tt class="docutils literal"><span class="pre">/db/_design/design-doc/_rewrite/path</span></tt><a class="headerlink" href="#db-design-design-doc-rewrite-path" title="Permalink to this headline">¶</a></h1>
+<dl class="any">
+<dt id="any--db-_design-ddoc-_rewrite-path">
+<tt class="descname">ANY </tt><tt class="descname">/{db}/_design/{ddoc}/_rewrite/{path}</tt><a class="headerlink" href="#any--db-_design-ddoc-_rewrite-path" title="Permalink to this definition">¶</a></dt>
+<dd><p>Rewrites the specified path by rules defined in the specified design
+document. The rewrite rules are defined in <em>array</em> or <em>string</em> field
+of the design document called <tt class="docutils literal"><span class="pre">rewrites</span></tt>.</p>
+</dd></dl>
+
+<div class="section" id="rewrite-section-a-is-stringified-function">
+<h2>Rewrite section a is stringified function<a class="headerlink" href="#rewrite-section-a-is-stringified-function" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div><p><em>&#8216;Rewrite using JS&#8217; feature was introduced in CouchDB 1.7</em>. If the
+<tt class="docutils literal"><span class="pre">rewrites</span></tt> field is a stringified function, query server is used
+to pre-process and route a request.</p>
+<p>The function receives truncated version of req object as a single argument
+and must return object, containing new information about request.</p>
+<p>Returned object should include properties as:</p>
+<ul class="simple">
+<li><strong>path</strong> (<em>string</em>): Rewritten path, mandatory if no <em>code</em> provided</li>
+<li><strong>query</strong> (<em>array</em>): Rewritten query, if omitted original query keys
+are used</li>
+<li><strong>headers</strong> (<em>object</em>): Rewritten headers. If omitted, original
+request headers are used</li>
+<li><strong>method</strong> (<em>string</em>): Method of rewritten request. If omitted,
+original request method is used</li>
+<li><strong>code</strong> (<em>number</em>): Returned code. If provided, request is not rewritten
+and user immidiately receives response with the code</li>
+<li><strong>body</strong> (<em>string</em>): Body for POST/PUT requests, or for returning to user
+if <em>code</em> field provided. If POST/PUT request is being rewritten and no
+body returned by rewrite function, original request body is used</li>
+</ul>
+<p><strong>Example A</strong>. Restricting access.</p>
+<div class="highlight-javascript"><div class="highlight"><pre><span class="kd">function</span><span class="p">(</span><span class="nx">req2</span><span class="p">)</span> <span class="p">{</span>
+  <span class="kd">var</span> <span class="nx">path</span> <span class="o">=</span> <span class="nx">req2</span><span class="p">.</span><span class="nx">path</span><span class="p">.</span><span class="nx">slice</span><span class="p">(</span><span class="mi">4</span><span class="p">),</span>
+    <span class="nx">isWrite</span> <span class="o">=</span> <span class="sr">/^(put|post|delete)$/i</span><span class="p">.</span><span class="nx">test</span><span class="p">(</span><span class="nx">req2</span><span class="p">.</span><span class="nx">method</span><span class="p">),</span>
+    <span class="nx">isFin</span> <span class="o">=</span> <span class="nx">req2</span><span class="p">.</span><span class="nx">userCtx</span><span class="p">.</span><span class="nx">roles</span><span class="p">.</span><span class="nx">indexOf</span><span class="p">(</span><span class="s2">&quot;finance&quot;</span><span class="p">)</span><span class="o">&gt;-</span><span class="mi">1</span><span class="p">;</span>
+  <span class="k">if</span> <span class="p">(</span><span class="nx">path</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;finance&quot;</span> <span class="o">&amp;&amp;</span> <span class="nx">isWrite</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="nx">isFin</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// Deny writes to  DB &quot;finance&quot; for users</span>
+    <span class="c1">// having no &quot;finance&quot; role</span>
+    <span class="k">return</span> <span class="p">{</span>
+      <span class="nx">code</span><span class="o">:</span> <span class="mi">403</span><span class="p">,</span>
+      <span class="nx">body</span><span class="o">:</span><span class="nx">JSON</span><span class="p">.</span><span class="nx">stringify</span><span class="p">({</span>
+        <span class="nx">error</span><span class="o">:</span><span class="s2">&quot;forbidden&quot;</span><span class="p">.</span>
+        <span class="nx">reason</span><span class="o">:</span><span class="s2">&quot;You are not allowed to modify docs in this DB&quot;</span>
+      <span class="p">})</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+  <span class="c1">// Pass through all other requests</span>
+  <span class="k">return</span> <span class="p">{</span><span class="nx">path</span><span class="o">:</span><span class="s2">&quot;../../../&quot;</span><span class="o">+</span><span class="nx">path</span><span class="p">.</span><span class="nx">join</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p><strong>Example B</strong>. Different replies for JSON and HTML requests.</p>
+<div class="highlight-javascript"><div class="highlight"><pre>  <span class="kd">function</span><span class="p">(</span><span class="nx">req2</span><span class="p">)</span> <span class="p">{</span>
+    <span class="kd">var</span> <span class="nx">path</span> <span class="o">=</span> <span class="nx">req2</span><span class="p">.</span><span class="nx">path</span><span class="p">.</span><span class="nx">slice</span><span class="p">(</span><span class="mi">4</span><span class="p">),</span>
+      <span class="nx">h</span> <span class="o">=</span> <span class="nx">headers</span><span class="p">,</span>
+      <span class="nx">wantsJson</span> <span class="o">=</span> <span class="p">(</span><span class="nx">h</span><span class="p">.</span><span class="nx">Accept</span><span class="o">||</span><span class="s2">&quot;&quot;</span><span class="p">).</span><span class="nx">indexOf</span><span class="p">(</span><span class="s2">&quot;application/json&quot;</span><span class="p">)</span><span class="o">&gt;-</span><span class="mi">1</span><span class="p">,</span>
+      <span class="nx">reply</span> <span class="o">=</span> <span class="p">{};</span>
+    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">wantsJson</span><span class="p">)</span> <span class="p">{</span>
+      <span class="c1">// Here we should prepare reply object</span>
+      <span class="c1">// for plain HTML pages</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+      <span class="c1">// Pass through JSON requests</span>
+      <span class="nx">reply</span><span class="p">.</span><span class="nx">path</span> <span class="o">=</span> <span class="s2">&quot;../../../&quot;</span><span class="o">+</span><span class="nx">path</span><span class="p">.</span><span class="nx">join</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">);</span>
+    <span class="p">}</span>
+    <span class="k">return</span> <span class="nx">reply</span><span class="p">;</span>
+  <span class="p">}</span>
+
+<span class="nx">The</span> <span class="nx">req2</span> <span class="nx">object</span> <span class="nx">rewrites</span> <span class="nx">is</span> <span class="nx">called</span> <span class="kd">with</span> <span class="nx">is</span> <span class="nx">a</span> <span class="nx">slightly</span> <span class="nx">truncated</span> <span class="nx">version</span>
+<span class="nx">of</span> <span class="nx">req</span> <span class="nx">object</span><span class="p">,</span> <span class="nx">provided</span> <span class="k">for</span> <span class="nx">list</span> <span class="nx">and</span> <span class="nx">update</span> <span class="nx">functions</span><span class="p">.</span> <span class="nx">Fields</span> <span class="o">*</span><span class="nx">info</span><span class="o">*</span><span class="p">,</span>
+<span class="o">*</span><span class="nx">uuid</span><span class="o">*</span><span class="p">,</span> <span class="o">*</span><span class="nx">id</span><span class="o">*</span> <span class="nx">and</span> <span class="o">*</span><span class="nx">form</span><span class="o">*</span> <span class="nx">are</span> <span class="nx">removed</span> <span class="nx">to</span> <span class="nx">speed</span> <span class="nx">up</span> <span class="nx">request</span> <span class="nx">processing</span><span class="p">.</span>
+<span class="nx">All</span> <span class="nx">other</span> <span class="nx">fields</span> <span class="nx">of</span> <span class="nx">the</span> <span class="nx">req</span> <span class="nx">object</span> <span class="nx">are</span> <span class="k">in</span> <span class="nx">place</span><span class="p">.</span>
+</pre></div>
+</div>
+</div></blockquote>
+</div>
+<div class="section" id="rewrite-section-is-an-array">
+<h2>Rewrite section is an array<a class="headerlink" href="#rewrite-section-is-an-array" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div><p>Each rule is an <em>object</em> with next structure:</p>
+<ul class="simple">
+<li><strong>from</strong> (<em>string</em>): The path rule used to bind current uri to the rule.
+It use pattern matching for that</li>
+<li><strong>to</strong> (<em>string</em>): Rule to rewrite an url. It can contain variables
+depending on  binding variables discovered during pattern matching and
+query args (url args and from the query member)</li>
+<li><strong>method</strong> (<em>string</em>): HTTP request method to bind the request method to
+the rule. Default is <tt class="docutils literal"><span class="pre">&quot;*&quot;</span></tt></li>
+<li><strong>query</strong> (<em>object</em>): Query args you want to define they can contain
+dynamic variable by binding the key</li>
+</ul>
+<p>The <tt class="docutils literal"><span class="pre">to``and</span> <span class="pre">``from</span></tt> paths may contains string patterns with leading
+<tt class="docutils literal"><span class="pre">:</span></tt> or <tt class="docutils literal"><span class="pre">*</span></tt> characters.</p>
+<p>For example: <tt class="docutils literal"><span class="pre">/somepath/:var/*</span></tt></p>
+<ul class="simple">
+<li>This path is converted in Erlang list by splitting <tt class="docutils literal"><span class="pre">/</span></tt></li>
+<li>Each <tt class="docutils literal"><span class="pre">var</span></tt> are converted in atom</li>
+<li><tt class="docutils literal"><span class="pre">&quot;&quot;</span></tt> are converted to <tt class="docutils literal"><span class="pre">''</span></tt> atom</li>
+<li>The pattern matching is done by splitting <tt class="docutils literal"><span class="pre">/</span></tt> in request url in a list
+of token</li>
+<li>A string pattern will match equal token</li>
+<li>The star atom (<tt class="docutils literal"><span class="pre">'*'</span></tt> in single quotes) will match any number of tokens,
+but may only be present as the last <cite>pathterm</cite> in a <cite>pathspec</cite></li>
+<li>If all tokens are matched and all <cite>pathterms</cite> are used, then the
+<cite>pathspec</cite> matches</li>
+</ul>
+<p>The pattern matching is done by first matching the HTTP request method to a
+rule. <tt class="docutils literal"><span class="pre">method</span></tt> is equal to <tt class="docutils literal"><span class="pre">&quot;*&quot;</span></tt> by default, and will match any HTTP
+method. It will then try to match the path to one rule. If no rule matches,
+then a <a class="reference external" href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.4.5">404 Not Found</a> response returned.</p>
+<p>Once a rule is found we rewrite the request url using the <tt class="docutils literal"><span class="pre">to</span></tt> and
+<tt class="docutils literal"><span class="pre">query</span></tt> fields. The identified token are matched to the rule and will
+replace var. If <tt class="docutils literal"><span class="pre">'*'</span></tt> is found in the rule it will contain the remaining
+part if it exists.</p>
+<p>Examples:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="50%" />
+<col width="14%" />
+<col width="26%" />
+<col width="10%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Rule</th>
+<th class="head">Url</th>
+<th class="head">Rewrite to</th>
+<th class="head">Tokens</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td><dl class="first last docutils">
+<dt>{&#8220;from&#8221;: &#8220;/a&#8221;,</dt>
+<dd>&#8220;to&#8221;: &#8220;/some&#8221;}</dd>
+</dl>
+</td>
+<td>/a</td>
+<td>/some</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td><dl class="first last docutils">
+<dt>{&#8220;from&#8221;: &#8220;/a/*&#8221;,</dt>
+<dd>&#8220;to&#8221;: &#8220;/some/*}</dd>
+</dl>
+</td>
+<td>/a/b/c</td>
+<td>/some/b/c</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-even"><td><dl class="first last docutils">
+<dt>{&#8220;from&#8221;: &#8220;/a/b&#8221;,</dt>
+<dd>&#8220;to&#8221;: &#8220;/some&#8221;}</dd>
+</dl>
+</td>
+<td>/a/b?k=v</td>
+<td>/some?k=v</td>
+<td>k=v</td>
+</tr>
+<tr class="row-odd"><td><dl class="first last docutils">
+<dt>{&#8220;from&#8221;: &#8220;/a/b&#8221;,</dt>
+<dd>&#8220;to&#8221;: &#8220;/some/:var&#8221;}</dd>
+</dl>
+</td>
+<td>/a/b</td>
+<td>/some/b?var=b</td>
+<td>var=b</td>
+</tr>
+<tr class="row-even"><td>{&#8220;from&#8221;: &#8220;/a/:foo/&#8221;,
+&#8220;to&#8221;: &#8220;/some/:foo/&#8221;}</td>
+<td>/a/b/c</td>
+<td>/some/b/c?foo=b</td>
+<td>foo=b</td>
+</tr>
+<tr class="row-odd"><td><dl class="first last docutils">
+<dt>{&#8220;from&#8221;: &#8220;/a/:foo&#8221;,</dt>
+<dd>&#8220;to&#8221;: &#8220;/some&#8221;,
+&#8220;query&#8221;: { &#8220;k&#8221;: &#8221;:foo&#8221; }}</dd>
+</dl>
+</td>
+<td>/a/b</td>
+<td>/some/?k=b&amp;foo=b</td>
+<td>foo=b</td>
+</tr>
+<tr class="row-even"><td><dl class="first last docutils">
+<dt>{&#8220;from&#8221;: &#8220;/a&#8221;,</dt>
+<dd>&#8220;to&#8221;: &#8220;/some/:foo&#8221;}</dd>
+</dl>
+</td>
+<td>/a?foo=b</td>
+<td>/some/?b&amp;foo=b</td>
+<td>foo=b</td>
+</tr>
+</tbody>
+</table>
+<p>Request method, header, query parameters, request payload and response body
+are depended on endpoint to which url will be rewritten.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">param db:</th><td class="field-body">Database name</td>
+</tr>
+<tr class="field-even field"><th class="field-name">param ddoc:</th><td class="field-body">Design document name</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">param path:</th><td class="field-body">URL path to rewrite</td>
+</tr>
+</tbody>
+</table>
+</div></blockquote>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+    <p class="logo"><a href="../../index.html">
+      <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+    </a></p><!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+<div id="searchbox" style="display: none">
+
+<h3>Quick Search</h3>
+
+<form class="search" action="../../search.html" method="get">
+<input type="text" name="q" style="width:115px">
+<input type="submit" value="Go">
+<input type="hidden" name="check_keywords" value="yes">
+<input type="hidden" name="area" value="default">
+</form>
+
+<br>
+
+</div>
+
+<script type="text/javascript">$('#searchbox').show(0);</script>
+  <h3><a href="../../contents.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">10.5.11. <tt class="docutils literal"><span class="pre">/db/_design/design-doc/_rewrite/path</span></tt></a><ul>
+<li><a class="reference internal" href="#rewrite-section-a-is-stringified-function">Rewrite section a is stringified function</a></li>
+<li><a class="reference internal" href="#rewrite-section-is-an-array">Rewrite section is an array</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="render.html"
+                        title="previous chapter">10.5.5. <tt class="docutils literal"><span class="pre">/db/_design/design-doc/_show/show-name</span></tt></a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="../local.html"
+                        title="next chapter">10.6. Local (non-replicating) Documents</a></p><!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+
+<h3>Utilities</h3>
+
+<ul>
+<li><a href="../">Fauxton</a></li>
+</ul>
+<!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+<h3>More Help</h3>
+
+<ul>
+<li><a href="https://couchdb.apache.org/">Homepage</a></li>
+<li><a href="https://cwiki.apache.org/confluence/display/COUCHDB/">Wiki</a></li>
+<li><a href="https://couchdb.apache.org/#mailing-list">Mailing Lists</a></li>
+<li><a href="http://webchat.freenode.net/?channels=couchdb">IRC</a></li>
+<li><a href="https://issues.apache.org/jira/browse/CouchDB">Issues</a></li>
+<li><a href="../../download.html">Download</a></li>
+<li><a href="https://github.com/apache/couchdb-documentation/blob/master/src/api/ddoc/rewrites.rst"
+       rel="nofollow">Show on GitHub</a></li>
+<li><a href="https://github.com/apache/couchdb-documentation/edit/master/src/api/ddoc/rewrites.rst"
+       rel="nofollow">Edit on GitHub</a></li>
+</ul><!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../http-api.html" title="HTTP API Reference"
+             >API Reference</a></li>
+        <li class="right" >
+          <a href="../../config-ref.html" title="Configuration Reference"
+             >Config Reference</a> |</li>
+        <li class="right" >
+          <a href="../local.html" title="10.6. Local (non-replicating) Documents"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="render.html" title="10.5.5. /db/_design/design-doc/_show/show-name"
+             >previous</a> |</li>
+  <li><a href="../../index.html">Apache CouchDB 2.0 Documentation</a> &raquo;</li>
+          <li><a href="../index.html" >10. API Reference</a> &raquo;</li>
+          <li><a href="index.html" >10.5. Design Documents</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2016, Apache Software Foundation.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
+    </div>
+  </body>
+</html>

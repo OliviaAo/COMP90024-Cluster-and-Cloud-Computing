@@ -1,0 +1,284 @@
+<!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>2. Installation &mdash; Apache CouchDB 2.0 Documentation</title>
+    
+    <link rel="stylesheet" href="../_static/rtd.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '2.0.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+    <link rel="author" title="About these documents" href="../about.html" />
+    <link rel="top" title="Apache CouchDB 2.0 Documentation" href="../index.html" />
+    <link rel="next" title="2.1. Installation on Unix-like systems" href="unix.html" />
+    <link rel="prev" title="1.7. cURL: Your Command Line Friend" href="../intro/curl.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../http-api.html" title="HTTP API Reference"
+             >API Reference</a></li>
+        <li class="right" >
+          <a href="../config-ref.html" title="Configuration Reference"
+             >Config Reference</a> |</li>
+        <li class="right" >
+          <a href="unix.html" title="2.1. Installation on Unix-like systems"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="../intro/curl.html" title="1.7. cURL: Your Command Line Friend"
+             accesskey="P">previous</a> |</li>
+  <li><a href="../index.html">Apache CouchDB 2.0 Documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="installation">
+<span id="install"></span><h1>2. Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h1>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="unix.html">2.1. Installation on Unix-like systems</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="unix.html#dependencies">2.1.1. Dependencies</a></li>
+<li class="toctree-l2"><a class="reference internal" href="unix.html#installing">2.1.2. Installing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="unix.html#user-registration-and-security">2.1.3. User Registration and Security</a></li>
+<li class="toctree-l2"><a class="reference internal" href="unix.html#first-run">2.1.4. First Run</a></li>
+<li class="toctree-l2"><a class="reference internal" href="unix.html#running-as-a-daemon">2.1.5. Running as a Daemon</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="windows.html">2.2. Installation on Windows</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="windows.html#installation-from-binaries">2.2.1. Installation from binaries</a></li>
+<li class="toctree-l2"><a class="reference internal" href="windows.html#installation-from-sources">2.2.2. Installation from sources</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="mac.html">2.3. Installation on Mac OS X</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="mac.html#installation-using-the-apache-couchdb-native-application">2.3.1. Installation using the Apache CouchDB native application</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mac.html#installation-with-homebrew">2.3.2. Installation with Homebrew</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="freebsd.html">2.4. Installation on FreeBSD</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="freebsd.html#installation-from-ports">2.4.1. Installation from ports</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="troubleshooting.html">2.5. Troubleshooting an Installation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="troubleshooting.html#first-install">2.5.1. First Install</a></li>
+<li class="toctree-l2"><a class="reference internal" href="troubleshooting.html#quick-build">2.5.2. Quick Build</a></li>
+<li class="toctree-l2"><a class="reference internal" href="troubleshooting.html#upgrading">2.5.3. Upgrading</a></li>
+<li class="toctree-l2"><a class="reference internal" href="troubleshooting.html#runtime-errors">2.5.4. Runtime Errors</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="section" id="single-node-setup">
+<span id="install-cluster"></span><h2>2.6. Single Node Setup<a class="headerlink" href="#single-node-setup" title="Permalink to this headline">¶</a></h2>
+<p>CouchDB 2.0 can be used in a single-node and cluster setup
+configuration. A single-node CouchDB 2.0 installation is what most
+users will be using. It is roughly equivalent to the CouchDB
+1.x-series. Note that a single-node setup obviously doesn&#8217;t take any
+advantage of the new scaling and fault-tolerance features in CouchDB
+2.0.</p>
+<p>After installation and initial startup, visit Fauxton at
+<tt class="docutils literal"><span class="pre">http://127.0.0.01:5984/_utils#setup</span></tt>. You will be asked to set up
+CouchDB as a single-node instance or set up a cluster.</p>
+<p>When you click “Single-Node-Setup”, you will get asked for an admin
+username and password. Choose them well and remember them. You can also
+bind CouchDB to a public port, so it is accessible within your LAN or
+the public, if you are doing this on a public VM.</p>
+<p>When you run 2.0 as a single node, it doesn&#8217;t create system databases
+on startup. You have to do this manually:</p>
+<div class="highlight-shell"><div class="highlight"><pre>curl -X PUT http://127.0.0.1:5984/_users
+
+curl -X PUT http://127.0.0.1:5984/_replicator
+
+curl -X PUT http://127.0.0.1:5984/_global_changes
+</pre></div>
+</div>
+<p>See the next section for the cluster setup instructions.</p>
+</div>
+<div class="section" id="cluster-setup">
+<h2>2.7. Cluster Setup<a class="headerlink" href="#cluster-setup" title="Permalink to this headline">¶</a></h2>
+<p>See the <a class="reference internal" href="../cluster/index.html#cluster"><em>Cluster Reference</em></a> for details.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+    <p class="logo"><a href="../index.html">
+      <img class="logo" src="../_static/logo.png" alt="Logo"/>
+    </a></p><!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+<div id="searchbox" style="display: none">
+
+<h3>Quick Search</h3>
+
+<form class="search" action="../search.html" method="get">
+<input type="text" name="q" style="width:115px">
+<input type="submit" value="Go">
+<input type="hidden" name="check_keywords" value="yes">
+<input type="hidden" name="area" value="default">
+</form>
+
+<br>
+
+</div>
+
+<script type="text/javascript">$('#searchbox').show(0);</script>
+  <h3><a href="../contents.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">2. Installation</a><ul>
+<li><a class="reference internal" href="#single-node-setup">2.6. Single Node Setup</a></li>
+<li><a class="reference internal" href="#cluster-setup">2.7. Cluster Setup</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="../intro/curl.html"
+                        title="previous chapter">1.7. cURL: Your Command Line Friend</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="unix.html"
+                        title="next chapter">2.1. Installation on Unix-like systems</a></p><!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+
+<h3>Utilities</h3>
+
+<ul>
+<li><a href="../">Fauxton</a></li>
+</ul>
+<!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+<h3>More Help</h3>
+
+<ul>
+<li><a href="https://couchdb.apache.org/">Homepage</a></li>
+<li><a href="https://cwiki.apache.org/confluence/display/COUCHDB/">Wiki</a></li>
+<li><a href="https://couchdb.apache.org/#mailing-list">Mailing Lists</a></li>
+<li><a href="http://webchat.freenode.net/?channels=couchdb">IRC</a></li>
+<li><a href="https://issues.apache.org/jira/browse/CouchDB">Issues</a></li>
+<li><a href="../download.html">Download</a></li>
+<li><a href="https://github.com/apache/couchdb-documentation/blob/master/src/install/index.rst"
+       rel="nofollow">Show on GitHub</a></li>
+<li><a href="https://github.com/apache/couchdb-documentation/edit/master/src/install/index.rst"
+       rel="nofollow">Edit on GitHub</a></li>
+</ul><!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../http-api.html" title="HTTP API Reference"
+             >API Reference</a></li>
+        <li class="right" >
+          <a href="../config-ref.html" title="Configuration Reference"
+             >Config Reference</a> |</li>
+        <li class="right" >
+          <a href="unix.html" title="2.1. Installation on Unix-like systems"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="../intro/curl.html" title="1.7. cURL: Your Command Line Friend"
+             >previous</a> |</li>
+  <li><a href="../index.html">Apache CouchDB 2.0 Documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2016, Apache Software Foundation.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
+    </div>
+  </body>
+</html>

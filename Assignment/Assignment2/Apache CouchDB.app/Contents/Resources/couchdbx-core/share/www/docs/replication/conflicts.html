@@ -1,0 +1,889 @@
+<!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>4.4. Replication and conflict model &mdash; Apache CouchDB 2.0 Documentation</title>
+    
+    <link rel="stylesheet" href="../_static/rtd.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '2.0.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+    <link rel="author" title="About these documents" href="../about.html" />
+    <link rel="top" title="Apache CouchDB 2.0 Documentation" href="../index.html" />
+    <link rel="up" title="4. Replication" href="index.html" />
+    <link rel="next" title="5. CouchDB Maintenance" href="../maintenance/index.html" />
+    <link rel="prev" title="4.3. Replicator Database" href="replicator.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../http-api.html" title="HTTP API Reference"
+             >API Reference</a></li>
+        <li class="right" >
+          <a href="../config-ref.html" title="Configuration Reference"
+             >Config Reference</a> |</li>
+        <li class="right" >
+          <a href="../maintenance/index.html" title="5. CouchDB Maintenance"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="replicator.html" title="4.3. Replicator Database"
+             accesskey="P">previous</a> |</li>
+  <li><a href="../index.html">Apache CouchDB 2.0 Documentation</a> &raquo;</li>
+          <li><a href="index.html" accesskey="U">4. Replication</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="replication-and-conflict-model">
+<span id="replication-conflicts"></span><h1>4.4. Replication and conflict model<a class="headerlink" href="#replication-and-conflict-model" title="Permalink to this headline">¶</a></h1>
+<p>Let&#8217;s take the following example to illustrate replication and conflict
+handling.</p>
+<ul class="simple">
+<li>Alice has a document containing Bob&#8217;s business card;</li>
+<li>She synchronizes it between her desktop PC and her laptop;</li>
+<li>On the desktop PC, she updates Bob&#8217;s E-mail address;
+Without syncing again, she updates Bob&#8217;s mobile number on the laptop;</li>
+<li>Then she replicates the two to each other again.</li>
+</ul>
+<p>So on the desktop the document has Bob&#8217;s new E-mail address and his old mobile
+number, and on the laptop it has his old E-mail address and his new mobile
+number.</p>
+<p>The question is, what happens to these conflicting updated documents?</p>
+<div class="section" id="couchdb-replication">
+<h2>4.4.1. CouchDB replication<a class="headerlink" href="#couchdb-replication" title="Permalink to this headline">¶</a></h2>
+<p>CouchDB works with JSON documents inside databases. Replication of databases
+takes place over HTTP, and can be either a &#8220;pull&#8221; or a &#8220;push&#8221;, but is
+unidirectional. So the easiest way to perform a full sync is to do a &#8220;push&#8221;
+followed by a &#8220;pull&#8221; (or vice versa).</p>
+<p>So, Alice creates v1 and sync it. She updates to v2a on one side and v2b on the
+other, and then replicates. What happens?</p>
+<p>The answer is simple: both versions exist on both sides!</p>
+<div class="highlight-text"><div class="highlight"><pre>  DESKTOP                          LAPTOP
++---------+
+| /db/bob |                                     INITIAL
+|   v1    |                                     CREATION
++---------+
+
++---------+                      +---------+
+| /db/bob |  -----------------&gt;  | /db/bob |     PUSH
+|   v1    |                      |   v1    |
++---------+                      +---------+
+
++---------+                      +---------+  INDEPENDENT
+| /db/bob |                      | /db/bob |     LOCAL
+|   v2a   |                      |   v2b   |     EDITS
++---------+                      +---------+
+
++---------+                      +---------+
+| /db/bob |  -----------------&gt;  | /db/bob |     PUSH
+|   v2a   |                      |   v2a   |
++---------+                      |   v2b   |
+                                 +---------+
+
++---------+                      +---------+
+| /db/bob |  &lt;-----------------  | /db/bob |     PULL
+|   v2a   |                      |   v2a   |
+|   v2b   |                      |   v2b   |
++---------+                      +---------+
+</pre></div>
+</div>
+<p>After all, this is not a filesystem, so there&#8217;s no restriction that only one
+document can exist with the name /db/bob. These are just &#8220;conflicting&#8221; revisions
+under the same name.</p>
+<p>Because the changes are always replicated, the data is safe. Both machines have
+identical copies of both documents, so failure of a hard drive on either side
+won&#8217;t lose any of the changes.</p>
+<p>Another thing to notice is that peers do not have to be configured or tracked.
+You can do regular replications to peers, or you can do one-off, ad-hoc pushes
+or pulls. After the replication has taken place, there is no record kept of
+which peer any particular document or revision came from.</p>
+<p>So the question now is: what happens when you try to read /db/bob? By default,
+CouchDB picks one arbitrary revision as the &#8220;winner&#8221;, using a deterministic
+algorithm so that the same choice will be made on all peers. The same happens
+with views: the deterministically-chosen winner is the only revision fed into
+your map function.</p>
+<p>Let&#8217;s say that the winner is v2a. On the desktop, if Alice reads the document
+she&#8217;ll see v2a, which is what she saved there. But on the laptop, after
+replication, she&#8217;ll also see only v2a. It could look as if the changes she made
+there have been lost - but of course they have not, they have just been hidden
+away as a conflicting revision. But eventually she&#8217;ll need these changes merged
+into Bob&#8217;s business card, otherwise they will effectively have been lost.</p>
+<p>Any sensible business-card application will, at minimum, have to present the
+conflicting versions to Alice and allow her to create a new version
+incorporating information from them all. Ideally it would merge the updates
+itself.</p>
+</div>
+<div class="section" id="conflict-avoidance">
+<h2>4.4.2. Conflict avoidance<a class="headerlink" href="#conflict-avoidance" title="Permalink to this headline">¶</a></h2>
+<p>When working on a single node, CouchDB will avoid creating conflicting revisions
+by returning a <a class="reference external" href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.4.10">409 Conflict</a> error. This is because, when you
+PUT a new version of a document, you must give the <tt class="docutils literal"><span class="pre">_rev</span></tt> of the previous
+version. If that <tt class="docutils literal"><span class="pre">_rev</span></tt> has already been superseded, the update is rejected
+with a  <a class="reference external" href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.4.10">409 Conflict</a> response.</p>
+<p>So imagine two users on the same node are fetching Bob&#8217;s business card, updating
+it concurrently, and writing it back:</p>
+<div class="highlight-text"><div class="highlight"><pre>USER1    -----------&gt;  GET /db/bob
+         &lt;-----------  {&quot;_rev&quot;:&quot;1-aaa&quot;, ...}
+
+USER2    -----------&gt;  GET /db/bob
+         &lt;-----------  {&quot;_rev&quot;:&quot;1-aaa&quot;, ...}
+
+USER1    -----------&gt;  PUT /db/bob?rev=1-aaa
+         &lt;-----------  {&quot;_rev&quot;:&quot;2-bbb&quot;, ...}
+
+USER2    -----------&gt;  PUT /db/bob?rev=1-aaa
+         &lt;-----------  409 Conflict  (not saved)
+</pre></div>
+</div>
+<p>User2&#8217;s changes are rejected, so it&#8217;s up to the app to fetch /db/bob again,
+and either:</p>
+<ol class="arabic simple">
+<li>apply the same changes as were applied to the earlier revision, and submit
+a new PUT</li>
+<li>redisplay the document so the user has to edit it again</li>
+<li>just overwrite it with the document being saved before (which is not
+advisable, as user1&#8217;s changes will be silently lost)</li>
+</ol>
+<p>So when working in this mode, your application still has to be able to handle
+these conflicts and have a suitable retry strategy, but these conflicts never
+end up inside the database itself.</p>
+</div>
+<div class="section" id="revision-tree">
+<h2>4.4.3. Revision tree<a class="headerlink" href="#revision-tree" title="Permalink to this headline">¶</a></h2>
+<p>When you update a document in CouchDB, it keeps a list of the previous
+revisions. In the case where conflicting updates are introduced, this history
+branches into a tree, where the current conflicting revisions for this document
+form the tips (leaf nodes) of this tree:</p>
+<div class="highlight-text"><div class="highlight"><pre>  ,--&gt; r2a
+r1 --&gt; r2b
+  `--&gt; r2c
+</pre></div>
+</div>
+<p>Each branch can then extend its history - for example if you read revision r2b
+and then PUT with ?rev=r2b then you will make a new revision along that
+particular branch.</p>
+<div class="highlight-text"><div class="highlight"><pre>  ,--&gt; r2a -&gt; r3a -&gt; r4a
+r1 --&gt; r2b -&gt; r3b
+  `--&gt; r2c -&gt; r3c
+</pre></div>
+</div>
+<p>Here, (r4a, r3b, r3c) are the set of conflicting revisions. The way you resolve
+a conflict is to delete the leaf nodes along the other branches. So when you
+combine (r4a+r3b+r3c) into a single merged document, you would replace r4a and
+delete r3b and r3c.</p>
+<div class="highlight-text"><div class="highlight"><pre>  ,--&gt; r2a -&gt; r3a -&gt; r4a -&gt; r5a
+r1 --&gt; r2b -&gt; r3b -&gt; (r4b deleted)
+  `--&gt; r2c -&gt; r3c -&gt; (r4c deleted)
+</pre></div>
+</div>
+<p>Note that r4b and r4c still exist as leaf nodes in the history tree, but as
+deleted docs. You can retrieve them but they will be marked <tt class="docutils literal"><span class="pre">&quot;_deleted&quot;:true</span></tt>.</p>
+<p>When you compact a database, the bodies of all the non-leaf documents are
+discarded. However, the list of historical _revs is retained, for the benefit of
+later conflict resolution in case you meet any old replicas of the database at
+some time in future. There is &#8220;revision pruning&#8221; to stop this getting
+arbitrarily large.</p>
+</div>
+<div class="section" id="working-with-conflicting-documents">
+<h2>4.4.4. Working with conflicting documents<a class="headerlink" href="#working-with-conflicting-documents" title="Permalink to this headline">¶</a></h2>
+<p>The basic <em>:get:`/{doc}/{docid}`</em> operation will not show you any
+information about conflicts. You see only the deterministically-chosen winner,
+and get no indication as to whether other conflicting revisions exist or not:</p>
+<div class="highlight-javascript"><div class="highlight"><pre><span class="p">{</span>
+    <span class="s2">&quot;_id&quot;</span><span class="o">:</span><span class="s2">&quot;test&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;_rev&quot;</span><span class="o">:</span><span class="s2">&quot;2-b91bb807b4685080c6a651115ff558f5&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;hello&quot;</span><span class="o">:</span><span class="s2">&quot;bar&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>If you do <tt class="docutils literal"><span class="pre">GET</span> <span class="pre">/db/test?conflicts=true</span></tt>, and the document is in a conflict
+state, then you will get the winner plus a _conflicts member containing an array
+of the revs of the other, conflicting revision(s). You can then fetch them
+individually using subsequent <tt class="docutils literal"><span class="pre">GET</span> <span class="pre">/db/test?rev=xxxx</span></tt> operations:</p>
+<div class="highlight-javascript"><div class="highlight"><pre><span class="p">{</span>
+    <span class="s2">&quot;_id&quot;</span><span class="o">:</span><span class="s2">&quot;test&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;_rev&quot;</span><span class="o">:</span><span class="s2">&quot;2-b91bb807b4685080c6a651115ff558f5&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;hello&quot;</span><span class="o">:</span><span class="s2">&quot;bar&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;_conflicts&quot;</span><span class="o">:</span><span class="p">[</span>
+        <span class="s2">&quot;2-65db2a11b5172bf928e3bcf59f728970&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;2-5bc3c6319edf62d4c624277fdd0ae191&quot;</span>
+    <span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>If you do <tt class="docutils literal"><span class="pre">GET</span> <span class="pre">/db/test?open_revs=all</span></tt> then you will get all the leaf nodes of
+the revision tree. This will give you all the current conflicts, but will also
+give you leaf nodes which have been deleted (i.e. parts of the conflict history
+which have since been resolved). You can remove these by filtering out documents
+with <tt class="docutils literal"><span class="pre">&quot;_deleted&quot;:true</span></tt>:</p>
+<div class="highlight-javascript"><div class="highlight"><pre><span class="p">[</span>
+    <span class="p">{</span><span class="s2">&quot;ok&quot;</span><span class="o">:</span><span class="p">{</span><span class="s2">&quot;_id&quot;</span><span class="o">:</span><span class="s2">&quot;test&quot;</span><span class="p">,</span><span class="s2">&quot;_rev&quot;</span><span class="o">:</span><span class="s2">&quot;2-5bc3c6319edf62d4c624277fdd0ae191&quot;</span><span class="p">,</span><span class="s2">&quot;hello&quot;</span><span class="o">:</span><span class="s2">&quot;foo&quot;</span><span class="p">}},</span>
+    <span class="p">{</span><span class="s2">&quot;ok&quot;</span><span class="o">:</span><span class="p">{</span><span class="s2">&quot;_id&quot;</span><span class="o">:</span><span class="s2">&quot;test&quot;</span><span class="p">,</span><span class="s2">&quot;_rev&quot;</span><span class="o">:</span><span class="s2">&quot;2-65db2a11b5172bf928e3bcf59f728970&quot;</span><span class="p">,</span><span class="s2">&quot;hello&quot;</span><span class="o">:</span><span class="s2">&quot;baz&quot;</span><span class="p">}},</span>
+    <span class="p">{</span><span class="s2">&quot;ok&quot;</span><span class="o">:</span><span class="p">{</span><span class="s2">&quot;_id&quot;</span><span class="o">:</span><span class="s2">&quot;test&quot;</span><span class="p">,</span><span class="s2">&quot;_rev&quot;</span><span class="o">:</span><span class="s2">&quot;2-b91bb807b4685080c6a651115ff558f5&quot;</span><span class="p">,</span><span class="s2">&quot;hello&quot;</span><span class="o">:</span><span class="s2">&quot;bar&quot;</span><span class="p">}}</span>
+<span class="p">]</span>
+</pre></div>
+</div>
+<p>The <tt class="docutils literal"><span class="pre">&quot;ok&quot;</span></tt> tag is an artifact of <tt class="docutils literal"><span class="pre">open_revs</span></tt>, which also lets you list
+explicit revisions as a JSON array, e.g. <tt class="docutils literal"><span class="pre">open_revs=[rev1,rev2,rev3]</span></tt>. In this
+form, it would be possible to request a revision which is now missing, because
+the database has been compacted.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">The order of revisions returned by <tt class="docutils literal"><span class="pre">open_revs=all</span></tt> is <strong>NOT</strong> related to
+the deterministic &#8220;winning&#8221; algorithm. In the above example, the winning
+revision is 2-b91b... and happens to be returned last, but in other cases it
+can be returned in a different position.</p>
+</div>
+<p>Once you have retrieved all the conflicting revisions, your application can then
+choose to display them all to the user. Or it could attempt to merge them, write
+back the merged version, and delete the conflicting versions - that is, to
+resolve the conflict permanently.</p>
+<p>As described above, you need to update one revision and delete all the
+conflicting revisions explicitly. This can be done using a single <cite>POST</cite> to
+<tt class="docutils literal"><span class="pre">_bulk_docs</span></tt>, setting <tt class="docutils literal"><span class="pre">&quot;_deleted&quot;:true</span></tt> on those revisions you wish to
+delete.</p>
+</div>
+<div class="section" id="multiple-document-api">
+<h2>4.4.5. Multiple document API<a class="headerlink" href="#multiple-document-api" title="Permalink to this headline">¶</a></h2>
+<p>You can fetch multiple documents at once using <tt class="docutils literal"><span class="pre">include_docs=true</span></tt> on a view.
+However, a <tt class="docutils literal"><span class="pre">conflicts=true</span></tt> request is ignored; the &#8220;doc&#8221; part of the value
+never includes a <tt class="docutils literal"><span class="pre">_conflicts</span></tt> member. Hence you would need to do another query
+to determine for each document whether it is in a conflicting state:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>curl <span class="s1">&#39;http://127.0.0.1:5984/conflict_test/_all_docs?include_docs=true&amp;conflicts=true&#39;</span>
+</pre></div>
+</div>
+<div class="highlight-javascript"><div class="highlight"><pre><span class="p">{</span>
+    <span class="s2">&quot;total_rows&quot;</span><span class="o">:</span><span class="mi">1</span><span class="p">,</span>
+    <span class="s2">&quot;offset&quot;</span><span class="o">:</span><span class="mi">0</span><span class="p">,</span>
+    <span class="s2">&quot;rows&quot;</span><span class="o">:</span><span class="p">[</span>
+        <span class="p">{</span>
+            <span class="s2">&quot;id&quot;</span><span class="o">:</span><span class="s2">&quot;test&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;key&quot;</span><span class="o">:</span><span class="s2">&quot;test&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;value&quot;</span><span class="o">:</span><span class="p">{</span><span class="s2">&quot;rev&quot;</span><span class="o">:</span><span class="s2">&quot;2-b91bb807b4685080c6a651115ff558f5&quot;</span><span class="p">},</span>
+            <span class="s2">&quot;doc&quot;</span><span class="o">:</span><span class="p">{</span>
+                <span class="s2">&quot;_id&quot;</span><span class="o">:</span><span class="s2">&quot;test&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;_rev&quot;</span><span class="o">:</span><span class="s2">&quot;2-b91bb807b4685080c6a651115ff558f5&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;hello&quot;</span><span class="o">:</span><span class="s2">&quot;bar&quot;</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+    <span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>curl <span class="s1">&#39;http://127.0.0.1:5984/conflict_test/test?conflicts=true&#39;</span>
+</pre></div>
+</div>
+<div class="highlight-javascript"><div class="highlight"><pre><span class="p">{</span>
+    <span class="s2">&quot;_id&quot;</span><span class="o">:</span><span class="s2">&quot;test&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;_rev&quot;</span><span class="o">:</span><span class="s2">&quot;2-b91bb807b4685080c6a651115ff558f5&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;hello&quot;</span><span class="o">:</span><span class="s2">&quot;bar&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;_conflicts&quot;</span><span class="o">:</span><span class="p">[</span>
+        <span class="s2">&quot;2-65db2a11b5172bf928e3bcf59f728970&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;2-5bc3c6319edf62d4c624277fdd0ae191&quot;</span>
+    <span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="view-map-functions">
+<h2>4.4.6. View map functions<a class="headerlink" href="#view-map-functions" title="Permalink to this headline">¶</a></h2>
+<p>Views only get the winning revision of a document. However they do also get a
+<tt class="docutils literal"><span class="pre">_conflicts</span></tt> member if there are any conflicting revisions. This means you can
+write a view whose job is specifically to locate documents with conflicts.
+Here is a simple map function which achieves this:</p>
+<div class="highlight-javascript"><div class="highlight"><pre><span class="kd">function</span><span class="p">(</span><span class="nx">doc</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nx">doc</span><span class="p">.</span><span class="nx">_conflicts</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">emit</span><span class="p">(</span><span class="kc">null</span><span class="p">,</span> <span class="p">[</span><span class="nx">doc</span><span class="p">.</span><span class="nx">_rev</span><span class="p">].</span><span class="nx">concat</span><span class="p">(</span><span class="nx">doc</span><span class="p">.</span><span class="nx">_conflicts</span><span class="p">));</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>which gives the following output:</p>
+<div class="highlight-javascript"><div class="highlight"><pre><span class="p">{</span>
+    <span class="s2">&quot;total_rows&quot;</span><span class="o">:</span><span class="mi">1</span><span class="p">,</span>
+    <span class="s2">&quot;offset&quot;</span><span class="o">:</span><span class="mi">0</span><span class="p">,</span>
+    <span class="s2">&quot;rows&quot;</span><span class="o">:</span><span class="p">[</span>
+        <span class="p">{</span>
+            <span class="s2">&quot;id&quot;</span><span class="o">:</span><span class="s2">&quot;test&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;key&quot;</span><span class="o">:</span><span class="kc">null</span><span class="p">,</span>
+            <span class="s2">&quot;value&quot;</span><span class="o">:</span><span class="p">[</span>
+                <span class="s2">&quot;2-b91bb807b4685080c6a651115ff558f5&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;2-65db2a11b5172bf928e3bcf59f728970&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;2-5bc3c6319edf62d4c624277fdd0ae191&quot;</span>
+            <span class="p">]</span>
+        <span class="p">}</span>
+    <span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>If you do this, you can have a separate &#8220;sweep&#8221; process which periodically scans
+your database, looks for documents which have conflicts, fetches the conflicting
+revisions, and resolves them.</p>
+<p>Whilst this keeps the main application simple, the problem with this approach is
+that there will be a window between a conflict being introduced and it being
+resolved. From a user&#8217;s viewpoint, this may appear that the document they just
+saved successfully may suddenly lose their changes, only to be resurrected some
+time later. This may or may not be acceptable.</p>
+<p>Also, it&#8217;s easy to forget to start the sweeper, or not to implement it properly,
+and this will introduce odd behaviour which will be hard to track down.</p>
+<p>CouchDB&#8217;s &#8220;winning&#8221; revision algorithm may mean that information drops out of a
+view until a conflict has been resolved. Consider Bob&#8217;s business card again;
+suppose Alice has a view which emits mobile numbers, so that her telephony
+application can display the caller&#8217;s name based on caller ID. If there are
+conflicting documents with Bob&#8217;s old and new mobile numbers, and they happen to
+be resolved in favour of Bob&#8217;s old number, then the view won&#8217;t be able to
+recognise his new one. In this particular case, the application might have
+preferred to put information from both the conflicting documents into the view,
+but this currently isn&#8217;t possible.</p>
+<p>Suggested algorithm to fetch a document with conflict resolution:</p>
+<ol class="arabic simple">
+<li>Get document via <tt class="docutils literal"><span class="pre">GET</span> <span class="pre">docid?conflicts=true</span></tt> request;</li>
+<li>For each member in the <tt class="docutils literal"><span class="pre">_conflicts</span></tt> array call <tt class="docutils literal"><span class="pre">GET</span> <span class="pre">docid?rev=xxx</span></tt>.
+If any errors occur at this stage, restart from step 1.
+(There could be a race where someone else has already resolved this conflict
+and deleted that rev)</li>
+<li>Perform application-specific merging</li>
+<li>Write <tt class="docutils literal"><span class="pre">_bulk_docs</span></tt> with an update to the first rev and deletes of the other
+revs.</li>
+</ol>
+<p>This could either be done on every read (in which case you could replace all
+calls to GET in your application with calls to a library which does the above),
+or as part of your sweeper code.</p>
+<p>And here is an example of this in Ruby using the low-level <a class="reference external" href="https://rubygems.org/gems/rest-client">RestClient</a>:</p>
+<div class="highlight-ruby"><div class="highlight"><pre><span class="nb">require</span> <span class="s1">&#39;rubygems&#39;</span>
+<span class="nb">require</span> <span class="s1">&#39;rest_client&#39;</span>
+<span class="nb">require</span> <span class="s1">&#39;json&#39;</span>
+<span class="no">DB</span><span class="o">=</span><span class="s2">&quot;http://127.0.0.1:5984/conflict_test&quot;</span>
+
+<span class="c1"># Write multiple documents as all_or_nothing, can introduce conflicts</span>
+<span class="k">def</span> <span class="nf">writem</span><span class="p">(</span><span class="n">docs</span><span class="p">)</span>
+    <span class="no">JSON</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="no">RestClient</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">#{</span><span class="no">DB</span><span class="si">}</span><span class="s2">/_bulk_docs&quot;</span><span class="p">,</span> <span class="p">{</span>
+        <span class="s2">&quot;all_or_nothing&quot;</span> <span class="o">=&gt;</span> <span class="kp">true</span><span class="p">,</span>
+        <span class="s2">&quot;docs&quot;</span> <span class="o">=&gt;</span> <span class="n">docs</span><span class="p">,</span>
+    <span class="p">}</span><span class="o">.</span><span class="n">to_json</span><span class="p">))</span>
+<span class="k">end</span>
+
+<span class="c1"># Write one document, return the rev</span>
+<span class="k">def</span> <span class="nf">write1</span><span class="p">(</span><span class="n">doc</span><span class="p">,</span> <span class="nb">id</span><span class="o">=</span><span class="kp">nil</span><span class="p">,</span> <span class="n">rev</span><span class="o">=</span><span class="kp">nil</span><span class="p">)</span>
+    <span class="n">doc</span><span class="o">[</span><span class="s1">&#39;_id&#39;</span><span class="o">]</span> <span class="o">=</span> <span class="nb">id</span> <span class="k">if</span> <span class="nb">id</span>
+    <span class="n">doc</span><span class="o">[</span><span class="s1">&#39;_rev&#39;</span><span class="o">]</span> <span class="o">=</span> <span class="n">rev</span> <span class="k">if</span> <span class="n">rev</span>
+    <span class="n">writem</span><span class="p">(</span><span class="o">[</span><span class="n">doc</span><span class="o">]</span><span class="p">)</span><span class="o">.</span><span class="n">first</span><span class="o">[</span><span class="s1">&#39;rev&#39;</span><span class="o">]</span>
+<span class="k">end</span>
+
+<span class="c1"># Read a document, return *all* revs</span>
+<span class="k">def</span> <span class="nf">read1</span><span class="p">(</span><span class="nb">id</span><span class="p">)</span>
+    <span class="n">retries</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="kp">loop</span> <span class="k">do</span>
+        <span class="c1"># FIXME: escape id</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="o">[</span><span class="no">JSON</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="no">RestClient</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">#{</span><span class="no">DB</span><span class="si">}</span><span class="s2">/</span><span class="si">#{</span><span class="nb">id</span><span class="si">}</span><span class="s2">?conflicts=true&quot;</span><span class="p">))</span><span class="o">]</span>
+        <span class="k">if</span> <span class="n">revs</span> <span class="o">=</span> <span class="n">res</span><span class="o">.</span><span class="n">first</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="s1">&#39;_conflicts&#39;</span><span class="p">)</span>
+            <span class="k">begin</span>
+                <span class="n">revs</span><span class="o">.</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">rev</span><span class="o">|</span>
+                    <span class="n">res</span> <span class="o">&lt;&lt;</span> <span class="no">JSON</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="no">RestClient</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">#{</span><span class="no">DB</span><span class="si">}</span><span class="s2">/</span><span class="si">#{</span><span class="nb">id</span><span class="si">}</span><span class="s2">?rev=</span><span class="si">#{</span><span class="n">rev</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">))</span>
+                <span class="k">end</span>
+            <span class="k">rescue</span>
+                <span class="n">retries</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="k">raise</span> <span class="k">if</span> <span class="n">retries</span> <span class="o">&gt;=</span> <span class="mi">5</span>
+                <span class="k">next</span>
+            <span class="k">end</span>
+        <span class="k">end</span>
+        <span class="k">return</span> <span class="n">res</span>
+    <span class="k">end</span>
+<span class="k">end</span>
+
+<span class="c1"># Create DB</span>
+<span class="no">RestClient</span><span class="o">.</span><span class="n">delete</span> <span class="no">DB</span> <span class="k">rescue</span> <span class="kp">nil</span>
+<span class="no">RestClient</span><span class="o">.</span><span class="n">put</span> <span class="no">DB</span><span class="p">,</span> <span class="p">{}</span><span class="o">.</span><span class="n">to_json</span>
+
+<span class="c1"># Write a document</span>
+<span class="n">rev1</span> <span class="o">=</span> <span class="n">write1</span><span class="p">({</span><span class="s2">&quot;hello&quot;</span><span class="o">=&gt;</span><span class="s2">&quot;xxx&quot;</span><span class="p">},</span><span class="s2">&quot;test&quot;</span><span class="p">)</span>
+<span class="nb">p</span> <span class="n">read1</span><span class="p">(</span><span class="s2">&quot;test&quot;</span><span class="p">)</span>
+
+<span class="c1"># Make three conflicting versions</span>
+<span class="n">write1</span><span class="p">({</span><span class="s2">&quot;hello&quot;</span><span class="o">=&gt;</span><span class="s2">&quot;foo&quot;</span><span class="p">},</span><span class="s2">&quot;test&quot;</span><span class="p">,</span><span class="n">rev1</span><span class="p">)</span>
+<span class="n">write1</span><span class="p">({</span><span class="s2">&quot;hello&quot;</span><span class="o">=&gt;</span><span class="s2">&quot;bar&quot;</span><span class="p">},</span><span class="s2">&quot;test&quot;</span><span class="p">,</span><span class="n">rev1</span><span class="p">)</span>
+<span class="n">write1</span><span class="p">({</span><span class="s2">&quot;hello&quot;</span><span class="o">=&gt;</span><span class="s2">&quot;baz&quot;</span><span class="p">},</span><span class="s2">&quot;test&quot;</span><span class="p">,</span><span class="n">rev1</span><span class="p">)</span>
+
+<span class="n">res</span> <span class="o">=</span> <span class="n">read1</span><span class="p">(</span><span class="s2">&quot;test&quot;</span><span class="p">)</span>
+<span class="nb">p</span> <span class="n">res</span>
+
+<span class="c1"># Now let&#39;s replace these three with one</span>
+<span class="n">res</span><span class="o">.</span><span class="n">first</span><span class="o">[</span><span class="s1">&#39;hello&#39;</span><span class="o">]</span> <span class="o">=</span> <span class="s2">&quot;foo+bar+baz&quot;</span>
+<span class="n">res</span><span class="o">.</span><span class="n">each_with_index</span> <span class="k">do</span> <span class="o">|</span><span class="n">r</span><span class="p">,</span><span class="n">i</span><span class="o">|</span>
+    <span class="k">unless</span> <span class="n">i</span> <span class="o">==</span> <span class="mi">0</span>
+        <span class="n">r</span><span class="o">.</span><span class="n">replace</span><span class="p">({</span><span class="s1">&#39;_id&#39;</span><span class="o">=&gt;</span><span class="n">r</span><span class="o">[</span><span class="s1">&#39;_id&#39;</span><span class="o">]</span><span class="p">,</span> <span class="s1">&#39;_rev&#39;</span><span class="o">=&gt;</span><span class="n">r</span><span class="o">[</span><span class="s1">&#39;_rev&#39;</span><span class="o">]</span><span class="p">,</span> <span class="s1">&#39;_deleted&#39;</span><span class="o">=&gt;</span><span class="kp">true</span><span class="p">})</span>
+    <span class="k">end</span>
+<span class="k">end</span>
+<span class="n">writem</span><span class="p">(</span><span class="n">res</span><span class="p">)</span>
+
+<span class="nb">p</span> <span class="n">read1</span><span class="p">(</span><span class="s2">&quot;test&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>An application written this way never has to deal with a <tt class="docutils literal"><span class="pre">PUT</span> <span class="pre">409</span></tt>, and is
+automatically multi-master capable.</p>
+<p>You can see that it&#8217;s straightforward enough when you know what you&#8217;re doing.
+It&#8217;s just that CouchDB doesn&#8217;t currently provide a convenient HTTP API for
+&#8220;fetch all conflicting revisions&#8221;, nor &#8220;PUT to supersede these N revisions&#8221;, so
+you need to wrap these yourself. I also don&#8217;t know of any client-side libraries
+which provide support for this.</p>
+</div>
+<div class="section" id="merging-and-revision-history">
+<h2>4.4.7. Merging and revision history<a class="headerlink" href="#merging-and-revision-history" title="Permalink to this headline">¶</a></h2>
+<p>Actually performing the merge is an application-specific function. It depends
+on the structure of your data. Sometimes it will be easy: e.g. if a document
+contains a list which is only ever appended to, then you can perform a union of
+the two list versions.</p>
+<p>Some merge strategies look at the changes made to an object, compared to its
+previous version. This is how git&#8217;s merge function works.</p>
+<p>For example, to merge Bob&#8217;s business card versions v2a and v2b, you could look
+at the differences between v1 and v2b, and then apply these changes to v2a as
+well.</p>
+<p>With CouchDB, you can sometimes get hold of old revisions of a document.
+For example, if you fetch <tt class="docutils literal"><span class="pre">/db/bob?rev=v2b&amp;revs_info=true</span></tt> you&#8217;ll get a list
+of the previous revision ids which ended up with revision v2b. Doing the same
+for v2a you can find their common ancestor revision. However if the database
+has been compacted, the content of that document revision will have been lost.
+<tt class="docutils literal"><span class="pre">revs_info</span></tt> will still show that v1 was an ancestor, but report it as
+&#8220;missing&#8221;:</p>
+<div class="highlight-python"><div class="highlight"><pre>BEFORE COMPACTION           AFTER COMPACTION
+
+     ,-&gt; v2a                     v2a
+   v1
+     `-&gt; v2b                     v2b
+</pre></div>
+</div>
+<p>So if you want to work with diffs, the recommended way is to store those diffs
+within the new revision itself. That is: when you replace v1 with v2a, include
+an extra field or attachment in v2a which says which fields were changed from
+v1 to v2a. This unfortunately does mean additional book-keeping for your
+application.</p>
+</div>
+<div class="section" id="comparison-with-other-replicating-data-stores">
+<h2>4.4.8. Comparison with other replicating data stores<a class="headerlink" href="#comparison-with-other-replicating-data-stores" title="Permalink to this headline">¶</a></h2>
+<p>The same issues arise with other replicating systems, so it can be instructive
+to look at these and see how they compare with CouchDB. Please feel free to add
+other examples.</p>
+<div class="section" id="unison">
+<h3>Unison<a class="headerlink" href="#unison" title="Permalink to this headline">¶</a></h3>
+<p><a class="reference external" href="http://www.cis.upenn.edu/~bcpierce/unison/">Unison</a> is a bi-directional file synchronisation tool. In this case, the
+business card would be a file, say <cite>bob.vcf</cite>.</p>
+<p>When you run unison, changes propagate both ways. If a file has changed on one
+side but not the other, the new replaces the old. Unison maintains a local state
+file so that it knows whether a file has changed since the last successful
+replication.</p>
+<p>In our example it has changed on both sides. Only one file called <cite>bob.vcf</cite>
+can exist within the filesystem. Unison solves the problem by simply ducking
+out: the user can choose to replace the remote version with the local version,
+or vice versa (both of which would lose data), but the default action is to
+leave both sides unchanged.</p>
+<p>From Alice&#8217;s point of view, at least this is a simple solution. Whenever she&#8217;s
+on the desktop she&#8217;ll see the version she last edited on the desktop, and
+whenever she&#8217;s on the laptop she&#8217;ll see the version she last edited there.</p>
+<p>But because no replication has actually taken place, the data is not protected.
+If her laptop hard drive dies, she&#8217;ll lose all her changes made on the laptop;
+ditto if her desktop hard drive dies.</p>
+<p>It&#8217;s up to her to copy across one of the versions manually (under a different
+filename), merge the two, and then finally push the merged version to the other
+side.</p>
+<p>Note also that the original file (version v1) has been lost by this point.
+So it&#8217;s not going to be known from inspection alone which of v2a and v2b has the
+most up-to-date E-mail address for Bob, and which has the most up-to-date mobile
+number. Alice has to remember which she entered last.</p>
+</div>
+<div class="section" id="git">
+<h3>Git<a class="headerlink" href="#git" title="Permalink to this headline">¶</a></h3>
+<p><a class="reference external" href="http://git-scm.com/">Git</a> is a well-known distributed source control system. Like Unison, git deals
+with files. However, git considers the state of a whole set of files as a single
+object, the &#8220;tree&#8221;. Whenever you save an update, you create a &#8220;commit&#8221; which
+points to both the updated tree and the previous commit(s), which in turn point
+to the previous tree(s). You therefore have a full history of all the states of
+the files. This forms a branch, and a pointer is kept to the tip of the branch,
+from which you can work backwards to any previous state. The &#8220;pointer&#8221; is
+actually an SHA1 hash of the tip commit.</p>
+<p>If you are replicating with one or more peers, a separate branch is made for
+each of the peers. For example, you might have:</p>
+<div class="highlight-python"><div class="highlight"><pre>master               -- my local branch
+remotes/foo/master   -- branch on peer &#39;foo&#39;
+remotes/bar/master   -- branch on peer &#39;bar&#39;
+</pre></div>
+</div>
+<p>In the normal way of working, replication is a &#8220;pull&#8221;, importing changes from
+a remote peer into the local repository. A &#8220;pull&#8221; does two things: first &#8220;fetch&#8221;
+the state of the peer into the remote tracking branch for that peer; and then
+attempt to &#8220;merge&#8221; those changes into the local branch.</p>
+<p>Now let&#8217;s consider the business card. Alice has created a git repo containing
+<tt class="docutils literal"><span class="pre">bob.vcf</span></tt>, and cloned it across to the other machine. The branches look like
+this, where <tt class="docutils literal"><span class="pre">AAAAAAAA</span></tt> is the SHA1 of the commit:</p>
+<div class="highlight-python"><div class="highlight"><pre>---------- desktop ----------           ---------- laptop ----------
+master: AAAAAAAA                        master: AAAAAAAA
+remotes/laptop/master: AAAAAAAA         remotes/desktop/master: AAAAAAAA
+</pre></div>
+</div>
+<p>Now she makes a change on the desktop, and commits it into the desktop repo;
+then she makes a different change on the laptop, and commits it into the laptop
+repo:</p>
+<div class="highlight-python"><div class="highlight"><pre>---------- desktop ----------           ---------- laptop ----------
+master: BBBBBBBB                        master: CCCCCCCC
+remotes/laptop/master: AAAAAAAA         remotes/desktop/master: AAAAAAAA
+</pre></div>
+</div>
+<p>Now on the desktop she does <tt class="docutils literal"><span class="pre">git</span> <span class="pre">pull</span> <span class="pre">laptop</span></tt>. Firstly, the remote objects
+are copied across into the local repo and the remote tracking branch is
+updated:</p>
+<div class="highlight-python"><div class="highlight"><pre>---------- desktop ----------           ---------- laptop ----------
+master: BBBBBBBB                        master: CCCCCCCC
+remotes/laptop/master: CCCCCCCC         remotes/desktop/master: AAAAAAAA
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">repo still contains AAAAAAAA because commits BBBBBBBB and CCCCCCCC point to
+it</p>
+</div>
+<p>Then git will attempt to merge the changes in. It can do this because it knows
+the parent commit to <tt class="docutils literal"><span class="pre">CCCCCCCC</span></tt> is <tt class="docutils literal"><span class="pre">AAAAAAAA</span></tt>, so it takes a diff between
+<tt class="docutils literal"><span class="pre">AAAAAAAA</span></tt> and <tt class="docutils literal"><span class="pre">CCCCCCCC</span></tt> and tries to apply it to <tt class="docutils literal"><span class="pre">BBBBBBBB</span></tt>.</p>
+<p>If this is successful, then you&#8217;ll get a new version with a merge commit:</p>
+<div class="highlight-python"><div class="highlight"><pre>---------- desktop ----------           ---------- laptop ----------
+master: DDDDDDDD                        master: CCCCCCCC
+remotes/laptop/master: CCCCCCCC         remotes/desktop/master: AAAAAAAA
+</pre></div>
+</div>
+<p>Then Alice has to logon to the laptop and run <tt class="docutils literal"><span class="pre">git</span> <span class="pre">pull</span> <span class="pre">desktop</span></tt>. A similar
+process occurs. The remote tracking branch is updated:</p>
+<div class="highlight-python"><div class="highlight"><pre>---------- desktop ----------           ---------- laptop ----------
+master: DDDDDDDD                        master: CCCCCCCC
+remotes/laptop/master: CCCCCCCC         remotes/desktop/master: DDDDDDDD
+</pre></div>
+</div>
+<p>Then a merge takes place. This is a special-case: <tt class="docutils literal"><span class="pre">CCCCCCCC</span></tt> one of the parent
+commits of <tt class="docutils literal"><span class="pre">DDDDDDDD</span></tt>, so the laptop can <cite>fast forward</cite> update from
+<tt class="docutils literal"><span class="pre">CCCCCCCC</span></tt> to <tt class="docutils literal"><span class="pre">DDDDDDDD</span></tt> directly without having to do any complex merging.
+This leaves the final state as:</p>
+<div class="highlight-python"><div class="highlight"><pre>---------- desktop ----------           ---------- laptop ----------
+master: DDDDDDDD                        master: DDDDDDDD
+remotes/laptop/master: CCCCCCCC         remotes/desktop/master: DDDDDDDD
+</pre></div>
+</div>
+<p>Now this is all and good, but you may wonder how this is relevant when thinking
+about CouchDB.</p>
+<p>Firstly, note what happens in the case when the merge algorithm fails.
+The changes are still propagated from the remote repo into the local one, and
+are available in the remote tracking branch; so unlike Unison, you know the data
+is protected. It&#8217;s just that the local working copy may fail to update, or may
+diverge from the remote version. It&#8217;s up to you to create and commit the
+combined version yourself, but you are guaranteed to have all the history you
+might need to do this.</p>
+<p>Note that whilst it&#8217;s possible to build new merge algorithms into Git,
+the standard ones are focused on line-based changes to source code. They don&#8217;t
+work well for XML or JSON if it&#8217;s presented without any line breaks.</p>
+<p>The other interesting consideration is multiple peers. In this case you have
+multiple remote tracking branches, some of which may match your local branch,
+some of which may be behind you, and some of which may be ahead of you
+(i.e. contain changes that you haven&#8217;t yet merged):</p>
+<div class="highlight-python"><div class="highlight"><pre>master: AAAAAAAA
+remotes/foo/master: BBBBBBBB
+remotes/bar/master: CCCCCCCC
+remotes/baz/master: AAAAAAAA
+</pre></div>
+</div>
+<p>Note that each peer is explicitly tracked, and therefore has to be explicitly
+created. If a peer becomes stale or is no longer needed, it&#8217;s up to you to
+remove it from your configuration and delete the remote tracking branch.
+This is different to CouchDB, which doesn&#8217;t keep any peer state in the database.</p>
+<p>Another difference with git is that it maintains all history back to time
+zero - git compaction keeps diffs between all those versions in order to reduce
+size, but CouchDB discards them. If you are constantly updating a document,
+the size of a git repo would grow forever. It is possible (with some effort)
+to use &#8220;history rewriting&#8221; to make git forget commits earlier than a particular
+one.</p>
+<div class="section" id="what-is-the-couchdb-replication-protocol-is-it-like-git">
+<span id="replication-conflicts-git"></span><h4>What is the CouchDB replication protocol? Is it like Git?<a class="headerlink" href="#what-is-the-couchdb-replication-protocol-is-it-like-git" title="Permalink to this headline">¶</a></h4>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Author:</th><td class="field-body">Jason Smith</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Date:</th><td class="field-body">2011-01-29</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Source:</th><td class="field-body"><a class="reference external" href="http://stackoverflow.com/questions/4766391/what-is-the-couchdb-replication-protocol-is-it-like-git">StackOverflow</a></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Key points</strong></p>
+<p><strong>If you know Git, then you know how Couch replication works.</strong> Replicating is
+<em>very</em> similar to pushing or pulling with distributed source managers like Git.</p>
+<p><strong>CouchDB replication does not have its own protocol.</strong> A replicator simply
+connects to two DBs as a client, then reads from one and writes to the other.
+Push replication is reading the local data and updating the remote DB;
+pull replication is vice versa.</p>
+<ul class="simple">
+<li><strong>Fun fact 1</strong>: The replicator is actually an independent Erlang application,
+in its own process. It connects to both couches, then reads records from one
+and writes them to the other.</li>
+<li><strong>Fun fact 2</strong>: CouchDB has no way of knowing who is a normal client and who
+is a replicator (let alone whether the replication is push or pull).
+It all looks like client connections. Some of them read records. Some of them
+write records.</li>
+</ul>
+<p><strong>Everything flows from the data model</strong></p>
+<p>The replication algorithm is trivial, uninteresting. A trained monkey could
+design it. It&#8217;s simple because the cleverness is the data model, which has these
+useful characteristics:</p>
+<ol class="arabic simple">
+<li>Every record in CouchDB is completely independent of all others. That sucks
+if you want to do a JOIN or a transaction, but it&#8217;s awesome if you want to
+write a replicator. Just figure out how to replicate one record, and then
+repeat that for each record.</li>
+<li>Like Git, records have a linked-list revision history. A record&#8217;s revision ID
+is the checksum of its own data. Subsequent revision IDs are checksums of:
+the new data, plus the revision ID of the previous.</li>
+<li>In addition to application data (<tt class="docutils literal"><span class="pre">{&quot;name&quot;:</span> <span class="pre">&quot;Jason&quot;,</span> <span class="pre">&quot;awesome&quot;:</span> <span class="pre">true}</span></tt>),
+every record stores the evolutionary timeline of all previous revision IDs
+leading up to itself.<ul>
+<li>Exercise: Take a moment of quiet reflection. Consider any two different
+records, A and B. If A&#8217;s revision ID appears in B&#8217;s timeline, then B
+definitely evolved from A. Now consider Git&#8217;s fast-forward merges.
+Do you hear that? That is the sound of your mind being blown.</li>
+</ul>
+</li>
+<li>Git isn&#8217;t really a linear list. It has forks, when one parent has multiple
+children. CouchDB has that too.<ul>
+<li>Exercise: Compare two different records, A and B. A&#8217;s revision ID does not
+appear in B&#8217;s timeline; however, one revision ID, C, is in both A&#8217;s and B&#8217;s
+timeline. Thus A didn&#8217;t evolve from B. B didn&#8217;t evolve from A. But rather,
+A and B have a common ancestor C. In Git, that is a &#8220;fork.&#8221; In CouchDB,
+it&#8217;s a &#8220;conflict.&#8221;</li>
+<li>In Git, if both children go on to develop their timelines independently,
+that&#8217;s cool. Forks totally support that.</li>
+<li>In CouchDB, if both children go on to develop their timelines
+independently, that cool too. Conflicts totally support that.</li>
+<li><strong>Fun fact 3</strong>: CouchDB &#8220;conflicts&#8221; do not correspond to Git &#8220;conflicts.&#8221;
+A Couch conflict is a divergent revision history, what Git calls a &#8220;fork.&#8221;
+For this reason the CouchDB community pronounces &#8220;conflict&#8221; with a silent
+<cite>n</cite>: &#8220;co-flicked.&#8221;</li>
+</ul>
+</li>
+<li>Git also has merges, when one child has multiple parents. CouchDB <em>sort</em> of
+has that too.<ul>
+<li><strong>In the data model, there is no merge.</strong> The client simply marks one
+timeline as deleted and continues to work with the only extant timeline.</li>
+<li><strong>In the application, it feels like a merge.</strong> Typically, the client merges
+the <em>data</em> from each timeline in an application-specific way.
+Then it writes the new data to the timeline. In Git, this is like copying
+and pasting the changes from branch A into branch B, then commiting to
+branch B and deleting branch A. The data was merged, but there was no
+<cite>git merge</cite>.</li>
+<li>These behaviors are different because, in Git, the timeline itself is
+important; but in CouchDB, the data is important and the timeline is
+incidental—it&#8217;s just there to support replication. That is one reason why
+CouchDB&#8217;s built-in revisioning is inappropriate for storing revision data
+like a wiki page.</li>
+</ul>
+</li>
+</ol>
+<p><strong>Final notes</strong></p>
+<p>At least one sentence in this writeup (possibly this one) is complete BS.</p>
+</div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+    <p class="logo"><a href="../index.html">
+      <img class="logo" src="../_static/logo.png" alt="Logo"/>
+    </a></p><!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+<div id="searchbox" style="display: none">
+
+<h3>Quick Search</h3>
+
+<form class="search" action="../search.html" method="get">
+<input type="text" name="q" style="width:115px">
+<input type="submit" value="Go">
+<input type="hidden" name="check_keywords" value="yes">
+<input type="hidden" name="area" value="default">
+</form>
+
+<br>
+
+</div>
+
+<script type="text/javascript">$('#searchbox').show(0);</script>
+  <h3><a href="../contents.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">4.4. Replication and conflict model</a><ul>
+<li><a class="reference internal" href="#couchdb-replication">4.4.1. CouchDB replication</a></li>
+<li><a class="reference internal" href="#conflict-avoidance">4.4.2. Conflict avoidance</a></li>
+<li><a class="reference internal" href="#revision-tree">4.4.3. Revision tree</a></li>
+<li><a class="reference internal" href="#working-with-conflicting-documents">4.4.4. Working with conflicting documents</a></li>
+<li><a class="reference internal" href="#multiple-document-api">4.4.5. Multiple document API</a></li>
+<li><a class="reference internal" href="#view-map-functions">4.4.6. View map functions</a></li>
+<li><a class="reference internal" href="#merging-and-revision-history">4.4.7. Merging and revision history</a></li>
+<li><a class="reference internal" href="#comparison-with-other-replicating-data-stores">4.4.8. Comparison with other replicating data stores</a><ul>
+<li><a class="reference internal" href="#unison">Unison</a></li>
+<li><a class="reference internal" href="#git">Git</a><ul>
+<li><a class="reference internal" href="#what-is-the-couchdb-replication-protocol-is-it-like-git">What is the CouchDB replication protocol? Is it like Git?</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="replicator.html"
+                        title="previous chapter">4.3. Replicator Database</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="../maintenance/index.html"
+                        title="next chapter">5. CouchDB Maintenance</a></p><!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+
+<h3>Utilities</h3>
+
+<ul>
+<li><a href="../">Fauxton</a></li>
+</ul>
+<!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+<h3>More Help</h3>
+
+<ul>
+<li><a href="https://couchdb.apache.org/">Homepage</a></li>
+<li><a href="https://cwiki.apache.org/confluence/display/COUCHDB/">Wiki</a></li>
+<li><a href="https://couchdb.apache.org/#mailing-list">Mailing Lists</a></li>
+<li><a href="http://webchat.freenode.net/?channels=couchdb">IRC</a></li>
+<li><a href="https://issues.apache.org/jira/browse/CouchDB">Issues</a></li>
+<li><a href="../download.html">Download</a></li>
+<li><a href="https://github.com/apache/couchdb-documentation/blob/master/src/replication/conflicts.rst"
+       rel="nofollow">Show on GitHub</a></li>
+<li><a href="https://github.com/apache/couchdb-documentation/edit/master/src/replication/conflicts.rst"
+       rel="nofollow">Edit on GitHub</a></li>
+</ul><!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../http-api.html" title="HTTP API Reference"
+             >API Reference</a></li>
+        <li class="right" >
+          <a href="../config-ref.html" title="Configuration Reference"
+             >Config Reference</a> |</li>
+        <li class="right" >
+          <a href="../maintenance/index.html" title="5. CouchDB Maintenance"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="replicator.html" title="4.3. Replicator Database"
+             >previous</a> |</li>
+  <li><a href="../index.html">Apache CouchDB 2.0 Documentation</a> &raquo;</li>
+          <li><a href="index.html" >4. Replication</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2016, Apache Software Foundation.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
+    </div>
+  </body>
+</html>

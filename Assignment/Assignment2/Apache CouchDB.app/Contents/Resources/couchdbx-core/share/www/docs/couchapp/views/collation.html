@@ -1,0 +1,454 @@
+<!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>6.2.2. Views Collation &mdash; Apache CouchDB 2.0 Documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/rtd.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '2.0.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <link rel="author" title="About these documents" href="../../about.html" />
+    <link rel="top" title="Apache CouchDB 2.0 Documentation" href="../../index.html" />
+    <link rel="up" title="6.2. Guide to Views" href="index.html" />
+    <link rel="next" title="6.2.3. Joins With Views" href="joins.html" />
+    <link rel="prev" title="6.2.1. Introduction to Views" href="intro.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../http-api.html" title="HTTP API Reference"
+             >API Reference</a></li>
+        <li class="right" >
+          <a href="../../config-ref.html" title="Configuration Reference"
+             >Config Reference</a> |</li>
+        <li class="right" >
+          <a href="joins.html" title="6.2.3. Joins With Views"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="intro.html" title="6.2.1. Introduction to Views"
+             accesskey="P">previous</a> |</li>
+  <li><a href="../../index.html">Apache CouchDB 2.0 Documentation</a> &raquo;</li>
+          <li><a href="../index.html" >6. CouchApp</a> &raquo;</li>
+          <li><a href="index.html" accesskey="U">6.2. Guide to Views</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="views-collation">
+<span id="id1"></span><h1>6.2.2. Views Collation<a class="headerlink" href="#views-collation" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="basics">
+<h2>Basics<a class="headerlink" href="#basics" title="Permalink to this headline">¶</a></h2>
+<p>View functions specify a key and a value to be returned for each row. CouchDB
+collates the view rows by this key. In the following example, the <tt class="docutils literal"><span class="pre">LastName</span></tt>
+property serves as the key, thus the result will be sorted by <tt class="docutils literal"><span class="pre">LastName</span></tt>:</p>
+<div class="highlight-javascript"><div class="highlight"><pre><span class="kd">function</span><span class="p">(</span><span class="nx">doc</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nx">doc</span><span class="p">.</span><span class="nx">Type</span> <span class="o">==</span> <span class="s2">&quot;customer&quot;</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">emit</span><span class="p">(</span><span class="nx">doc</span><span class="p">.</span><span class="nx">LastName</span><span class="p">,</span> <span class="p">{</span><span class="nx">FirstName</span><span class="o">:</span> <span class="nx">doc</span><span class="p">.</span><span class="nx">FirstName</span><span class="p">,</span> <span class="nx">Address</span><span class="o">:</span> <span class="nx">doc</span><span class="p">.</span><span class="nx">Address</span><span class="p">});</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>CouchDB allows arbitrary JSON structures to be used as keys. You can use JSON
+arrays as keys for fine-grained control over sorting and grouping.</p>
+</div>
+<div class="section" id="examples">
+<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
+<p>The following clever trick would return both customer and order documents.
+The key is composed of a customer <tt class="docutils literal"><span class="pre">_id</span></tt> and a sorting token. Because the key
+for order documents begins with the <tt class="docutils literal"><span class="pre">_id</span></tt> of a customer document, all the
+orders will be sorted by customer. Because the sorting token for customers is
+lower than the token for orders, the customer document will come before the
+associated orders. The values 0 and 1 for the sorting token are arbitrary.</p>
+<div class="highlight-javascript"><div class="highlight"><pre><span class="kd">function</span><span class="p">(</span><span class="nx">doc</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nx">doc</span><span class="p">.</span><span class="nx">Type</span> <span class="o">==</span> <span class="s2">&quot;customer&quot;</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">emit</span><span class="p">([</span><span class="nx">doc</span><span class="p">.</span><span class="nx">_id</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="kc">null</span><span class="p">);</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="nx">doc</span><span class="p">.</span><span class="nx">Type</span> <span class="o">==</span> <span class="s2">&quot;order&quot;</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">emit</span><span class="p">([</span><span class="nx">doc</span><span class="p">.</span><span class="nx">customer_id</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="kc">null</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>To list a specific customer with <tt class="docutils literal"><span class="pre">_id</span></tt> XYZ, and all of that customer&#8217;s orders,
+limit the startkey and endkey ranges to cover only documents for that customer&#8217;s
+<tt class="docutils literal"><span class="pre">_id</span></tt>:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">startkey</span><span class="o">=</span><span class="p">[</span><span class="s">&quot;XYZ&quot;</span><span class="p">]</span><span class="o">&amp;</span><span class="n">endkey</span><span class="o">=</span><span class="p">[</span><span class="s">&quot;XYZ&quot;</span><span class="p">,</span> <span class="p">{}]</span>
+</pre></div>
+</div>
+<p>It is not recommended to emit the document itself in the view. Instead, to
+include the bodies of the documents when requesting the view, request the view
+with <tt class="docutils literal"><span class="pre">?include_docs=true</span></tt>.</p>
+</div>
+<div class="section" id="sorting-by-dates">
+<h2>Sorting by Dates<a class="headerlink" href="#sorting-by-dates" title="Permalink to this headline">¶</a></h2>
+<p>It maybe be convenient to store date attributes in a human readable format
+(i.e. as a <cite>string</cite>), but still sort by date. This can be done by converting
+the date to a <cite>number</cite> in the <a class="reference internal" href="../../query-server/javascript.html#emit" title="emit"><tt class="xref js js-func docutils literal"><span class="pre">emit()</span></tt></a> function. For example, given
+a document with a created_at attribute of <tt class="docutils literal"><span class="pre">'Wed</span> <span class="pre">Jul</span> <span class="pre">23</span> <span class="pre">16:29:21</span> <span class="pre">+0100</span> <span class="pre">2013'</span></tt>,
+the following emit function would sort by date:</p>
+<div class="highlight-javascript"><div class="highlight"><pre><span class="nx">emit</span><span class="p">(</span><span class="nb">Date</span><span class="p">.</span><span class="nx">parse</span><span class="p">(</span><span class="nx">doc</span><span class="p">.</span><span class="nx">created_at</span><span class="p">).</span><span class="nx">getTime</span><span class="p">(),</span> <span class="kc">null</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>Alternatively, if you use a date format which sorts lexicographically,
+such as <tt class="docutils literal"><span class="pre">&quot;2013/06/09</span> <span class="pre">13:52:11</span> <span class="pre">+0000&quot;</span></tt> you can just</p>
+<div class="highlight-javascript"><div class="highlight"><pre><span class="nx">emit</span><span class="p">(</span><span class="nx">doc</span><span class="p">.</span><span class="nx">created_at</span><span class="p">,</span> <span class="kc">null</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>and avoid the conversion. As a bonus, this date format is compatible with the
+JavaScript date parser, so you can use <tt class="docutils literal"><span class="pre">new</span> <span class="pre">Date(doc.created_at)</span></tt> in your
+client side JavaScript to make date sorting easy in the browser.</p>
+</div>
+<div class="section" id="string-ranges">
+<h2>String Ranges<a class="headerlink" href="#string-ranges" title="Permalink to this headline">¶</a></h2>
+<p>If you need start and end keys that encompass every string with a given prefix,
+it is better to use a high value unicode character, than to use a <tt class="docutils literal"><span class="pre">'ZZZZ'</span></tt>
+suffix.</p>
+<p>That is, rather than:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">startkey</span><span class="o">=</span><span class="s">&quot;abc&quot;</span><span class="o">&amp;</span><span class="n">endkey</span><span class="o">=</span><span class="s">&quot;abcZZZZZZZZZ&quot;</span>
+</pre></div>
+</div>
+<p>You should use:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">startkey</span><span class="o">=</span><span class="s">&quot;abc&quot;</span><span class="o">&amp;</span><span class="n">endkey</span><span class="o">=</span><span class="s">&quot;abc</span><span class="se">\ufff0</span><span class="s">&quot;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="collation-specification">
+<h2>Collation Specification<a class="headerlink" href="#collation-specification" title="Permalink to this headline">¶</a></h2>
+<p>This section is based on the view_collation function in <a class="reference external" href="https://git-wip-us.apache.org/repos/asf?p=couchdb.git;a=blob;f=share/www/script/test/view_collation.js;hb=HEAD">view_collation.js</a>:</p>
+<div class="highlight-javascript"><div class="highlight"><pre><span class="c1">// special values sort before all other types</span>
+<span class="kc">null</span>
+<span class="kc">false</span>
+<span class="kc">true</span>
+
+<span class="c1">// then numbers</span>
+<span class="mi">1</span>
+<span class="mi">2</span>
+<span class="mf">3.0</span>
+<span class="mi">4</span>
+
+<span class="c1">// then text, case sensitive</span>
+<span class="s2">&quot;a&quot;</span>
+<span class="s2">&quot;A&quot;</span>
+<span class="s2">&quot;aa&quot;</span>
+<span class="s2">&quot;b&quot;</span>
+<span class="s2">&quot;B&quot;</span>
+<span class="s2">&quot;ba&quot;</span>
+<span class="s2">&quot;bb&quot;</span>
+
+<span class="c1">// then arrays. compared element by element until different.</span>
+<span class="c1">// Longer arrays sort after their prefixes</span>
+<span class="p">[</span><span class="s2">&quot;a&quot;</span><span class="p">]</span>
+<span class="p">[</span><span class="s2">&quot;b&quot;</span><span class="p">]</span>
+<span class="p">[</span><span class="s2">&quot;b&quot;</span><span class="p">,</span><span class="s2">&quot;c&quot;</span><span class="p">]</span>
+<span class="p">[</span><span class="s2">&quot;b&quot;</span><span class="p">,</span><span class="s2">&quot;c&quot;</span><span class="p">,</span> <span class="s2">&quot;a&quot;</span><span class="p">]</span>
+<span class="p">[</span><span class="s2">&quot;b&quot;</span><span class="p">,</span><span class="s2">&quot;d&quot;</span><span class="p">]</span>
+<span class="p">[</span><span class="s2">&quot;b&quot;</span><span class="p">,</span><span class="s2">&quot;d&quot;</span><span class="p">,</span> <span class="s2">&quot;e&quot;</span><span class="p">]</span>
+
+<span class="c1">// then object, compares each key value in the list until different.</span>
+<span class="c1">// larger objects sort after their subset objects.</span>
+<span class="p">{</span><span class="nx">a</span><span class="o">:</span><span class="mi">1</span><span class="p">}</span>
+<span class="p">{</span><span class="nx">a</span><span class="o">:</span><span class="mi">2</span><span class="p">}</span>
+<span class="p">{</span><span class="nx">b</span><span class="o">:</span><span class="mi">1</span><span class="p">}</span>
+<span class="p">{</span><span class="nx">b</span><span class="o">:</span><span class="mi">2</span><span class="p">}</span>
+<span class="p">{</span><span class="nx">b</span><span class="o">:</span><span class="mi">2</span><span class="p">,</span> <span class="nx">a</span><span class="o">:</span><span class="mi">1</span><span class="p">}</span> <span class="c1">// Member order does matter for collation.</span>
+           <span class="c1">// CouchDB preserves member order</span>
+           <span class="c1">// but doesn&#39;t require that clients will.</span>
+           <span class="c1">// this test might fail if used with a js engine</span>
+           <span class="c1">// that doesn&#39;t preserve order</span>
+<span class="p">{</span><span class="nx">b</span><span class="o">:</span><span class="mi">2</span><span class="p">,</span> <span class="nx">c</span><span class="o">:</span><span class="mi">2</span><span class="p">}</span>
+</pre></div>
+</div>
+<p>Comparison of strings is done using <a class="reference external" href="http://site.icu-project.org/">ICU</a> which implements the
+<a class="reference external" href="http://www.unicode.org/unicode/reports/tr10/">Unicode Collation Algorithm</a>, giving a dictionary sorting of keys.
+This can give surprising results if you were expecting ASCII ordering.
+Note that:</p>
+<ul class="simple">
+<li>All symbols sort before numbers and letters (even the &#8220;high&#8221; symbols like
+tilde, <tt class="docutils literal"><span class="pre">0x7e</span></tt>)</li>
+<li>Differing sequences of letters are compared without regard to case, so
+<tt class="docutils literal"><span class="pre">a</span> <span class="pre">&lt;</span> <span class="pre">aa</span></tt> but also <tt class="docutils literal"><span class="pre">A</span> <span class="pre">&lt;</span> <span class="pre">aa</span></tt> and <tt class="docutils literal"><span class="pre">a</span> <span class="pre">&lt;</span> <span class="pre">AA</span></tt></li>
+<li>Identical sequences of letters are compared with regard to case, with
+lowercase before uppercase, so <tt class="docutils literal"><span class="pre">a</span> <span class="pre">&lt;</span> <span class="pre">A</span></tt></li>
+</ul>
+<p>You can demonstrate the collation sequence for 7-bit ASCII characters like this:</p>
+<div class="highlight-ruby"><div class="highlight"><pre><span class="nb">require</span> <span class="s1">&#39;rubygems&#39;</span>
+<span class="nb">require</span> <span class="s1">&#39;restclient&#39;</span>
+<span class="nb">require</span> <span class="s1">&#39;json&#39;</span>
+
+<span class="no">DB</span><span class="o">=</span><span class="s2">&quot;http://127.0.0.1:5984/collator&quot;</span>
+
+<span class="no">RestClient</span><span class="o">.</span><span class="n">delete</span> <span class="no">DB</span> <span class="k">rescue</span> <span class="kp">nil</span>
+<span class="no">RestClient</span><span class="o">.</span><span class="n">put</span> <span class="s2">&quot;</span><span class="si">#{</span><span class="no">DB</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span><span class="s2">&quot;&quot;</span>
+
+<span class="p">(</span><span class="mi">32</span><span class="o">..</span><span class="mi">126</span><span class="p">)</span><span class="o">.</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">c</span><span class="o">|</span>
+    <span class="no">RestClient</span><span class="o">.</span><span class="n">put</span> <span class="s2">&quot;</span><span class="si">#{</span><span class="no">DB</span><span class="si">}</span><span class="s2">/</span><span class="si">#{</span><span class="n">c</span><span class="o">.</span><span class="n">to_s</span><span class="p">(</span><span class="mi">16</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;x&quot;</span><span class="o">=&gt;</span><span class="n">c</span><span class="o">.</span><span class="n">chr</span><span class="p">}</span><span class="o">.</span><span class="n">to_json</span>
+<span class="k">end</span>
+
+<span class="no">RestClient</span><span class="o">.</span><span class="n">put</span> <span class="s2">&quot;</span><span class="si">#{</span><span class="no">DB</span><span class="si">}</span><span class="s2">/_design/test&quot;</span><span class="p">,</span> <span class="o">&lt;&lt;</span><span class="no">EOS</span>
+<span class="sh">{</span>
+<span class="sh">    &quot;views&quot;:{</span>
+<span class="sh">        &quot;one&quot;:{</span>
+<span class="sh">            &quot;map&quot;:&quot;function (doc) { emit(doc.x,null); }&quot;</span>
+<span class="sh">        }</span>
+<span class="sh">    }</span>
+<span class="sh">}</span>
+<span class="no">EOS</span>
+
+<span class="nb">puts</span> <span class="no">RestClient</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">#{</span><span class="no">DB</span><span class="si">}</span><span class="s2">/_design/test/_view/one&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>This shows the collation sequence to be:</p>
+<div class="highlight-python"><div class="highlight"><pre>` ^ _ - , ; : ! ? . &#39; &quot; ( ) [ ] { } @ * / \ &amp; # % + &lt; = &gt; | ~ $ 0 1 2 3 4 5 6 7 8 9
+a A b B c C d D e E f F g G h H i I j J k K l L m M n N o O p P q Q r R s S t T u U v V w W x X y Y z Z
+</pre></div>
+</div>
+<div class="section" id="key-ranges">
+<h3>Key ranges<a class="headerlink" href="#key-ranges" title="Permalink to this headline">¶</a></h3>
+<p>Take special care when querying key ranges. For example: the query:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">startkey</span><span class="o">=</span><span class="s">&quot;Abc&quot;</span><span class="o">&amp;</span><span class="n">endkey</span><span class="o">=</span><span class="s">&quot;AbcZZZZ&quot;</span>
+</pre></div>
+</div>
+<p>will match &#8220;ABC&#8221; and &#8220;abc1&#8221;, but not &#8220;abc&#8221;. This is because UCA sorts as:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">abc</span> <span class="o">&lt;</span> <span class="n">Abc</span> <span class="o">&lt;</span> <span class="n">ABC</span> <span class="o">&lt;</span> <span class="n">abc1</span> <span class="o">&lt;</span> <span class="n">AbcZZZZZ</span>
+</pre></div>
+</div>
+<p>For most applications, to avoid problems you should lowercase the <cite>startkey</cite>:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">startkey</span><span class="o">=</span><span class="s">&quot;abc&quot;</span><span class="o">&amp;</span><span class="n">endkey</span><span class="o">=</span><span class="s">&quot;abcZZZZZZZZ&quot;</span>
+</pre></div>
+</div>
+<p>will match all keys starting with <tt class="docutils literal"><span class="pre">[aA][bB][cC]</span></tt></p>
+</div>
+<div class="section" id="complex-keys">
+<h3>Complex keys<a class="headerlink" href="#complex-keys" title="Permalink to this headline">¶</a></h3>
+<p>The query <tt class="docutils literal"><span class="pre">startkey=[&quot;foo&quot;]&amp;endkey=[&quot;foo&quot;,{}]</span></tt> will match most array keys
+with &#8220;foo&#8221; in the first element, such as <tt class="docutils literal"><span class="pre">[&quot;foo&quot;,&quot;bar&quot;]</span></tt> and
+<tt class="docutils literal"><span class="pre">[&quot;foo&quot;,[&quot;bar&quot;,&quot;baz&quot;]]</span></tt>. However it will not match <tt class="docutils literal"><span class="pre">[&quot;foo&quot;,{&quot;an&quot;:&quot;object&quot;}]</span></tt></p>
+</div>
+</div>
+<div class="section" id="all-docs">
+<h2>_all_docs<a class="headerlink" href="#all-docs" title="Permalink to this headline">¶</a></h2>
+<p>The <a class="reference internal" href="../../api/database/bulk-api.html#api-db-all-docs"><em>_all_docs</em></a>  view is a special case because it uses
+ASCII collation for doc ids, not UCA:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">startkey</span><span class="o">=</span><span class="s">&quot;_design/&quot;</span><span class="o">&amp;</span><span class="n">endkey</span><span class="o">=</span><span class="s">&quot;_design/ZZZZZZZZ&quot;</span>
+</pre></div>
+</div>
+<p>will not find <tt class="docutils literal"><span class="pre">_design/abc</span></tt> because <cite>&#8216;Z&#8217;</cite> comes before <cite>&#8216;a&#8217;</cite> in the ASCII
+sequence. A better solution is:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">startkey</span><span class="o">=</span><span class="s">&quot;_design/&quot;</span><span class="o">&amp;</span><span class="n">endkey</span><span class="o">=</span><span class="s">&quot;_design0&quot;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="raw-collation">
+<h2>Raw collation<a class="headerlink" href="#raw-collation" title="Permalink to this headline">¶</a></h2>
+<p>To squeeze a little more performance out of views, you can specify
+<tt class="docutils literal"><span class="pre">&quot;options&quot;:{&quot;collation&quot;:&quot;raw&quot;}</span></tt>  within the view definition for native Erlang
+collation, especially if you don&#8217;t require UCA. This gives a different collation
+sequence:</p>
+<div class="highlight-javascript"><div class="highlight"><pre><span class="mi">1</span>
+<span class="kc">false</span>
+<span class="kc">null</span>
+<span class="kc">true</span>
+<span class="p">{</span><span class="s2">&quot;a&quot;</span><span class="o">:</span><span class="s2">&quot;a&quot;</span><span class="p">},</span>
+<span class="p">[</span><span class="s2">&quot;a&quot;</span><span class="p">]</span>
+<span class="s2">&quot;a&quot;</span>
+</pre></div>
+</div>
+<p>Beware that <tt class="docutils literal"><span class="pre">{}</span></tt> is no longer a suitable &#8220;high&#8221; key sentinel value. Use a
+string like <tt class="docutils literal"><span class="pre">&quot;\ufff0&quot;</span></tt> instead.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+    <p class="logo"><a href="../../index.html">
+      <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+    </a></p><!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+<div id="searchbox" style="display: none">
+
+<h3>Quick Search</h3>
+
+<form class="search" action="../../search.html" method="get">
+<input type="text" name="q" style="width:115px">
+<input type="submit" value="Go">
+<input type="hidden" name="check_keywords" value="yes">
+<input type="hidden" name="area" value="default">
+</form>
+
+<br>
+
+</div>
+
+<script type="text/javascript">$('#searchbox').show(0);</script>
+  <h3><a href="../../contents.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">6.2.2. Views Collation</a><ul>
+<li><a class="reference internal" href="#basics">Basics</a></li>
+<li><a class="reference internal" href="#examples">Examples</a></li>
+<li><a class="reference internal" href="#sorting-by-dates">Sorting by Dates</a></li>
+<li><a class="reference internal" href="#string-ranges">String Ranges</a></li>
+<li><a class="reference internal" href="#collation-specification">Collation Specification</a><ul>
+<li><a class="reference internal" href="#key-ranges">Key ranges</a></li>
+<li><a class="reference internal" href="#complex-keys">Complex keys</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#all-docs">_all_docs</a></li>
+<li><a class="reference internal" href="#raw-collation">Raw collation</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="intro.html"
+                        title="previous chapter">6.2.1. Introduction to Views</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="joins.html"
+                        title="next chapter">6.2.3. Joins With Views</a></p><!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+
+<h3>Utilities</h3>
+
+<ul>
+<li><a href="../">Fauxton</a></li>
+</ul>
+<!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+<h3>More Help</h3>
+
+<ul>
+<li><a href="https://couchdb.apache.org/">Homepage</a></li>
+<li><a href="https://cwiki.apache.org/confluence/display/COUCHDB/">Wiki</a></li>
+<li><a href="https://couchdb.apache.org/#mailing-list">Mailing Lists</a></li>
+<li><a href="http://webchat.freenode.net/?channels=couchdb">IRC</a></li>
+<li><a href="https://issues.apache.org/jira/browse/CouchDB">Issues</a></li>
+<li><a href="../../download.html">Download</a></li>
+<li><a href="https://github.com/apache/couchdb-documentation/blob/master/src/couchapp/views/collation.rst"
+       rel="nofollow">Show on GitHub</a></li>
+<li><a href="https://github.com/apache/couchdb-documentation/edit/master/src/couchapp/views/collation.rst"
+       rel="nofollow">Edit on GitHub</a></li>
+</ul><!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../http-api.html" title="HTTP API Reference"
+             >API Reference</a></li>
+        <li class="right" >
+          <a href="../../config-ref.html" title="Configuration Reference"
+             >Config Reference</a> |</li>
+        <li class="right" >
+          <a href="joins.html" title="6.2.3. Joins With Views"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="intro.html" title="6.2.1. Introduction to Views"
+             >previous</a> |</li>
+  <li><a href="../../index.html">Apache CouchDB 2.0 Documentation</a> &raquo;</li>
+          <li><a href="../index.html" >6. CouchApp</a> &raquo;</li>
+          <li><a href="index.html" >6.2. Guide to Views</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2016, Apache Software Foundation.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,278 @@
+<!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>2.4. Installation on FreeBSD &mdash; Apache CouchDB 2.0 Documentation</title>
+    
+    <link rel="stylesheet" href="../_static/rtd.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '2.0.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+    <link rel="author" title="About these documents" href="../about.html" />
+    <link rel="top" title="Apache CouchDB 2.0 Documentation" href="../index.html" />
+    <link rel="up" title="2. Installation" href="index.html" />
+    <link rel="next" title="2.5. Troubleshooting an Installation" href="troubleshooting.html" />
+    <link rel="prev" title="2.3. Installation on Mac OS X" href="mac.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../http-api.html" title="HTTP API Reference"
+             >API Reference</a></li>
+        <li class="right" >
+          <a href="../config-ref.html" title="Configuration Reference"
+             >Config Reference</a> |</li>
+        <li class="right" >
+          <a href="troubleshooting.html" title="2.5. Troubleshooting an Installation"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="mac.html" title="2.3. Installation on Mac OS X"
+             accesskey="P">previous</a> |</li>
+  <li><a href="../index.html">Apache CouchDB 2.0 Documentation</a> &raquo;</li>
+          <li><a href="index.html" accesskey="U">2. Installation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="installation-on-freebsd">
+<span id="install-freebsd"></span><h1>2.4. Installation on FreeBSD<a class="headerlink" href="#installation-on-freebsd" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="installation-from-ports">
+<h2>2.4.1. Installation from ports<a class="headerlink" href="#installation-from-ports" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-text"><div class="highlight"><pre>cd /usr/ports/databases/couchdb
+make install clean
+</pre></div>
+</div>
+<p>This will install CouchDB from the ports collection.</p>
+<div class="section" id="start-script">
+<h3>Start script<a class="headerlink" href="#start-script" title="Permalink to this headline">¶</a></h3>
+<p>The following options for <tt class="docutils literal"><span class="pre">/etc/rc.conf</span></tt> or <tt class="docutils literal"><span class="pre">/etc/rc.conf.local</span></tt> are
+supported by the start script (defaults shown):</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">couchdb_enable</span><span class="o">=</span><span class="s">&quot;NO&quot;</span>
+<span class="n">couchdb_enablelogs</span><span class="o">=</span><span class="s">&quot;YES&quot;</span>
+<span class="n">couchdb_user</span><span class="o">=</span><span class="s">&quot;couchdb&quot;</span>
+</pre></div>
+</div>
+<p>After enabling the couchdb rc service use the following command to start CouchDB:</p>
+<div class="highlight-python"><div class="highlight"><pre>/usr/local/etc/rc.d/couchdb start
+</pre></div>
+</div>
+<p>This script responds to the arguments <cite>start</cite>, <cite>stop</cite>, <cite>status</cite>, <cite>rcvar</cite> etc..</p>
+<p>The start script will also use settings from the following config files:</p>
+<ul class="simple">
+<li>/usr/local/etc/couchdb/default.ini</li>
+<li>/usr/local/etc/couchdb/local.ini</li>
+</ul>
+<p>Administrators should use <tt class="docutils literal"><span class="pre">default.ini</span></tt> as reference and only modify the
+<tt class="docutils literal"><span class="pre">local.ini</span></tt> file.</p>
+</div>
+<div class="section" id="post-install">
+<h3>Post install<a class="headerlink" href="#post-install" title="Permalink to this headline">¶</a></h3>
+<p>In case the install script fails to install a noninteractive user &#8220;couchdb&#8221; to
+be used for the database, the user needs to be created manually:</p>
+<p>I used the <tt class="docutils literal"><span class="pre">pw</span></tt> command to add a user &#8220;couchdb&#8221; in group &#8220;couchdb&#8221;:</p>
+<div class="highlight-text"><div class="highlight"><pre>pw user add couchdb
+pw user mod couchdb -c &#39;CouchDB, time to relax&#39; -s /usr/sbin/nologin -d /var/lib/couchdb
+pw group add couchdb
+</pre></div>
+</div>
+<p>The user is added to <tt class="docutils literal"><span class="pre">/etc/passwd</span></tt> and should look similar to the following:</p>
+<div class="highlight-text"><div class="highlight"><pre>shell#  grep couchdb /etc/passwd
+couchdb:*:1013:1013:Couchdb, time to relax:/var/lib/couchdb/:/usr/sbin/nologin
+</pre></div>
+</div>
+<p>To change any of these settings, please refrain from editing <cite>/etc/passwd</cite> and
+instead use <tt class="docutils literal"><span class="pre">pw</span> <span class="pre">user</span> <span class="pre">mod</span> <span class="pre">...</span></tt> or <tt class="docutils literal"><span class="pre">vipw</span></tt>. Make sure that the user has no
+shell, but instead uses <tt class="docutils literal"><span class="pre">/usr/sbin/nologin</span></tt>. The &#8216;*&#8217; in the second field means
+that this user can not login via password authorization. For details use
+<a class="reference external" href="http://linux.die.net/man/5/passwd">man 5 passwd</a>.</p>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+    <p class="logo"><a href="../index.html">
+      <img class="logo" src="../_static/logo.png" alt="Logo"/>
+    </a></p><!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+<div id="searchbox" style="display: none">
+
+<h3>Quick Search</h3>
+
+<form class="search" action="../search.html" method="get">
+<input type="text" name="q" style="width:115px">
+<input type="submit" value="Go">
+<input type="hidden" name="check_keywords" value="yes">
+<input type="hidden" name="area" value="default">
+</form>
+
+<br>
+
+</div>
+
+<script type="text/javascript">$('#searchbox').show(0);</script>
+  <h3><a href="../contents.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">2.4. Installation on FreeBSD</a><ul>
+<li><a class="reference internal" href="#installation-from-ports">2.4.1. Installation from ports</a><ul>
+<li><a class="reference internal" href="#start-script">Start script</a></li>
+<li><a class="reference internal" href="#post-install">Post install</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="mac.html"
+                        title="previous chapter">2.3. Installation on Mac OS X</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="troubleshooting.html"
+                        title="next chapter">2.5. Troubleshooting an Installation</a></p><!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+
+<h3>Utilities</h3>
+
+<ul>
+<li><a href="../">Fauxton</a></li>
+</ul>
+<!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+<h3>More Help</h3>
+
+<ul>
+<li><a href="https://couchdb.apache.org/">Homepage</a></li>
+<li><a href="https://cwiki.apache.org/confluence/display/COUCHDB/">Wiki</a></li>
+<li><a href="https://couchdb.apache.org/#mailing-list">Mailing Lists</a></li>
+<li><a href="http://webchat.freenode.net/?channels=couchdb">IRC</a></li>
+<li><a href="https://issues.apache.org/jira/browse/CouchDB">Issues</a></li>
+<li><a href="../download.html">Download</a></li>
+<li><a href="https://github.com/apache/couchdb-documentation/blob/master/src/install/freebsd.rst"
+       rel="nofollow">Show on GitHub</a></li>
+<li><a href="https://github.com/apache/couchdb-documentation/edit/master/src/install/freebsd.rst"
+       rel="nofollow">Edit on GitHub</a></li>
+</ul><!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../http-api.html" title="HTTP API Reference"
+             >API Reference</a></li>
+        <li class="right" >
+          <a href="../config-ref.html" title="Configuration Reference"
+             >Config Reference</a> |</li>
+        <li class="right" >
+          <a href="troubleshooting.html" title="2.5. Troubleshooting an Installation"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="mac.html" title="2.3. Installation on Mac OS X"
+             >previous</a> |</li>
+  <li><a href="../index.html">Apache CouchDB 2.0 Documentation</a> &raquo;</li>
+          <li><a href="index.html" >2. Installation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2016, Apache Software Foundation.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
+    </div>
+  </body>
+</html>

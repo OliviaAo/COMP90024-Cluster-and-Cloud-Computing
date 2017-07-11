@@ -1,0 +1,669 @@
+<!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>6.2.4. View Cookbook for SQL Jockeys &mdash; Apache CouchDB 2.0 Documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/rtd.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '2.0.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <link rel="author" title="About these documents" href="../../about.html" />
+    <link rel="top" title="Apache CouchDB 2.0 Documentation" href="../../index.html" />
+    <link rel="up" title="6.2. Guide to Views" href="index.html" />
+    <link rel="next" title="6.2.5. Pagination Recipe" href="pagination.html" />
+    <link rel="prev" title="6.2.3. Joins With Views" href="joins.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../http-api.html" title="HTTP API Reference"
+             >API Reference</a></li>
+        <li class="right" >
+          <a href="../../config-ref.html" title="Configuration Reference"
+             >Config Reference</a> |</li>
+        <li class="right" >
+          <a href="pagination.html" title="6.2.5. Pagination Recipe"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="joins.html" title="6.2.3. Joins With Views"
+             accesskey="P">previous</a> |</li>
+  <li><a href="../../index.html">Apache CouchDB 2.0 Documentation</a> &raquo;</li>
+          <li><a href="../index.html" >6. CouchApp</a> &raquo;</li>
+          <li><a href="index.html" accesskey="U">6.2. Guide to Views</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="view-cookbook-for-sql-jockeys">
+<span id="views-nosql"></span><h1>6.2.4. View Cookbook for SQL Jockeys<a class="headerlink" href="#view-cookbook-for-sql-jockeys" title="Permalink to this headline">¶</a></h1>
+<p>This is a collection of some common SQL queries and how to get the same result
+in CouchDB. The key to remember here is that CouchDB does not work like an SQL
+database at all, and that best practices from the SQL world do not translate
+well or at all to CouchDB. This document’s “cookbook” assumes that you are
+familiar with the CouchDB basics such as creating and updating databases and
+documents.</p>
+<div class="section" id="using-views">
+<h2>Using Views<a class="headerlink" href="#using-views" title="Permalink to this headline">¶</a></h2>
+<p>How you would do this in SQL:</p>
+<div class="highlight-python"><div class="highlight"><pre>CREATE TABLE
+</pre></div>
+</div>
+<p>or:</p>
+<div class="highlight-python"><div class="highlight"><pre>ALTER TABLE
+</pre></div>
+</div>
+<p>How you can do this in CouchDB?</p>
+<p>Using views is a two-step process. First you define a view; then you query it.
+This is analogous to defining a table structure (with indexes) using
+<tt class="docutils literal"><span class="pre">CREATE</span> <span class="pre">TABLE</span></tt> or <tt class="docutils literal"><span class="pre">ALTER</span> <span class="pre">TABLE</span></tt> and querying it using an SQL query.</p>
+<div class="section" id="defining-a-view">
+<h3>Defining a View<a class="headerlink" href="#defining-a-view" title="Permalink to this headline">¶</a></h3>
+<p>Defining a view is done by creating a special document in a CouchDB database.
+The only real specialness is the <tt class="docutils literal"><span class="pre">_id</span></tt> of the document, which starts with
+<tt class="docutils literal"><span class="pre">_design/</span></tt> — for example, _design/application. Other than that, it is just a
+regular CouchDB document. To make sure CouchDB understands that you are defining
+a view, you need to prepare the contents of that design document in a special
+format. Here is an example:</p>
+<div class="highlight-javascript"><div class="highlight"><pre><span class="p">{</span>
+    <span class="s2">&quot;_id&quot;</span><span class="o">:</span> <span class="s2">&quot;_design/application&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;_rev&quot;</span><span class="o">:</span> <span class="s2">&quot;1-C1687D17&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;views&quot;</span><span class="o">:</span> <span class="p">{</span>
+        <span class="s2">&quot;viewname&quot;</span><span class="o">:</span> <span class="p">{</span>
+            <span class="s2">&quot;map&quot;</span><span class="o">:</span> <span class="s2">&quot;function(doc) { ... }&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;reduce&quot;</span><span class="o">:</span> <span class="s2">&quot;function(keys, values) { ... }&quot;</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>We are defining a view <cite>viewname</cite>. The definition of the view consists of two
+functions: the map function and the reduce function. Specifying a reduce
+function is optional. We’ll look at the nature of the functions later. Note that
+<cite>viewname</cite> can be whatever you like: <tt class="docutils literal"><span class="pre">users</span></tt>, <tt class="docutils literal"><span class="pre">by-name</span></tt>, or <tt class="docutils literal"><span class="pre">by-date</span></tt> are
+just some examples.</p>
+<p>A single design document can also include multiple view definitions, each
+identified by a unique name:</p>
+<div class="highlight-javascript"><div class="highlight"><pre><span class="p">{</span>
+    <span class="s2">&quot;_id&quot;</span><span class="o">:</span> <span class="s2">&quot;_design/application&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;_rev&quot;</span><span class="o">:</span> <span class="s2">&quot;1-C1687D17&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;views&quot;</span><span class="o">:</span> <span class="p">{</span>
+        <span class="s2">&quot;viewname&quot;</span><span class="o">:</span> <span class="p">{</span>
+            <span class="s2">&quot;map&quot;</span><span class="o">:</span> <span class="s2">&quot;function(doc) { ... }&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;reduce&quot;</span><span class="o">:</span> <span class="s2">&quot;function(keys, values) { ... }&quot;</span>
+        <span class="p">},</span>
+        <span class="s2">&quot;anotherview&quot;</span><span class="o">:</span> <span class="p">{</span>
+            <span class="s2">&quot;map&quot;</span><span class="o">:</span> <span class="s2">&quot;function(doc) { ... }&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;reduce&quot;</span><span class="o">:</span> <span class="s2">&quot;function(keys, values) { ... }&quot;</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="querying-a-view">
+<h3>Querying a View<a class="headerlink" href="#querying-a-view" title="Permalink to this headline">¶</a></h3>
+<p>The name of the design document and the name of the view are significant for
+querying the view. To query the view <cite>viewname</cite>, you perform an HTTP <tt class="docutils literal"><span class="pre">GET</span></tt>
+request to the following URI:</p>
+<div class="highlight-python"><div class="highlight"><pre>/database/_design/application/_view/viewname
+</pre></div>
+</div>
+<p>database is the name of the database you created your design document in. Next
+up is the design document name, and then the view name prefixed with <tt class="docutils literal"><span class="pre">_view/</span></tt>.
+To query <cite>anotherview</cite>, replace <cite>viewname</cite> in that URI with <cite>anotherview</cite>.
+If you want to query a view in a different design document, adjust the design
+document name.</p>
+</div>
+<div class="section" id="mapreduce-functions">
+<h3>MapReduce Functions<a class="headerlink" href="#mapreduce-functions" title="Permalink to this headline">¶</a></h3>
+<p>MapReduce is a concept that solves problems by applying a two-step process,
+aptly named the map phase and the reduce phase. The map phase looks at all
+documents in CouchDB separately one after the other and creates a <cite>map result</cite>.
+The map result is an ordered list of key/value pairs. Both key and value can
+be specified by the user writing the map function. A map function may call the
+built-in <tt class="docutils literal"><span class="pre">emit(key,</span> <span class="pre">value)</span></tt> function 0 to N times per document, creating a row
+in the map result per invocation.</p>
+<p>CouchDB is smart enough to run a map function only once for every document, even
+on subsequent queries on a view. Only changes to documents or new documents need
+to be processed anew.</p>
+</div>
+<div class="section" id="map-functions">
+<h3>Map functions<a class="headerlink" href="#map-functions" title="Permalink to this headline">¶</a></h3>
+<p>Map functions run in isolation for every document. They can’t modify the
+document, and they can’t talk to the outside world—they can’t have side effects.
+This is required so that CouchDB can guarantee correct results without having
+to recalculate a complete result when only one document gets changed.</p>
+<p>The map result looks like this:</p>
+<div class="highlight-javascript"><div class="highlight"><pre><span class="p">{</span><span class="s2">&quot;total_rows&quot;</span><span class="o">:</span><span class="mi">3</span><span class="p">,</span><span class="s2">&quot;offset&quot;</span><span class="o">:</span><span class="mi">0</span><span class="p">,</span><span class="s2">&quot;rows&quot;</span><span class="o">:</span><span class="p">[</span>
+<span class="p">{</span><span class="s2">&quot;id&quot;</span><span class="o">:</span><span class="s2">&quot;fc2636bf50556346f1ce46b4bc01fe30&quot;</span><span class="p">,</span><span class="s2">&quot;key&quot;</span><span class="o">:</span><span class="s2">&quot;Lena&quot;</span><span class="p">,</span><span class="s2">&quot;value&quot;</span><span class="o">:</span><span class="mi">5</span><span class="p">},</span>
+<span class="p">{</span><span class="s2">&quot;id&quot;</span><span class="o">:</span><span class="s2">&quot;1fb2449f9b9d4e466dbfa47ebe675063&quot;</span><span class="p">,</span><span class="s2">&quot;key&quot;</span><span class="o">:</span><span class="s2">&quot;Lisa&quot;</span><span class="p">,</span><span class="s2">&quot;value&quot;</span><span class="o">:</span><span class="mi">4</span><span class="p">},</span>
+<span class="p">{</span><span class="s2">&quot;id&quot;</span><span class="o">:</span><span class="s2">&quot;8ede09f6f6aeb35d948485624b28f149&quot;</span><span class="p">,</span><span class="s2">&quot;key&quot;</span><span class="o">:</span><span class="s2">&quot;Sarah&quot;</span><span class="p">,</span><span class="s2">&quot;value&quot;</span><span class="o">:</span><span class="mi">6</span><span class="p">}</span>
+<span class="p">]}</span>
+</pre></div>
+</div>
+<p>It is a list of rows sorted by the value of key. The id is added automatically
+and refers back to the document that created this row. The value is the data
+you’re looking for. For example purposes, it’s the girl’s age.</p>
+<p>The map function that produces this result is:</p>
+<div class="highlight-javascript"><div class="highlight"><pre><span class="kd">function</span><span class="p">(</span><span class="nx">doc</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">if</span><span class="p">(</span><span class="nx">doc</span><span class="p">.</span><span class="nx">name</span> <span class="o">&amp;&amp;</span> <span class="nx">doc</span><span class="p">.</span><span class="nx">age</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">emit</span><span class="p">(</span><span class="nx">doc</span><span class="p">.</span><span class="nx">name</span><span class="p">,</span> <span class="nx">doc</span><span class="p">.</span><span class="nx">age</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>It includes the if statement as a sanity check to ensure that we’re operating
+on the right fields and calls the emit function with the name and age as the key
+and value.</p>
+</div>
+</div>
+<div class="section" id="look-up-by-key">
+<h2>Look Up by Key<a class="headerlink" href="#look-up-by-key" title="Permalink to this headline">¶</a></h2>
+<p>How you would do this in SQL:</p>
+<div class="highlight-python"><div class="highlight"><pre>SELECT field FROM table WHERE value=&quot;searchterm&quot;
+</pre></div>
+</div>
+<p>How you can do this in CouchDB?</p>
+<p>Use case: get a result (which can be a record or set of records) associated
+with a key (&#8220;searchterm&#8221;).</p>
+<p>To look something up quickly, regardless of the storage mechanism, an index is
+needed. An index is a data structure optimized for quick search and retrieval.
+CouchDB’s map result is stored in such an index, which happens to be a B+ tree.</p>
+<p>To look up a value by &#8220;searchterm&#8221;, we need to put all values into the key of a
+view. All we need is a simple map function:</p>
+<div class="highlight-javascript"><div class="highlight"><pre><span class="kd">function</span><span class="p">(</span><span class="nx">doc</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">if</span><span class="p">(</span><span class="nx">doc</span><span class="p">.</span><span class="nx">value</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">emit</span><span class="p">(</span><span class="nx">doc</span><span class="p">.</span><span class="nx">value</span><span class="p">,</span> <span class="kc">null</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>This creates a list of documents that have a value field sorted by the data in
+the value field. To find all the records that match &#8220;searchterm&#8221;, we query the
+view and specify the search term as a query parameter:</p>
+<div class="highlight-python"><div class="highlight"><pre>/database/_design/application/_view/viewname?key=&quot;searchterm&quot;
+</pre></div>
+</div>
+<p>Consider the documents from the previous section, and say we’re indexing on the
+age field of the documents to find all the five-year-olds:</p>
+<div class="highlight-javascript"><div class="highlight"><pre><span class="kd">function</span><span class="p">(</span><span class="nx">doc</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">if</span><span class="p">(</span><span class="nx">doc</span><span class="p">.</span><span class="nx">age</span> <span class="o">&amp;&amp;</span> <span class="nx">doc</span><span class="p">.</span><span class="nx">name</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">emit</span><span class="p">(</span><span class="nx">doc</span><span class="p">.</span><span class="nx">age</span><span class="p">,</span> <span class="nx">doc</span><span class="p">.</span><span class="nx">name</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Query:</p>
+<div class="highlight-python"><div class="highlight"><pre>/ladies/_design/ladies/_view/age?key=5
+</pre></div>
+</div>
+<p>Result:</p>
+<div class="highlight-javascript"><div class="highlight"><pre><span class="p">{</span><span class="s2">&quot;total_rows&quot;</span><span class="o">:</span><span class="mi">3</span><span class="p">,</span><span class="s2">&quot;offset&quot;</span><span class="o">:</span><span class="mi">1</span><span class="p">,</span><span class="s2">&quot;rows&quot;</span><span class="o">:</span><span class="p">[</span>
+<span class="p">{</span><span class="s2">&quot;id&quot;</span><span class="o">:</span><span class="s2">&quot;fc2636bf50556346f1ce46b4bc01fe30&quot;</span><span class="p">,</span><span class="s2">&quot;key&quot;</span><span class="o">:</span><span class="mi">5</span><span class="p">,</span><span class="s2">&quot;value&quot;</span><span class="o">:</span><span class="s2">&quot;Lena&quot;</span><span class="p">}</span>
+<span class="p">]}</span>
+</pre></div>
+</div>
+<p>Easy.</p>
+<p>Note that you have to emit a value. The view result includes the associated
+document ID in every row. We can use it to look up more data from the document
+itself. We can also use the <tt class="docutils literal"><span class="pre">?include_docs=true</span></tt> parameter to have CouchDB
+fetch the individual documents for us.</p>
+</div>
+<div class="section" id="look-up-by-prefix">
+<h2>Look Up by Prefix<a class="headerlink" href="#look-up-by-prefix" title="Permalink to this headline">¶</a></h2>
+<p>How you would do this in SQL:</p>
+<div class="highlight-python"><div class="highlight"><pre>SELECT field FROM table WHERE value LIKE &quot;searchterm%&quot;
+</pre></div>
+</div>
+<p>How you can do this in CouchDB?</p>
+<p>Use case: find all documents that have a field value that starts with
+<cite>searchterm</cite>. For example, say you stored a MIME type (like <cite>text/html</cite> or
+<cite>image/jpg</cite>) for each document and now you want to find all documents that are
+images according to the MIME type.</p>
+<p>The solution is very similar to the previous example: all we need is a map
+function that is a little more clever than the first one. But first, an example
+document:</p>
+<div class="highlight-javascript"><div class="highlight"><pre><span class="p">{</span>
+    <span class="s2">&quot;_id&quot;</span><span class="o">:</span> <span class="s2">&quot;Hugh Laurie&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;_rev&quot;</span><span class="o">:</span> <span class="s2">&quot;1-9fded7deef52ac373119d05435581edf&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;mime-type&quot;</span><span class="o">:</span> <span class="s2">&quot;image/jpg&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;description&quot;</span><span class="o">:</span> <span class="s2">&quot;some dude&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>The clue lies in extracting the prefix that we want to search for from our
+document and putting it into our view index. We use a regular expression to
+match our prefix:</p>
+<div class="highlight-javascript"><div class="highlight"><pre><span class="kd">function</span><span class="p">(</span><span class="nx">doc</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">if</span><span class="p">(</span><span class="nx">doc</span><span class="p">[</span><span class="s2">&quot;mime-type&quot;</span><span class="p">])</span> <span class="p">{</span>
+        <span class="c1">// from the start (^) match everything that is not a slash ([^\/]+) until</span>
+        <span class="c1">// we find a slash (\/). Slashes needs to be escaped with a backslash (\/)</span>
+        <span class="kd">var</span> <span class="nx">prefix</span> <span class="o">=</span> <span class="nx">doc</span><span class="p">[</span><span class="s2">&quot;mime-type&quot;</span><span class="p">].</span><span class="nx">match</span><span class="p">(</span><span class="sr">/^[^\/]+\//</span><span class="p">);</span>
+        <span class="k">if</span><span class="p">(</span><span class="nx">prefix</span><span class="p">)</span> <span class="p">{</span>
+          <span class="nx">emit</span><span class="p">(</span><span class="nx">prefix</span><span class="p">,</span> <span class="kc">null</span><span class="p">);</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>We can now query this view with our desired MIME type prefix and not only find
+all images, but also text, video, and all other formats:</p>
+<div class="highlight-python"><div class="highlight"><pre>/files/_design/finder/_view/by-mime-type?key=&quot;image/&quot;
+</pre></div>
+</div>
+</div>
+<div class="section" id="aggregate-functions">
+<h2>Aggregate Functions<a class="headerlink" href="#aggregate-functions" title="Permalink to this headline">¶</a></h2>
+<p>How you would do this in SQL:</p>
+<div class="highlight-python"><div class="highlight"><pre>SELECT COUNT(field) FROM table
+</pre></div>
+</div>
+<p>How you can do this in CouchDB?</p>
+<p>Use case: calculate a derived value from your data.</p>
+<p>We haven’t explained reduce functions yet. Reduce functions are similar to
+aggregate functions in SQL. They compute a value over multiple documents.</p>
+<p>To explain the mechanics of reduce functions, we’ll create one that doesn’t make
+a whole lot of sense. But this example is easy to understand. We’ll explore more
+useful reductions later.</p>
+<p>Reduce functions operate on the output of the map function (also called the map
+result or intermediate result). The reduce function’s job, unsurprisingly, is to
+reduce the list that the map function produces.</p>
+<p>Here’s what our summing reduce function looks like:</p>
+<div class="highlight-javascript"><div class="highlight"><pre><span class="kd">function</span><span class="p">(</span><span class="nx">keys</span><span class="p">,</span> <span class="nx">values</span><span class="p">)</span> <span class="p">{</span>
+    <span class="kd">var</span> <span class="nx">sum</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+    <span class="k">for</span><span class="p">(</span><span class="kd">var</span> <span class="nx">idx</span> <span class="k">in</span> <span class="nx">values</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">sum</span> <span class="o">=</span> <span class="nx">sum</span> <span class="o">+</span> <span class="nx">values</span><span class="p">[</span><span class="nx">idx</span><span class="p">];</span>
+    <span class="p">}</span>
+    <span class="k">return</span> <span class="nx">sum</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Here’s an alternate, more idiomatic JavaScript version:</p>
+<div class="highlight-javascript"><div class="highlight"><pre><span class="kd">function</span><span class="p">(</span><span class="nx">keys</span><span class="p">,</span> <span class="nx">values</span><span class="p">)</span> <span class="p">{</span>
+    <span class="kd">var</span> <span class="nx">sum</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+    <span class="nx">values</span><span class="p">.</span><span class="nx">forEach</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">element</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">sum</span> <span class="o">=</span> <span class="nx">sum</span> <span class="o">+</span> <span class="nx">element</span><span class="p">;</span>
+    <span class="p">});</span>
+    <span class="k">return</span> <span class="nx">sum</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Don&#8217;t miss effective builtin <a class="reference internal" href="../ddocs.html#reducefun"><em>reduce functions</em></a> like
+<tt class="docutils literal"><span class="pre">_sum</span></tt> and <tt class="docutils literal"><span class="pre">_count</span></tt></p>
+</div>
+<p>This reduce function takes two arguments: a list of keys and a list of values.
+For our summing purposes we can ignore the keys-list and consider only the value
+list. We’re looping over the list and add each item to a running total that
+we’re returning at the end of the function.</p>
+<p>You’ll see one difference between the map and the reduce function. The map
+function uses <tt class="docutils literal"><span class="pre">emit()</span></tt> to create its result, whereas the reduce function
+returns a value.</p>
+<p>For example, from a list of integer values that specify the age, calculate the
+sum of all years of life for the news headline,
+<cite>“786 life years present at event.”</cite> A little contrived, but very simple and
+thus good for demonstration purposes. Consider the documents and the map view we
+used earlier in this document.</p>
+<p>The reduce function to calculate the total age of all girls is:</p>
+<div class="highlight-javascript"><div class="highlight"><pre><span class="kd">function</span><span class="p">(</span><span class="nx">keys</span><span class="p">,</span> <span class="nx">values</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="nx">sum</span><span class="p">(</span><span class="nx">values</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Note that, instead of the two earlier versions, we use CouchDB’s predefined
+<a class="reference internal" href="../../query-server/javascript.html#sum" title="sum"><tt class="xref js js-func docutils literal"><span class="pre">sum()</span></tt></a> function. It does the same thing as the other two, but it is such
+a common piece of code that CouchDB has it included.</p>
+<p>The result for our reduce view now looks like this:</p>
+<div class="highlight-javascript"><div class="highlight"><pre><span class="p">{</span><span class="s2">&quot;rows&quot;</span><span class="o">:</span><span class="p">[</span>
+    <span class="p">{</span><span class="s2">&quot;key&quot;</span><span class="o">:</span><span class="kc">null</span><span class="p">,</span><span class="s2">&quot;value&quot;</span><span class="o">:</span><span class="mi">15</span><span class="p">}</span>
+<span class="p">]}</span>
+</pre></div>
+</div>
+<p>The total sum of all age fields in all our documents is 15. Just what we wanted.
+The key member of the result object is null, as we can’t know anymore which
+documents took part in the creation of the reduced result. We’ll cover more
+advanced reduce cases later on.</p>
+<p>As a rule of thumb, the reduce function should reduce to a single scalar value.
+That is, an integer; a string; or a small, fixed-size list or object that
+includes an aggregated value (or values) from the values argument.
+It should never just return values or similar. CouchDB will give you a warning
+if you try to use reduce “the wrong way”:</p>
+<div class="highlight-javascript"><div class="highlight"><pre><span class="p">{</span>
+    <span class="s2">&quot;error&quot;</span><span class="o">:</span><span class="s2">&quot;reduce_overflow_error&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;message&quot;</span><span class="o">:</span><span class="s2">&quot;Reduce output must shrink more rapidly: Current output: ...&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="get-unique-values">
+<h2>Get Unique Values<a class="headerlink" href="#get-unique-values" title="Permalink to this headline">¶</a></h2>
+<p>How you would do this in SQL:</p>
+<div class="highlight-python"><div class="highlight"><pre>SELECT DISTINCT field FROM table
+</pre></div>
+</div>
+<p>How you can do this in CouchDB?</p>
+<p>Getting unique values is not as easy as adding a keyword. But a reduce view and
+a special query parameter give us the same result. Let’s say you want a list of
+tags that your users have tagged themselves with and no duplicates.</p>
+<p>First, let’s look at the source documents. We punt on <tt class="docutils literal"><span class="pre">_id</span></tt> and <tt class="docutils literal"><span class="pre">_rev</span></tt>
+attributes here:</p>
+<div class="highlight-javascript"><div class="highlight"><pre><span class="p">{</span>
+    <span class="s2">&quot;name&quot;</span><span class="o">:</span><span class="s2">&quot;Chris&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;tags&quot;</span><span class="o">:</span><span class="p">[</span><span class="s2">&quot;mustache&quot;</span><span class="p">,</span> <span class="s2">&quot;music&quot;</span><span class="p">,</span> <span class="s2">&quot;couchdb&quot;</span><span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<div class="highlight-javascript"><div class="highlight"><pre><span class="p">{</span>
+    <span class="s2">&quot;name&quot;</span><span class="o">:</span><span class="s2">&quot;Noah&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;tags&quot;</span><span class="o">:</span><span class="p">[</span><span class="s2">&quot;hypertext&quot;</span><span class="p">,</span> <span class="s2">&quot;philosophy&quot;</span><span class="p">,</span> <span class="s2">&quot;couchdb&quot;</span><span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<div class="highlight-javascript"><div class="highlight"><pre><span class="p">{</span>
+    <span class="s2">&quot;name&quot;</span><span class="o">:</span><span class="s2">&quot;Jan&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;tags&quot;</span><span class="o">:</span><span class="p">[</span><span class="s2">&quot;drums&quot;</span><span class="p">,</span> <span class="s2">&quot;bike&quot;</span><span class="p">,</span> <span class="s2">&quot;couchdb&quot;</span><span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Next, we need a list of all tags. A map function will do the trick:</p>
+<div class="highlight-javascript"><div class="highlight"><pre><span class="kd">function</span><span class="p">(</span><span class="nx">doc</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">if</span><span class="p">(</span><span class="nx">doc</span><span class="p">.</span><span class="nx">name</span> <span class="o">&amp;&amp;</span> <span class="nx">doc</span><span class="p">.</span><span class="nx">tags</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">doc</span><span class="p">.</span><span class="nx">tags</span><span class="p">.</span><span class="nx">forEach</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">tag</span><span class="p">)</span> <span class="p">{</span>
+            <span class="nx">emit</span><span class="p">(</span><span class="nx">tag</span><span class="p">,</span> <span class="kc">null</span><span class="p">);</span>
+        <span class="p">});</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>The result will look like this:</p>
+<div class="highlight-javascript"><div class="highlight"><pre><span class="p">{</span><span class="s2">&quot;total_rows&quot;</span><span class="o">:</span><span class="mi">9</span><span class="p">,</span><span class="s2">&quot;offset&quot;</span><span class="o">:</span><span class="mi">0</span><span class="p">,</span><span class="s2">&quot;rows&quot;</span><span class="o">:</span><span class="p">[</span>
+<span class="p">{</span><span class="s2">&quot;id&quot;</span><span class="o">:</span><span class="s2">&quot;3525ab874bc4965fa3cda7c549e92d30&quot;</span><span class="p">,</span><span class="s2">&quot;key&quot;</span><span class="o">:</span><span class="s2">&quot;bike&quot;</span><span class="p">,</span><span class="s2">&quot;value&quot;</span><span class="o">:</span><span class="kc">null</span><span class="p">},</span>
+<span class="p">{</span><span class="s2">&quot;id&quot;</span><span class="o">:</span><span class="s2">&quot;3525ab874bc4965fa3cda7c549e92d30&quot;</span><span class="p">,</span><span class="s2">&quot;key&quot;</span><span class="o">:</span><span class="s2">&quot;couchdb&quot;</span><span class="p">,</span><span class="s2">&quot;value&quot;</span><span class="o">:</span><span class="kc">null</span><span class="p">},</span>
+<span class="p">{</span><span class="s2">&quot;id&quot;</span><span class="o">:</span><span class="s2">&quot;53f82b1f0ff49a08ac79a9dff41d7860&quot;</span><span class="p">,</span><span class="s2">&quot;key&quot;</span><span class="o">:</span><span class="s2">&quot;couchdb&quot;</span><span class="p">,</span><span class="s2">&quot;value&quot;</span><span class="o">:</span><span class="kc">null</span><span class="p">},</span>
+<span class="p">{</span><span class="s2">&quot;id&quot;</span><span class="o">:</span><span class="s2">&quot;da5ea89448a4506925823f4d985aabbd&quot;</span><span class="p">,</span><span class="s2">&quot;key&quot;</span><span class="o">:</span><span class="s2">&quot;couchdb&quot;</span><span class="p">,</span><span class="s2">&quot;value&quot;</span><span class="o">:</span><span class="kc">null</span><span class="p">},</span>
+<span class="p">{</span><span class="s2">&quot;id&quot;</span><span class="o">:</span><span class="s2">&quot;3525ab874bc4965fa3cda7c549e92d30&quot;</span><span class="p">,</span><span class="s2">&quot;key&quot;</span><span class="o">:</span><span class="s2">&quot;drums&quot;</span><span class="p">,</span><span class="s2">&quot;value&quot;</span><span class="o">:</span><span class="kc">null</span><span class="p">},</span>
+<span class="p">{</span><span class="s2">&quot;id&quot;</span><span class="o">:</span><span class="s2">&quot;53f82b1f0ff49a08ac79a9dff41d7860&quot;</span><span class="p">,</span><span class="s2">&quot;key&quot;</span><span class="o">:</span><span class="s2">&quot;hypertext&quot;</span><span class="p">,</span><span class="s2">&quot;value&quot;</span><span class="o">:</span><span class="kc">null</span><span class="p">},</span>
+<span class="p">{</span><span class="s2">&quot;id&quot;</span><span class="o">:</span><span class="s2">&quot;da5ea89448a4506925823f4d985aabbd&quot;</span><span class="p">,</span><span class="s2">&quot;key&quot;</span><span class="o">:</span><span class="s2">&quot;music&quot;</span><span class="p">,</span><span class="s2">&quot;value&quot;</span><span class="o">:</span><span class="kc">null</span><span class="p">},</span>
+<span class="p">{</span><span class="s2">&quot;id&quot;</span><span class="o">:</span><span class="s2">&quot;da5ea89448a4506925823f4d985aabbd&quot;</span><span class="p">,</span><span class="s2">&quot;key&quot;</span><span class="o">:</span><span class="s2">&quot;mustache&quot;</span><span class="p">,</span><span class="s2">&quot;value&quot;</span><span class="o">:</span><span class="kc">null</span><span class="p">},</span>
+<span class="p">{</span><span class="s2">&quot;id&quot;</span><span class="o">:</span><span class="s2">&quot;53f82b1f0ff49a08ac79a9dff41d7860&quot;</span><span class="p">,</span><span class="s2">&quot;key&quot;</span><span class="o">:</span><span class="s2">&quot;philosophy&quot;</span><span class="p">,</span><span class="s2">&quot;value&quot;</span><span class="o">:</span><span class="kc">null</span><span class="p">}</span>
+<span class="p">]}</span>
+</pre></div>
+</div>
+<p>As promised, these are all the tags, including duplicates. Since each document
+gets run through the map function in isolation, it cannot know if the same key
+has been emitted already. At this stage, we need to live with that. To achieve
+uniqueness, we need a reduce:</p>
+<div class="highlight-javascript"><div class="highlight"><pre><span class="kd">function</span><span class="p">(</span><span class="nx">keys</span><span class="p">,</span> <span class="nx">values</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="kc">true</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>This reduce doesn’t do anything, but it allows us to specify a special query
+parameter when querying the view:</p>
+<div class="highlight-python"><div class="highlight"><pre>/dudes/_design/dude-data/_view/tags?group=true
+</pre></div>
+</div>
+<p>CouchDB replies:</p>
+<div class="highlight-javascript"><div class="highlight"><pre><span class="p">{</span><span class="s2">&quot;rows&quot;</span><span class="o">:</span><span class="p">[</span>
+<span class="p">{</span><span class="s2">&quot;key&quot;</span><span class="o">:</span><span class="s2">&quot;bike&quot;</span><span class="p">,</span><span class="s2">&quot;value&quot;</span><span class="o">:</span><span class="kc">true</span><span class="p">},</span>
+<span class="p">{</span><span class="s2">&quot;key&quot;</span><span class="o">:</span><span class="s2">&quot;couchdb&quot;</span><span class="p">,</span><span class="s2">&quot;value&quot;</span><span class="o">:</span><span class="kc">true</span><span class="p">},</span>
+<span class="p">{</span><span class="s2">&quot;key&quot;</span><span class="o">:</span><span class="s2">&quot;drums&quot;</span><span class="p">,</span><span class="s2">&quot;value&quot;</span><span class="o">:</span><span class="kc">true</span><span class="p">},</span>
+<span class="p">{</span><span class="s2">&quot;key&quot;</span><span class="o">:</span><span class="s2">&quot;hypertext&quot;</span><span class="p">,</span><span class="s2">&quot;value&quot;</span><span class="o">:</span><span class="kc">true</span><span class="p">},</span>
+<span class="p">{</span><span class="s2">&quot;key&quot;</span><span class="o">:</span><span class="s2">&quot;music&quot;</span><span class="p">,</span><span class="s2">&quot;value&quot;</span><span class="o">:</span><span class="kc">true</span><span class="p">},</span>
+<span class="p">{</span><span class="s2">&quot;key&quot;</span><span class="o">:</span><span class="s2">&quot;mustache&quot;</span><span class="p">,</span><span class="s2">&quot;value&quot;</span><span class="o">:</span><span class="kc">true</span><span class="p">},</span>
+<span class="p">{</span><span class="s2">&quot;key&quot;</span><span class="o">:</span><span class="s2">&quot;philosophy&quot;</span><span class="p">,</span><span class="s2">&quot;value&quot;</span><span class="o">:</span><span class="kc">true</span><span class="p">}</span>
+<span class="p">]}</span>
+</pre></div>
+</div>
+<p>In this case, we can ignore the value part because it is always true, but the
+result includes a list of all our tags and no duplicates!</p>
+<p>With a small change we can put the reduce to good use, too. Let’s see how many
+of the non-unique tags are there for each tag. To calculate the tag frequency,
+we just use the summing up we already learned about. In the map function,
+we emit a 1 instead of null:</p>
+<div class="highlight-javascript"><div class="highlight"><pre><span class="kd">function</span><span class="p">(</span><span class="nx">doc</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">if</span><span class="p">(</span><span class="nx">doc</span><span class="p">.</span><span class="nx">name</span> <span class="o">&amp;&amp;</span> <span class="nx">doc</span><span class="p">.</span><span class="nx">tags</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">doc</span><span class="p">.</span><span class="nx">tags</span><span class="p">.</span><span class="nx">forEach</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">tag</span><span class="p">)</span> <span class="p">{</span>
+            <span class="nx">emit</span><span class="p">(</span><span class="nx">tag</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span>
+        <span class="p">});</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>In the reduce function, we return the sum of all values:</p>
+<div class="highlight-javascript"><div class="highlight"><pre><span class="kd">function</span><span class="p">(</span><span class="nx">keys</span><span class="p">,</span> <span class="nx">values</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="nx">sum</span><span class="p">(</span><span class="nx">values</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Now, if we query the view with the <tt class="docutils literal"><span class="pre">?group=true</span></tt> parameter, we get back the
+count for each tag:</p>
+<div class="highlight-javascript"><div class="highlight"><pre><span class="p">{</span><span class="s2">&quot;rows&quot;</span><span class="o">:</span><span class="p">[</span>
+<span class="p">{</span><span class="s2">&quot;key&quot;</span><span class="o">:</span><span class="s2">&quot;bike&quot;</span><span class="p">,</span><span class="s2">&quot;value&quot;</span><span class="o">:</span><span class="mi">1</span><span class="p">},</span>
+<span class="p">{</span><span class="s2">&quot;key&quot;</span><span class="o">:</span><span class="s2">&quot;couchdb&quot;</span><span class="p">,</span><span class="s2">&quot;value&quot;</span><span class="o">:</span><span class="mi">3</span><span class="p">},</span>
+<span class="p">{</span><span class="s2">&quot;key&quot;</span><span class="o">:</span><span class="s2">&quot;drums&quot;</span><span class="p">,</span><span class="s2">&quot;value&quot;</span><span class="o">:</span><span class="mi">1</span><span class="p">},</span>
+<span class="p">{</span><span class="s2">&quot;key&quot;</span><span class="o">:</span><span class="s2">&quot;hypertext&quot;</span><span class="p">,</span><span class="s2">&quot;value&quot;</span><span class="o">:</span><span class="mi">1</span><span class="p">},</span>
+<span class="p">{</span><span class="s2">&quot;key&quot;</span><span class="o">:</span><span class="s2">&quot;music&quot;</span><span class="p">,</span><span class="s2">&quot;value&quot;</span><span class="o">:</span><span class="mi">1</span><span class="p">},</span>
+<span class="p">{</span><span class="s2">&quot;key&quot;</span><span class="o">:</span><span class="s2">&quot;mustache&quot;</span><span class="p">,</span><span class="s2">&quot;value&quot;</span><span class="o">:</span><span class="mi">1</span><span class="p">},</span>
+<span class="p">{</span><span class="s2">&quot;key&quot;</span><span class="o">:</span><span class="s2">&quot;philosophy&quot;</span><span class="p">,</span><span class="s2">&quot;value&quot;</span><span class="o">:</span><span class="mi">1</span><span class="p">}</span>
+<span class="p">]}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="enforcing-uniqueness">
+<h2>Enforcing Uniqueness<a class="headerlink" href="#enforcing-uniqueness" title="Permalink to this headline">¶</a></h2>
+<p>How you would do this in SQL:</p>
+<div class="highlight-python"><div class="highlight"><pre>UNIQUE KEY(column)
+</pre></div>
+</div>
+<p>How you can do this in CouchDB?</p>
+<p>Use case: your applications require that a certain value exists only once in a
+database.</p>
+<p>This is an easy one: within a CouchDB database, each document must have a
+unique <tt class="docutils literal"><span class="pre">_id</span></tt> field. If you require unique values in a database, just assign
+them to a document’s <tt class="docutils literal"><span class="pre">_id</span></tt> field and CouchDB will enforce uniqueness for you.</p>
+<p>There’s one caveat, though: in the distributed case, when you are running more
+than one CouchDB node that accepts write requests, uniqueness can be guaranteed
+only per node or outside of CouchDB. CouchDB will allow two identical IDs to be
+written to two different nodes. On replication, CouchDB will detect a conflict
+and flag the document accordingly.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+    <p class="logo"><a href="../../index.html">
+      <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+    </a></p><!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+<div id="searchbox" style="display: none">
+
+<h3>Quick Search</h3>
+
+<form class="search" action="../../search.html" method="get">
+<input type="text" name="q" style="width:115px">
+<input type="submit" value="Go">
+<input type="hidden" name="check_keywords" value="yes">
+<input type="hidden" name="area" value="default">
+</form>
+
+<br>
+
+</div>
+
+<script type="text/javascript">$('#searchbox').show(0);</script>
+  <h3><a href="../../contents.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">6.2.4. View Cookbook for SQL Jockeys</a><ul>
+<li><a class="reference internal" href="#using-views">Using Views</a><ul>
+<li><a class="reference internal" href="#defining-a-view">Defining a View</a></li>
+<li><a class="reference internal" href="#querying-a-view">Querying a View</a></li>
+<li><a class="reference internal" href="#mapreduce-functions">MapReduce Functions</a></li>
+<li><a class="reference internal" href="#map-functions">Map functions</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#look-up-by-key">Look Up by Key</a></li>
+<li><a class="reference internal" href="#look-up-by-prefix">Look Up by Prefix</a></li>
+<li><a class="reference internal" href="#aggregate-functions">Aggregate Functions</a></li>
+<li><a class="reference internal" href="#get-unique-values">Get Unique Values</a></li>
+<li><a class="reference internal" href="#enforcing-uniqueness">Enforcing Uniqueness</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="joins.html"
+                        title="previous chapter">6.2.3. Joins With Views</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="pagination.html"
+                        title="next chapter">6.2.5. Pagination Recipe</a></p><!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+
+<h3>Utilities</h3>
+
+<ul>
+<li><a href="../">Fauxton</a></li>
+</ul>
+<!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+<h3>More Help</h3>
+
+<ul>
+<li><a href="https://couchdb.apache.org/">Homepage</a></li>
+<li><a href="https://cwiki.apache.org/confluence/display/COUCHDB/">Wiki</a></li>
+<li><a href="https://couchdb.apache.org/#mailing-list">Mailing Lists</a></li>
+<li><a href="http://webchat.freenode.net/?channels=couchdb">IRC</a></li>
+<li><a href="https://issues.apache.org/jira/browse/CouchDB">Issues</a></li>
+<li><a href="../../download.html">Download</a></li>
+<li><a href="https://github.com/apache/couchdb-documentation/blob/master/src/couchapp/views/nosql.rst"
+       rel="nofollow">Show on GitHub</a></li>
+<li><a href="https://github.com/apache/couchdb-documentation/edit/master/src/couchapp/views/nosql.rst"
+       rel="nofollow">Edit on GitHub</a></li>
+</ul><!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../http-api.html" title="HTTP API Reference"
+             >API Reference</a></li>
+        <li class="right" >
+          <a href="../../config-ref.html" title="Configuration Reference"
+             >Config Reference</a> |</li>
+        <li class="right" >
+          <a href="pagination.html" title="6.2.5. Pagination Recipe"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="joins.html" title="6.2.3. Joins With Views"
+             >previous</a> |</li>
+  <li><a href="../../index.html">Apache CouchDB 2.0 Documentation</a> &raquo;</li>
+          <li><a href="../index.html" >6. CouchApp</a> &raquo;</li>
+          <li><a href="index.html" >6.2. Guide to Views</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2016, Apache Software Foundation.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
+    </div>
+  </body>
+</html>

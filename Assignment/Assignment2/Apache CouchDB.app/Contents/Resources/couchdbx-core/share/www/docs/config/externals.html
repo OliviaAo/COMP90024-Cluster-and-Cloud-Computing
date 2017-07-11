@@ -1,0 +1,377 @@
+<!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>3.10. External Processes &mdash; Apache CouchDB 2.0 Documentation</title>
+    
+    <link rel="stylesheet" href="../_static/rtd.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '2.0.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+    <link rel="author" title="About these documents" href="../about.html" />
+    <link rel="top" title="Apache CouchDB 2.0 Documentation" href="../index.html" />
+    <link rel="up" title="3. Configuring CouchDB" href="index.html" />
+    <link rel="next" title="3.11. HTTP Resource Handlers" href="http-handlers.html" />
+    <link rel="prev" title="3.9. Query Servers" href="query-servers.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../http-api.html" title="HTTP API Reference"
+             >API Reference</a></li>
+        <li class="right" >
+          <a href="../config-ref.html" title="Configuration Reference"
+             >Config Reference</a> |</li>
+        <li class="right" >
+          <a href="http-handlers.html" title="3.11. HTTP Resource Handlers"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="query-servers.html" title="3.9. Query Servers"
+             accesskey="P">previous</a> |</li>
+  <li><a href="../index.html">Apache CouchDB 2.0 Documentation</a> &raquo;</li>
+          <li><a href="index.html" accesskey="U">3. Configuring CouchDB</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="external-processes">
+<h1>3.10. External Processes<a class="headerlink" href="#external-processes" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="os-daemons">
+<span id="config-os-daemons"></span><h2>3.10.1. OS Daemons<a class="headerlink" href="#os-daemons" title="Permalink to this headline">¶</a></h2>
+<dl class="section">
+<dt id="os_daemons">
+<tt class="descname">[os_daemons]</tt><a class="headerlink" href="#os_daemons" title="Permalink to this definition">¶</a></dt>
+<dd><p>This is a simple feature that allows users to configure CouchDB so that it
+maintains a given OS level process alive. If the process dies for any
+reason, CouchDB will restart it. If the process restarts too often, then
+CouchDB will mark it has halted and not attempt to restart it. The default
+max restart rate is <tt class="docutils literal"><span class="pre">3</span></tt> times in the last <tt class="docutils literal"><span class="pre">5</span></tt> seconds. These parameters
+are <a class="reference internal" href="#os_daemon_settings" title="[os_daemon_settings]"><tt class="xref config config-section docutils literal"><span class="pre">adjustable</span></tt></a>.</p>
+<p>Commands that are started in this manner will have access to a simple API
+over stdio to request configuration parameters or to add log statements to
+CouchDB&#8217;s logs.</p>
+<p>To configure an OS process as a CouchDB os_daemon, create a section in your
+<cite>local.ini</cite> like such:</p>
+<div class="highlight-ini"><div class="highlight"><pre><span class="k">[os_daemons]</span>
+<span class="na">daemon_name</span> <span class="o">=</span> <span class="s">/path/to/command -with args</span>
+</pre></div>
+</div>
+<p>This will make CouchDB bring up the command and attempt to keep it alive.
+To request a configuration parameter, an <cite>os_daemon</cite> can write a simple
+JSON message to stdout like such:</p>
+<div class="highlight-none"><div class="highlight"><pre>[&quot;get&quot;, &quot;os_daemons&quot;]\n
+</pre></div>
+</div>
+<p>which would return:</p>
+<div class="highlight-none"><div class="highlight"><pre>{&quot;daemon_name&quot;: &quot;/path/to/command -with args&quot;}\n
+</pre></div>
+</div>
+<p>Or:</p>
+<div class="highlight-none"><div class="highlight"><pre>[&quot;get&quot;, &quot;os_daemons&quot;, &quot;daemon_name&quot;]\n
+</pre></div>
+</div>
+<p>which would return:</p>
+<div class="highlight-none"><div class="highlight"><pre>&quot;/path/to/command -with args&quot;\n
+</pre></div>
+</div>
+<p>There&#8217;s no restriction on what configuration variables are visible. There&#8217;s
+also no method for altering the configuration.</p>
+<p>If you would like your OS daemon to be restarted in the event that the
+configuration changes, you can send the following messages:</p>
+<div class="highlight-none"><div class="highlight"><pre>[&quot;register&quot;, $(SECTION)]\n
+</pre></div>
+</div>
+<p>When anything in that section changes, your OS process will be rebooted so
+it can pick up the new configuration settings. If you want to listen for
+changes on a specific key, you can send something like:</p>
+<div class="highlight-none"><div class="highlight"><pre>[&quot;register&quot;, $(SECTION), $(KEY)]\n
+</pre></div>
+</div>
+<p>In this case, CouchDB will only restart your daemon if that exact
+section/key pair changes, instead of anything in that entire section.</p>
+<p>Logging commands look like:</p>
+<div class="highlight-none"><div class="highlight"><pre>[&quot;log&quot;, $(JSON_MESSAGE)]\n
+</pre></div>
+</div>
+<p>Where <tt class="docutils literal"><span class="pre">$(JSON_MESSAGE)</span></tt> is arbitrary JSON data. These messages are logged
+at the &#8216;info&#8217; level. If you want to log at a different level you can pass
+messages like such:</p>
+<div class="highlight-none"><div class="highlight"><pre>[&quot;log&quot;, $(JSON_MESSAGE), {&quot;level&quot;: $(LEVEL)}]\n
+</pre></div>
+</div>
+<p>Where <tt class="docutils literal"><span class="pre">$(LEVEL)</span></tt> is one of &#8220;debug&#8221;, &#8220;info&#8221;, or &#8220;error&#8221;.</p>
+<p>When implementing a daemon process to be managed by CouchDB you should
+remember to use a method like checking the parent process id or if stdin
+has been closed. These flags can tell you if your daemon process has been
+orphaned so you can exit cleanly.</p>
+<p>There is no interactivity between CouchDB and the running process, but you
+can use the OS Daemons service to create new HTTP servers and responders
+and then use the new proxy service to redirect requests and output to the
+CouchDB managed service. For more information on proxying, see
+<a class="reference internal" href="proxying.html#http-proxying"><em>CouchDB As Proxy</em></a>. For further background on the OS Daemon service,
+see <a class="reference internal" href="../externals.html#externals"><em>CouchDB Externals API</em></a>.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="os-daemons-settings">
+<span id="config-os-daemon-settings"></span><h2>3.10.2. OS Daemons settings<a class="headerlink" href="#os-daemons-settings" title="Permalink to this headline">¶</a></h2>
+<dl class="section">
+<dt id="os_daemon_settings">
+<tt class="descname">[os_daemon_settings]</tt><a class="headerlink" href="#os_daemon_settings" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="option">
+<dt id="os_daemon_settings/max_retries">
+<tt class="descname">max_retries</tt><a class="headerlink" href="#os_daemon_settings/max_retries" title="Permalink to this definition">¶</a></dt>
+<dd><p>Specifies maximum attempts to run <a class="reference internal" href="#os_daemons" title="[os_daemons]"><tt class="xref config config-section docutils literal"><span class="pre">os_daemons</span></tt></a> before mark
+them halted:</p>
+<div class="highlight-ini"><div class="highlight"><pre><span class="k">[os_daemon_settings]</span>
+<span class="na">max_retries</span> <span class="o">=</span> <span class="s">3</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="option">
+<dt id="os_daemon_settings/retry_time">
+<tt class="descname">retry_time</tt><a class="headerlink" href="#os_daemon_settings/retry_time" title="Permalink to this definition">¶</a></dt>
+<dd><p>Delay in seconds between <a class="reference internal" href="#os_daemons" title="[os_daemons]"><tt class="xref config config-section docutils literal"><span class="pre">os_daemons</span></tt></a> restarts:</p>
+<div class="highlight-ini"><div class="highlight"><pre><span class="k">[os_daemon_settings]</span>
+<span class="na">retry_time</span> <span class="o">=</span> <span class="s">5</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="config-update-notification">
+<span id="update-notifications"></span><span id="id1"></span><h2>3.10.3. Update notifications<a class="headerlink" href="#config-update-notification" title="Permalink to this headline">¶</a></h2>
+<dl class="section">
+<dt id="update_notification">
+<tt class="descname">[update_notification]</tt><a class="headerlink" href="#update_notification" title="Permalink to this definition">¶</a></dt>
+<dd><p>CouchDB is able to spawn OS processes to notify them about recent databases
+updates. The notifications are in form of JSON messages sent as a line of
+text, terminated by <tt class="docutils literal"><span class="pre">CR</span></tt> (<tt class="docutils literal"><span class="pre">\n</span></tt>) character, to the OS processes through
+<cite>stdout</cite>:</p>
+<div class="highlight-ini"><div class="highlight"><pre><span class="k">[update_notification]</span>
+<span class="c1">;unique notifier name=/full/path/to/exe -with &quot;cmd line arg&quot;</span>
+<span class="na">index_updater</span> <span class="o">=</span> <span class="s">ruby /usr/local/bin/index_updater.rb</span>
+</pre></div>
+</div>
+<p>The update notification messages are depend upon of event type:</p>
+<ul>
+<li><p class="first"><strong>Database created</strong>:</p>
+<div class="highlight-javascript"><div class="highlight"><pre><span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="o">:</span><span class="s2">&quot;created&quot;</span><span class="p">,</span><span class="s2">&quot;db&quot;</span><span class="o">:</span><span class="s2">&quot;dbname&quot;</span><span class="p">}</span>
+</pre></div>
+</div>
+</li>
+<li><p class="first"><strong>Database updated</strong>:  this event raises when any document gets updated
+for specified database:</p>
+<div class="highlight-javascript"><div class="highlight"><pre><span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="o">:</span><span class="s2">&quot;updated&quot;</span><span class="p">,</span><span class="s2">&quot;db&quot;</span><span class="o">:</span><span class="s2">&quot;dbname&quot;</span><span class="p">}</span>
+</pre></div>
+</div>
+</li>
+<li><p class="first"><strong>Design document updated</strong>: for design document updates there is special
+event raised in additional to regular db update one:</p>
+<div class="highlight-javascript"><div class="highlight"><pre><span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="o">:</span><span class="s2">&quot;ddoc_updated&quot;</span><span class="p">,</span><span class="s2">&quot;db&quot;</span><span class="o">:</span><span class="s2">&quot;dbname&quot;</span><span class="p">,</span><span class="s2">&quot;id&quot;</span><span class="o">:</span><span class="s2">&quot;_design/ddoc_name&quot;</span><span class="p">}</span>
+</pre></div>
+</div>
+</li>
+<li><p class="first"><strong>Database deleted</strong>:</p>
+<div class="highlight-javascript"><div class="highlight"><pre><span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="o">:</span><span class="s2">&quot;deleted&quot;</span><span class="p">,</span><span class="s2">&quot;db&quot;</span><span class="o">:</span><span class="s2">&quot;dbname&quot;</span><span class="p">}</span>
+</pre></div>
+</div>
+</li>
+</ul>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">New line (<tt class="docutils literal"><span class="pre">\n</span></tt>) trailing character was removed from examples.</p>
+</div>
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+    <p class="logo"><a href="../index.html">
+      <img class="logo" src="../_static/logo.png" alt="Logo"/>
+    </a></p><!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+<div id="searchbox" style="display: none">
+
+<h3>Quick Search</h3>
+
+<form class="search" action="../search.html" method="get">
+<input type="text" name="q" style="width:115px">
+<input type="submit" value="Go">
+<input type="hidden" name="check_keywords" value="yes">
+<input type="hidden" name="area" value="default">
+</form>
+
+<br>
+
+</div>
+
+<script type="text/javascript">$('#searchbox').show(0);</script>
+  <h3><a href="../contents.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">3.10. External Processes</a><ul>
+<li><a class="reference internal" href="#os-daemons">3.10.1. OS Daemons</a></li>
+<li><a class="reference internal" href="#os-daemons-settings">3.10.2. OS Daemons settings</a></li>
+<li><a class="reference internal" href="#config-update-notification">3.10.3. Update notifications</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="query-servers.html"
+                        title="previous chapter">3.9. Query Servers</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="http-handlers.html"
+                        title="next chapter">3.11. HTTP Resource Handlers</a></p><!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+
+<h3>Utilities</h3>
+
+<ul>
+<li><a href="../">Fauxton</a></li>
+</ul>
+<!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+<h3>More Help</h3>
+
+<ul>
+<li><a href="https://couchdb.apache.org/">Homepage</a></li>
+<li><a href="https://cwiki.apache.org/confluence/display/COUCHDB/">Wiki</a></li>
+<li><a href="https://couchdb.apache.org/#mailing-list">Mailing Lists</a></li>
+<li><a href="http://webchat.freenode.net/?channels=couchdb">IRC</a></li>
+<li><a href="https://issues.apache.org/jira/browse/CouchDB">Issues</a></li>
+<li><a href="../download.html">Download</a></li>
+<li><a href="https://github.com/apache/couchdb-documentation/blob/master/src/config/externals.rst"
+       rel="nofollow">Show on GitHub</a></li>
+<li><a href="https://github.com/apache/couchdb-documentation/edit/master/src/config/externals.rst"
+       rel="nofollow">Edit on GitHub</a></li>
+</ul><!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../http-api.html" title="HTTP API Reference"
+             >API Reference</a></li>
+        <li class="right" >
+          <a href="../config-ref.html" title="Configuration Reference"
+             >Config Reference</a> |</li>
+        <li class="right" >
+          <a href="http-handlers.html" title="3.11. HTTP Resource Handlers"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="query-servers.html" title="3.9. Query Servers"
+             >previous</a> |</li>
+  <li><a href="../index.html">Apache CouchDB 2.0 Documentation</a> &raquo;</li>
+          <li><a href="index.html" >3. Configuring CouchDB</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2016, Apache Software Foundation.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
+    </div>
+  </body>
+</html>

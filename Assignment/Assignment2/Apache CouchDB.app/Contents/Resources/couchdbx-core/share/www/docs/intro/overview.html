@@ -1,0 +1,545 @@
+<!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>1.1. Technical Overview &mdash; Apache CouchDB 2.0 Documentation</title>
+    
+    <link rel="stylesheet" href="../_static/rtd.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '2.0.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+    <link rel="author" title="About these documents" href="../about.html" />
+    <link rel="top" title="Apache CouchDB 2.0 Documentation" href="../index.html" />
+    <link rel="up" title="1. Introduction" href="index.html" />
+    <link rel="next" title="1.2. Why CouchDB?" href="why.html" />
+    <link rel="prev" title="1. Introduction" href="index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../http-api.html" title="HTTP API Reference"
+             >API Reference</a></li>
+        <li class="right" >
+          <a href="../config-ref.html" title="Configuration Reference"
+             >Config Reference</a> |</li>
+        <li class="right" >
+          <a href="why.html" title="1.2. Why CouchDB?"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="1. Introduction"
+             accesskey="P">previous</a> |</li>
+  <li><a href="../index.html">Apache CouchDB 2.0 Documentation</a> &raquo;</li>
+          <li><a href="index.html" accesskey="U">1. Introduction</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="technical-overview">
+<span id="intro-overview"></span><h1>1.1. Technical Overview<a class="headerlink" href="#technical-overview" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="document-storage">
+<h2>1.1.1. Document Storage<a class="headerlink" href="#document-storage" title="Permalink to this headline">¶</a></h2>
+<p>A CouchDB server hosts named databases, which store <strong>documents</strong>.
+Each document is uniquely named in the database, and CouchDB provides
+a <a class="reference external" href="http://en.wikipedia.org/wiki/REST">RESTful</a> <a class="reference internal" href="../api/basics.html#api-basics"><em>HTTP API</em></a> for reading and updating (add, edit,
+delete)  database documents.</p>
+<p>Documents are the primary unit of data in CouchDB and consist of any number
+of fields and attachments. Documents also include metadata that’s maintained
+by the database system. Document fields are uniquely named and contain values
+of <a class="reference internal" href="../api/basics.html#json"><em>varying types</em></a> (text, number, boolean, lists, etc),
+and there is no set limit to text size or element count.</p>
+<p>The CouchDB document update model is lockless and optimistic.
+Document edits are made by client applications loading documents,
+applying changes, and saving them back to the database. If another client
+editing the same document saves their changes first, the client gets an edit
+conflict error on save. To resolve the update conflict, the latest document
+version can be opened, the edits reapplied and the update tried again.</p>
+<p>Document updates (add, edit, delete) are all or nothing, either succeeding
+entirely or failing completely. The database never contains partially saved
+or edited documents.</p>
+</div>
+<div class="section" id="acid-properties">
+<h2>1.1.2. ACID Properties<a class="headerlink" href="#acid-properties" title="Permalink to this headline">¶</a></h2>
+<p>The CouchDB file layout and commitment system features all <cite>Atomic Consistent
+Isolated Durable</cite> (<a class="reference external" href="http://en.wikipedia.org/wiki/ACID">ACID</a>) properties. On-disk, CouchDB never overwrites
+committed data or associated structures, ensuring the database file is always
+in a consistent state. This is a &#8220;crash-only&#8221; design where the CouchDB
+server does not go through a shut down process, it&#8217;s simply terminated.</p>
+<p>Document updates (add, edit, delete) are serialized, except for binary blobs
+which are written concurrently. Database readers are never locked out and
+never have to wait on writers or other readers. Any number of clients can be
+reading documents without being locked out or interrupted by concurrent
+updates, even on the same document. CouchDB read operations use a
+<cite>Multi-Version Concurrency Control</cite> (<a class="reference external" href="http://en.wikipedia.org/wiki/Multiversion_concurrency_control">MVCC</a>) model where each client sees a
+consistent snapshot of the database from the beginning to the end of the read
+operation.</p>
+<p>Documents are indexed in <a class="reference external" href="http://en.wikipedia.org/wiki/B-tree">B-trees</a> by their name (DocID) and a Sequence ID.
+Each update to a database instance generates a new sequential number.
+Sequence IDs are used later for incrementally finding changes in a database.
+These B-tree indexes are updated simultaneously when documents are saved or
+deleted. The index updates always occur at the end of the file (append-only
+updates).</p>
+<p>Documents have the advantage of data being already conveniently packaged for
+storage rather than split out across numerous tables and rows in most
+database systems. When documents are committed to disk, the document fields
+and metadata are packed into buffers, sequentially one document after another
+(helpful later for efficient building of views).</p>
+<p>When CouchDB documents are updated, all data and associated indexes are
+flushed to disk and the transactional commit always leaves the database
+in a completely consistent state. Commits occur in two steps:</p>
+<ol class="arabic simple">
+<li>All document data and associated index updates are synchronously flushed
+to disk.</li>
+<li>The updated database header is written in two consecutive, identical chunks
+to make up the first 4k of the file, and then synchronously flushed to disk.</li>
+</ol>
+<p>In the event of an OS crash or power failure during step 1,
+the partially flushed updates are simply forgotten on restart. If such a
+crash happens during step 2 (committing the header), a surviving copy of the
+previous identical headers will remain, ensuring coherency of all previously
+committed data. Excepting the header area, consistency checks or fix-ups
+after a crash or a power failure are never necessary.</p>
+</div>
+<div class="section" id="compaction">
+<h2>1.1.3. Compaction<a class="headerlink" href="#compaction" title="Permalink to this headline">¶</a></h2>
+<p>Wasted space is recovered by occasional compaction. On schedule, or when the
+database file exceeds a certain amount of wasted space, the compaction process
+clones all the active data to a new file and then discards the old file.
+The database remains completely online the entire time and all updates and
+reads are allowed to complete successfully. The old database file is deleted
+only when all the data has been copied and all users transitioned to the new
+file.</p>
+</div>
+<div class="section" id="views">
+<h2>1.1.4. Views<a class="headerlink" href="#views" title="Permalink to this headline">¶</a></h2>
+<p>ACID properties only deal with storage and updates, but we also need the ability
+to show our data in interesting and useful ways. Unlike SQL databases where
+data must be carefully decomposed into tables, data in CouchDB is stored in
+semi-structured documents. CouchDB documents are flexible and each has its
+own implicit structure, which alleviates the most difficult problems and
+pitfalls of bi-directionally replicating table schemas and their contained data.</p>
+<p>But beyond acting as a fancy file server, a simple document model for data
+storage and sharing is too simple to build real applications on &#8211; it simply
+doesn&#8217;t do enough of the things we want and expect. We want to slice and dice
+and see our data in many different ways. What is needed is a way to filter,
+organize and report on data that hasn&#8217;t been decomposed into tables.</p>
+<div class="admonition seealso">
+<p class="first admonition-title">See also</p>
+<p class="last"><a class="reference internal" href="../couchapp/views/index.html#views"><em>Guide to Views</em></a></p>
+</div>
+<div class="section" id="view-model">
+<h3>View Model<a class="headerlink" href="#view-model" title="Permalink to this headline">¶</a></h3>
+<p>To address this problem of adding structure back to unstructured and
+semi-structured data, CouchDB integrates a view model. Views are the method
+of aggregating and reporting on the documents in a database, and are built
+on-demand to aggregate, join and report on database documents. Because views
+are built dynamically and don’t affect the underlying document, you can have
+as many different view representations of the same data as you like.</p>
+<p>View definitions are strictly virtual and only display the documents from the
+current database instance, making them separate from the data they display
+and compatible with replication. CouchDB views are defined inside special
+<strong>design documents</strong> and can replicate across database instances like
+regular documents, so that not only data replicates in CouchDB,
+but entire application designs replicate too.</p>
+</div>
+<div class="section" id="javascript-view-functions">
+<h3>JavaScript View Functions<a class="headerlink" href="#javascript-view-functions" title="Permalink to this headline">¶</a></h3>
+<p>Views are defined using JavaScript functions acting as the map part in a
+<a class="reference external" href="http://en.wikipedia.org/wiki/MapReduce">map-reduce system</a>. A <a class="reference internal" href="../couchapp/ddocs.html#viewfun"><em>view function</em></a> takes a CouchDB document
+as an argument and then does whatever computation it needs to do to determine
+the data that is to be made available through the view, if any.
+It can add multiple rows to the view based on a single document,
+or it can add no rows at all.</p>
+<div class="admonition seealso">
+<p class="first admonition-title">See also</p>
+<p class="last"><a class="reference internal" href="../couchapp/ddocs.html#viewfun"><em>View Functions</em></a></p>
+</div>
+</div>
+<div class="section" id="view-indexes">
+<h3>View Indexes<a class="headerlink" href="#view-indexes" title="Permalink to this headline">¶</a></h3>
+<p>Views are a dynamic representation of the actual document contents of a
+database, and CouchDB makes it easy to create useful views of data.
+But generating a view of a database with hundreds of thousands or millions of
+documents is time and resource consuming, it&#8217;s not something the system
+should do from scratch each time.</p>
+<p>To keep view querying fast, the view engine maintains indexes of its views,
+and incrementally updates them to reflect changes in the database.
+CouchDB’s core design is largely optimized around the need for efficient,
+incremental creation of views and their indexes.</p>
+<p>Views and their functions are defined inside special &#8220;design&#8221; documents,
+and a design document may contain any number of uniquely named view functions.
+When a user opens a view and its index is automatically updated, all the views
+in the same design document are indexed as a single group.</p>
+<p>The view builder uses the database sequence ID to determine if the view group
+is fully up-to-date with the database. If not, the view engine examines the
+all database documents (in packed sequential order) changed since the last
+refresh. Documents are read in the order they occur in the disk file,
+reducing the frequency and cost of disk head seeks.</p>
+<p>The views can be read and queried simultaneously while also being refreshed.
+If a client is slowly streaming out the contents of a large view,
+the same view can be concurrently opened and refreshed for another client
+without blocking the first client. This is true for any number of
+simultaneous client readers, who can read and query the view while the index
+is concurrently being refreshed for other clients without causing problems
+for the readers.</p>
+<p>As documents are processed by the view engine through your &#8216;map&#8217; and &#8216;reduce&#8217;
+functions, their previous row values are removed from the view indexes, if
+they exist. If the document is selected by a view function, the function results
+are inserted into the view as a new row.</p>
+<p>When view index changes are written to disk, the updates are always appended
+at the end of the file, serving to both reduce disk head seek times during
+disk commits and to ensure crashes and power failures can not cause
+corruption of indexes. If a crash occurs while updating a view index,
+the incomplete index updates are simply lost and rebuilt incrementally from
+its previously committed state.</p>
+</div>
+</div>
+<div class="section" id="security-and-validation">
+<h2>1.1.5. Security and Validation<a class="headerlink" href="#security-and-validation" title="Permalink to this headline">¶</a></h2>
+<p>To protect who can read and update documents, CouchDB has a simple reader
+access and update validation model that can be extended to implement custom
+security models.</p>
+<div class="admonition seealso">
+<p class="first admonition-title">See also</p>
+<p class="last"><a class="reference internal" href="../api/database/security.html#api-db-security"><em>/db/_security</em></a></p>
+</div>
+<div class="section" id="administrator-access">
+<h3>Administrator Access<a class="headerlink" href="#administrator-access" title="Permalink to this headline">¶</a></h3>
+<p>CouchDB database instances have administrator accounts. Administrator
+accounts can create other administrator accounts and update design documents.
+Design documents are special documents containing view definitions and other
+special formulas, as well as regular fields and blobs.</p>
+</div>
+<div class="section" id="update-validation">
+<h3>Update Validation<a class="headerlink" href="#update-validation" title="Permalink to this headline">¶</a></h3>
+<p>As documents are written to disk, they can be validated dynamically by
+JavaScript functions for both security and data validation. When the document
+passes all the formula validation criteria, the update is allowed to continue.
+If the validation fails, the update is aborted and the user client gets an
+error response.</p>
+<p>Both the user&#8217;s credentials and the updated document are given as inputs to
+the validation formula, and can be used to implement custom security models
+by validating a user&#8217;s permissions to update a document.</p>
+<p>A basic &#8220;author only&#8221; update document model is trivial to implement,
+where document updates are validated to check if the user is listed in an
+&#8220;author&#8221; field in the existing document. More dynamic models are also possible,
+like checking a separate user account profile for permission settings.</p>
+<p>The update validations are enforced for both live usage and replicated
+updates, ensuring security and data validation in a shared, distributed system.</p>
+<div class="admonition seealso">
+<p class="first admonition-title">See also</p>
+<p class="last"><a class="reference internal" href="../couchapp/ddocs.html#vdufun"><em>Validate Document Update Functions</em></a></p>
+</div>
+</div>
+</div>
+<div class="section" id="distributed-updates-and-replication">
+<h2>1.1.6. Distributed Updates and Replication<a class="headerlink" href="#distributed-updates-and-replication" title="Permalink to this headline">¶</a></h2>
+<p>CouchDB is a peer-based distributed database system. It allows users and servers
+to access and update the same shared data while disconnected. Those changes can
+then be replicated bi-directionally later.</p>
+<p>The CouchDB document storage, view and security models are designed to work
+together to make true bi-directional replication efficient and reliable.
+Both documents and designs can replicate, allowing full database applications
+(including application design, logic and data) to be replicated to laptops
+for offline use, or replicated to servers in remote offices where slow or
+unreliable connections make sharing data difficult.</p>
+<p>The replication process is incremental. At the database level,
+replication only examines documents updated since the last replication.
+Then for each updated document, only fields and blobs that have changed are
+replicated across the network. If replication fails at any step, due to network
+problems or crash for example, the next replication restarts at the same
+document where it left off.</p>
+<p>Partial replicas can be created and maintained. Replication can be filtered
+by a JavaScript function, so that only particular documents or those meeting
+specific criteria are replicated. This can allow users to take subsets of a
+large shared database application offline for their own use, while maintaining
+normal interaction with the application and that subset of data.</p>
+<div class="section" id="conflicts">
+<h3>Conflicts<a class="headerlink" href="#conflicts" title="Permalink to this headline">¶</a></h3>
+<p>Conflict detection and management are key issues for any distributed edit
+system. The CouchDB storage system treats edit conflicts as a common state,
+not an exceptional one. The conflict handling model is simple and
+&#8220;non-destructive&#8221; while preserving single document semantics and allowing for
+decentralized conflict resolution.</p>
+<p>CouchDB allows for any number of conflicting documents to exist
+simultaneously in the database, with each database instance deterministically
+deciding which document is the &#8220;winner&#8221; and which are conflicts. Only the
+winning document can appear in views, while &#8220;losing&#8221; conflicts are still
+accessible and remain in the database until deleted or purged during
+database compaction. Because conflict documents are still regular documents,
+they replicate just like regular documents and are subject to the same
+security and validation rules.</p>
+<p>When distributed edit conflicts occur, every database replica sees the same
+winning revision and each has the opportunity to resolve the conflict.
+Resolving conflicts can be done manually or, depending on the nature of the
+data and the conflict, by automated agents. The system makes decentralized
+conflict resolution possible while maintaining single document database
+semantics.</p>
+<p>Conflict management continues to work even if multiple disconnected users or
+agents attempt to resolve the same conflicts. If resolved conflicts result in
+more conflicts, the system accommodates them in the same manner, determining
+the same winner on each machine and maintaining single document semantics.</p>
+<div class="admonition seealso">
+<p class="first admonition-title">See also</p>
+<p class="last"><a class="reference internal" href="../replication/conflicts.html#replication-conflicts"><em>Replication and conflict model</em></a></p>
+</div>
+</div>
+<div class="section" id="applications">
+<h3>Applications<a class="headerlink" href="#applications" title="Permalink to this headline">¶</a></h3>
+<p>Using just the basic replication model, many traditionally single server
+database applications can be made distributed with almost no extra work.
+CouchDB replication is designed to be immediately useful for basic database
+applications, while also being extendable for more elaborate and full-featured
+uses.</p>
+<p>With very little database work, it is possible to build a distributed
+document management application with granular security and full revision
+histories. Updates to documents can be implemented to exploit incremental
+field and blob replication, where replicated updates are nearly as efficient
+and incremental as the actual edit differences (&#8220;diffs&#8221;).</p>
+<p>The CouchDB replication model can be modified for other distributed update
+models. If the storage engine is enhanced to allow multi-document update
+transactions, it is possible to perform Subversion-like &#8220;all or nothing&#8221;
+atomic commits when replicating with an upstream server, such that any single
+document conflict or validation failure will cause the entire update to fail.
+Like Subversion, conflicts would be resolved by doing a &#8220;pull&#8221; replication to
+force the conflicts locally, then merging and  re-replicating to the upstream
+server.</p>
+</div>
+</div>
+<div class="section" id="implementation">
+<h2>1.1.7. Implementation<a class="headerlink" href="#implementation" title="Permalink to this headline">¶</a></h2>
+<p>CouchDB is built on the <a class="reference external" href="http://www.erlang.org/">Erlang OTP platform</a>, a functional,
+concurrent programming language and development platform. Erlang was
+developed for real-time telecom applications with an extreme emphasis on
+reliability and availability.</p>
+<p>Both in syntax and semantics, Erlang is very different from conventional
+programming languages like C or Java. Erlang uses lightweight &#8220;processes&#8221; and
+message passing for concurrency, it has no shared state threading and all
+data is immutable. The robust, concurrent nature of Erlang is ideal for a
+database server.</p>
+<p>CouchDB is designed for lock-free concurrency, in the conceptual model and
+the actual Erlang implementation. Reducing bottlenecks and avoiding locks
+keeps the entire system working predictably under heavy loads. CouchDB can
+accommodate many clients replicating changes, opening and updating documents,
+and querying views whose indexes are simultaneously being refreshed for
+other clients, without needing locks.</p>
+<p>For higher availability and more concurrent users, CouchDB is designed for
+&#8220;shared nothing&#8221; clustering. In a &#8220;shared nothing&#8221; cluster, each machine
+is independent and replicates data with its cluster mates, allowing individual
+server failures with zero downtime. And because consistency scans
+and fix-ups aren’t needed on restart,
+if the entire cluster fails &#8211; due to a power outage in a datacenter,
+for example &#8211; the entire CouchDB distributed system becomes immediately
+available after a restart.</p>
+<p>CouchDB is built from the start with a consistent vision of a distributed
+document database system. Unlike cumbersome attempts to bolt distributed
+features on top of the same legacy models and databases,
+it is the result of careful ground-up design, engineering and integration.
+The document, view, security and replication models, the special purpose query
+language, the efficient and robust disk layout and the concurrent and reliable
+nature of the Erlang platform are all carefully integrated for a reliable
+and efficient system.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+    <p class="logo"><a href="../index.html">
+      <img class="logo" src="../_static/logo.png" alt="Logo"/>
+    </a></p><!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+<div id="searchbox" style="display: none">
+
+<h3>Quick Search</h3>
+
+<form class="search" action="../search.html" method="get">
+<input type="text" name="q" style="width:115px">
+<input type="submit" value="Go">
+<input type="hidden" name="check_keywords" value="yes">
+<input type="hidden" name="area" value="default">
+</form>
+
+<br>
+
+</div>
+
+<script type="text/javascript">$('#searchbox').show(0);</script>
+  <h3><a href="../contents.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">1.1. Technical Overview</a><ul>
+<li><a class="reference internal" href="#document-storage">1.1.1. Document Storage</a></li>
+<li><a class="reference internal" href="#acid-properties">1.1.2. ACID Properties</a></li>
+<li><a class="reference internal" href="#compaction">1.1.3. Compaction</a></li>
+<li><a class="reference internal" href="#views">1.1.4. Views</a><ul>
+<li><a class="reference internal" href="#view-model">View Model</a></li>
+<li><a class="reference internal" href="#javascript-view-functions">JavaScript View Functions</a></li>
+<li><a class="reference internal" href="#view-indexes">View Indexes</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#security-and-validation">1.1.5. Security and Validation</a><ul>
+<li><a class="reference internal" href="#administrator-access">Administrator Access</a></li>
+<li><a class="reference internal" href="#update-validation">Update Validation</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#distributed-updates-and-replication">1.1.6. Distributed Updates and Replication</a><ul>
+<li><a class="reference internal" href="#conflicts">Conflicts</a></li>
+<li><a class="reference internal" href="#applications">Applications</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#implementation">1.1.7. Implementation</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="index.html"
+                        title="previous chapter">1. Introduction</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="why.html"
+                        title="next chapter">1.2. Why CouchDB?</a></p><!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+
+<h3>Utilities</h3>
+
+<ul>
+<li><a href="../">Fauxton</a></li>
+</ul>
+<!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+<h3>More Help</h3>
+
+<ul>
+<li><a href="https://couchdb.apache.org/">Homepage</a></li>
+<li><a href="https://cwiki.apache.org/confluence/display/COUCHDB/">Wiki</a></li>
+<li><a href="https://couchdb.apache.org/#mailing-list">Mailing Lists</a></li>
+<li><a href="http://webchat.freenode.net/?channels=couchdb">IRC</a></li>
+<li><a href="https://issues.apache.org/jira/browse/CouchDB">Issues</a></li>
+<li><a href="../download.html">Download</a></li>
+<li><a href="https://github.com/apache/couchdb-documentation/blob/master/src/intro/overview.rst"
+       rel="nofollow">Show on GitHub</a></li>
+<li><a href="https://github.com/apache/couchdb-documentation/edit/master/src/intro/overview.rst"
+       rel="nofollow">Edit on GitHub</a></li>
+</ul><!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../http-api.html" title="HTTP API Reference"
+             >API Reference</a></li>
+        <li class="right" >
+          <a href="../config-ref.html" title="Configuration Reference"
+             >Config Reference</a> |</li>
+        <li class="right" >
+          <a href="why.html" title="1.2. Why CouchDB?"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="1. Introduction"
+             >previous</a> |</li>
+  <li><a href="../index.html">Apache CouchDB 2.0 Documentation</a> &raquo;</li>
+          <li><a href="index.html" >1. Introduction</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2016, Apache Software Foundation.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
+    </div>
+  </body>
+</html>

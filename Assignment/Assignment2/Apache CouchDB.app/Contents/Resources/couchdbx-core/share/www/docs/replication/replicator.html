@@ -1,0 +1,570 @@
+<!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>4.3. Replicator Database &mdash; Apache CouchDB 2.0 Documentation</title>
+    
+    <link rel="stylesheet" href="../_static/rtd.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '2.0.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+    <link rel="author" title="About these documents" href="../about.html" />
+    <link rel="top" title="Apache CouchDB 2.0 Documentation" href="../index.html" />
+    <link rel="up" title="4. Replication" href="index.html" />
+    <link rel="next" title="4.4. Replication and conflict model" href="conflicts.html" />
+    <link rel="prev" title="4.2. CouchDB Replication Protocol" href="protocol.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../http-api.html" title="HTTP API Reference"
+             >API Reference</a></li>
+        <li class="right" >
+          <a href="../config-ref.html" title="Configuration Reference"
+             >Config Reference</a> |</li>
+        <li class="right" >
+          <a href="conflicts.html" title="4.4. Replication and conflict model"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="protocol.html" title="4.2. CouchDB Replication Protocol"
+             accesskey="P">previous</a> |</li>
+  <li><a href="../index.html">Apache CouchDB 2.0 Documentation</a> &raquo;</li>
+          <li><a href="index.html" accesskey="U">4. Replication</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="replicator-database">
+<span id="replicator"></span><h1>4.3. Replicator Database<a class="headerlink" href="#replicator-database" title="Permalink to this headline">¶</a></h1>
+<p>The <tt class="docutils literal"><span class="pre">_replicator</span></tt> database works like any other in CouchDB, but documents
+added to it will trigger replications. Create (<tt class="docutils literal"><span class="pre">PUT</span></tt> or <tt class="docutils literal"><span class="pre">POST</span></tt>) a document
+to start replication. <tt class="docutils literal"><span class="pre">DELETE</span></tt> a replication document to cancel an ongoing
+replication.</p>
+<p>These documents have exactly the same content as the JSON objects we used to
+<tt class="docutils literal"><span class="pre">POST</span></tt> to <tt class="docutils literal"><span class="pre">_replicate</span></tt> (fields <tt class="docutils literal"><span class="pre">source</span></tt>, <tt class="docutils literal"><span class="pre">target</span></tt>, <tt class="docutils literal"><span class="pre">create_target</span></tt>,
+<tt class="docutils literal"><span class="pre">continuous</span></tt>, <tt class="docutils literal"><span class="pre">doc_ids</span></tt>, <tt class="docutils literal"><span class="pre">filter</span></tt>, <tt class="docutils literal"><span class="pre">query_params</span></tt>, <tt class="docutils literal"><span class="pre">use_checkpoints</span></tt>,
+<tt class="docutils literal"><span class="pre">checkpoint_interval</span></tt>).</p>
+<p>Replication documents can have a user defined <tt class="docutils literal"><span class="pre">_id</span></tt> (handy for finding a
+specific replication request later). Design Documents (and <tt class="docutils literal"><span class="pre">_local</span></tt> documents)
+added to the replicator database are ignored.</p>
+<p>The default name of this database is <tt class="docutils literal"><span class="pre">_replicator</span></tt>. Additional replicator
+databases can be created. To be recognized as such by the system, their database
+names should end with <tt class="docutils literal"><span class="pre">/_replicator</span></tt>.</p>
+<div class="section" id="basics">
+<h2>4.3.1. Basics<a class="headerlink" href="#basics" title="Permalink to this headline">¶</a></h2>
+<p>Let&#8217;s say you POST the following document into <tt class="docutils literal"><span class="pre">_replicator</span></tt>:</p>
+<div class="highlight-javascript"><div class="highlight"><pre><span class="p">{</span>
+    <span class="s2">&quot;_id&quot;</span><span class="o">:</span> <span class="s2">&quot;my_rep&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;source&quot;</span><span class="o">:</span>  <span class="s2">&quot;http://myserver.com:5984/foo&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;target&quot;</span><span class="o">:</span>  <span class="s2">&quot;http://user:pass@localhost:5984/bar&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;create_target&quot;</span><span class="o">:</span>  <span class="kc">true</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>In the couch log you&#8217;ll see 2 entries like these:</p>
+<div class="highlight-text"><div class="highlight"><pre>[Thu, 17 Feb 2011 19:43:59 GMT] [info] [&lt;0.291.0&gt;] Document `my_rep` triggered replication `c0ebe9256695ff083347cbf95f93e280+create_target`
+[Thu, 17 Feb 2011 19:44:37 GMT] [info] [&lt;0.124.0&gt;] Replication `c0ebe9256695ff083347cbf95f93e280+create_target` finished (triggered by document `my_rep`)
+</pre></div>
+</div>
+<p>As soon as the replication is triggered, the document will be updated by
+CouchDB with 3 new fields:</p>
+<div class="highlight-javascript"><div class="highlight"><pre><span class="p">{</span>
+    <span class="s2">&quot;_id&quot;</span><span class="o">:</span> <span class="s2">&quot;my_rep&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;source&quot;</span><span class="o">:</span>  <span class="s2">&quot;http://myserver.com:5984/foo&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;target&quot;</span><span class="o">:</span>  <span class="s2">&quot;http://user:pass@localhost:5984/bar&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;create_target&quot;</span><span class="o">:</span>  <span class="kc">true</span><span class="p">,</span>
+    <span class="s2">&quot;_replication_id&quot;</span><span class="o">:</span>  <span class="s2">&quot;c0ebe9256695ff083347cbf95f93e280&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;_replication_state&quot;</span><span class="o">:</span>  <span class="s2">&quot;triggered&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;_replication_state_time&quot;</span><span class="o">:</span>  <span class="mi">1297974122</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Special fields set by the replicator start with the prefix
+<tt class="docutils literal"><span class="pre">_replication_</span></tt>.</p>
+<ul>
+<li><p class="first"><tt class="docutils literal"><span class="pre">_replication_id</span></tt></p>
+<p>The ID internally assigned to the replication. This is also the ID
+exposed by <tt class="docutils literal"><span class="pre">/_active_tasks</span></tt>.</p>
+</li>
+<li><p class="first"><tt class="docutils literal"><span class="pre">_replication_state</span></tt></p>
+<p>The current state of the replication.</p>
+</li>
+<li><p class="first"><tt class="docutils literal"><span class="pre">_replication_state_time</span></tt></p>
+<p>A Unix timestamp (number of seconds since 1 Jan 1970) that tells us
+when the current replication state (marked in <tt class="docutils literal"><span class="pre">_replication_state</span></tt>)
+was set.</p>
+</li>
+<li><p class="first"><tt class="docutils literal"><span class="pre">_replication_state_reason</span></tt></p>
+<p>If <tt class="docutils literal"><span class="pre">replication_state</span></tt> is <tt class="docutils literal"><span class="pre">error</span></tt>, this field contains the reason.</p>
+</li>
+</ul>
+<div class="highlight-javascript"><div class="highlight"><pre><span class="p">{</span>
+    <span class="s2">&quot;_id&quot;</span><span class="o">:</span> <span class="s2">&quot;my_rep&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;_rev&quot;</span><span class="o">:</span> <span class="s2">&quot;2-9f2c0d9372f4ee4dc75652ab8f8e7c70&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;source&quot;</span><span class="o">:</span>  <span class="s2">&quot;http://myserver.com:5984/foo&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;target&quot;</span><span class="o">:</span>  <span class="s2">&quot;http://user:pass@localhost:5984/bar&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;_replication_state&quot;</span><span class="o">:</span> <span class="s2">&quot;error&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;_replication_state_time&quot;</span><span class="o">:</span> <span class="s2">&quot;2013-12-13T18:48:00+01:00&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;_replication_state_reason&quot;</span><span class="o">:</span> <span class="s2">&quot;db_not_found: could not open foodb&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;_replication_id&quot;</span><span class="o">:</span> <span class="s2">&quot;c0ebe9256695ff083347cbf95f93e280&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>When the replication finishes, it will update the <tt class="docutils literal"><span class="pre">_replication_state</span></tt>
+field (and <tt class="docutils literal"><span class="pre">_replication_state_time</span></tt>) with the value <tt class="docutils literal"><span class="pre">completed</span></tt>, so
+the document will look like:</p>
+<div class="highlight-javascript"><div class="highlight"><pre><span class="p">{</span>
+    <span class="s2">&quot;_id&quot;</span><span class="o">:</span> <span class="s2">&quot;my_rep&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;source&quot;</span><span class="o">:</span>  <span class="s2">&quot;http://myserver.com:5984/foo&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;target&quot;</span><span class="o">:</span>  <span class="s2">&quot;http://user:pass@localhost:5984/bar&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;create_target&quot;</span><span class="o">:</span>  <span class="kc">true</span><span class="p">,</span>
+    <span class="s2">&quot;_replication_id&quot;</span><span class="o">:</span>  <span class="s2">&quot;c0ebe9256695ff083347cbf95f93e280&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;_replication_state&quot;</span><span class="o">:</span>  <span class="s2">&quot;completed&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;_replication_state_time&quot;</span><span class="o">:</span>  <span class="mi">1297974122</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>When an error happens during replication, the <tt class="docutils literal"><span class="pre">_replication_state</span></tt>
+field is set to <tt class="docutils literal"><span class="pre">error</span></tt> (and <tt class="docutils literal"><span class="pre">_replication_state_reason</span></tt> and
+<tt class="docutils literal"><span class="pre">_replication_state_time</span></tt> are updated).</p>
+<p>When you PUT/POST a document to the <tt class="docutils literal"><span class="pre">_replicator</span></tt> database, CouchDB
+will attempt to start the replication up to 10 times (configurable under
+<tt class="docutils literal"><span class="pre">[replicator]</span></tt>, parameter <tt class="docutils literal"><span class="pre">max_replication_retry_count</span></tt>). If it
+fails on the first attempt, it waits 5 seconds before doing a second
+attempt. If the second attempt fails, it waits 10 seconds before doing a
+third attempt. If the third attempt fails, it waits 20 seconds before
+doing a fourth attempt (each attempt doubles the previous wait period).
+When an attempt fails, the Couch log will show you something like:</p>
+<div class="highlight-text"><div class="highlight"><pre>[error] [&lt;0.149.0&gt;] Error starting replication `67c1bb92010e7abe35d7d629635f18b6+create_target` (document `my_rep_2`): {db_not_found,&lt;&lt;&quot;could not open http://myserver:5986/foo/&quot;&gt;&gt;
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">The <tt class="docutils literal"><span class="pre">_replication_state</span></tt> field is only set to <tt class="docutils literal"><span class="pre">error</span></tt> when all the
+attempts were unsuccessful.</p>
+</div>
+<p>There are only 3 possible values for the <tt class="docutils literal"><span class="pre">_replication_state</span></tt> field:
+<tt class="docutils literal"><span class="pre">triggered</span></tt>, <tt class="docutils literal"><span class="pre">completed</span></tt> and <tt class="docutils literal"><span class="pre">error</span></tt>. Continuous replications
+never get their state set to <tt class="docutils literal"><span class="pre">completed</span></tt>.</p>
+</div>
+<div class="section" id="documents-describing-the-same-replication">
+<h2>4.3.2. Documents describing the same replication<a class="headerlink" href="#documents-describing-the-same-replication" title="Permalink to this headline">¶</a></h2>
+<p>Lets suppose 2 documents are added to the <tt class="docutils literal"><span class="pre">_replicator</span></tt> database in
+the following order:</p>
+<div class="highlight-javascript"><div class="highlight"><pre><span class="p">{</span>
+    <span class="s2">&quot;_id&quot;</span><span class="o">:</span> <span class="s2">&quot;doc_A&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;source&quot;</span><span class="o">:</span>  <span class="s2">&quot;http://myserver.com:5984/foo&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;target&quot;</span><span class="o">:</span>  <span class="s2">&quot;http://user:pass@localhost:5984/bar&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>and</p>
+<div class="highlight-javascript"><div class="highlight"><pre><span class="p">{</span>
+    <span class="s2">&quot;_id&quot;</span><span class="o">:</span> <span class="s2">&quot;doc_B&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;source&quot;</span><span class="o">:</span>  <span class="s2">&quot;http://myserver.com:5984/foo&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;target&quot;</span><span class="o">:</span>  <span class="s2">&quot;http://user:pass@localhost:5984/bar&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Both describe exactly the same replication (only their <tt class="docutils literal"><span class="pre">_ids</span></tt> differ). In this
+case document <tt class="docutils literal"><span class="pre">doc_A</span></tt> triggers the replication, getting updated by CouchDB
+with the fields <tt class="docutils literal"><span class="pre">_replication_state</span></tt>, <tt class="docutils literal"><span class="pre">_replication_state_time</span></tt> and
+<tt class="docutils literal"><span class="pre">_replication_id</span></tt>, just like it was described before. Document <tt class="docutils literal"><span class="pre">doc_B</span></tt>
+however, is only updated with one field, the <tt class="docutils literal"><span class="pre">_replication_id</span></tt> so it will
+look like this:</p>
+<div class="highlight-javascript"><div class="highlight"><pre><span class="p">{</span>
+    <span class="s2">&quot;_id&quot;</span><span class="o">:</span> <span class="s2">&quot;doc_B&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;source&quot;</span><span class="o">:</span>  <span class="s2">&quot;http://myserver.com:5984/foo&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;target&quot;</span><span class="o">:</span>  <span class="s2">&quot;http://user:pass@localhost:5984/bar&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;_replication_id&quot;</span><span class="o">:</span>  <span class="s2">&quot;c0ebe9256695ff083347cbf95f93e280&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>While document <tt class="docutils literal"><span class="pre">doc_A</span></tt> will look like this:</p>
+<div class="highlight-javascript"><div class="highlight"><pre><span class="p">{</span>
+    <span class="s2">&quot;_id&quot;</span><span class="o">:</span> <span class="s2">&quot;doc_A&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;source&quot;</span><span class="o">:</span>  <span class="s2">&quot;http://myserver.com:5984/foo&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;target&quot;</span><span class="o">:</span>  <span class="s2">&quot;http://user:pass@localhost:5984/bar&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;_replication_id&quot;</span><span class="o">:</span>  <span class="s2">&quot;c0ebe9256695ff083347cbf95f93e280&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;_replication_state&quot;</span><span class="o">:</span>  <span class="s2">&quot;triggered&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;_replication_state_time&quot;</span><span class="o">:</span>  <span class="mi">1297974122</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Note that both document get exactly the same value for the <tt class="docutils literal"><span class="pre">_replication_id</span></tt>
+field. This way you can identify which documents refer to the same replication -
+you can for example define a view which maps replication IDs to document IDs.</p>
+</div>
+<div class="section" id="canceling-replications">
+<h2>4.3.3. Canceling replications<a class="headerlink" href="#canceling-replications" title="Permalink to this headline">¶</a></h2>
+<p>To cancel a replication simply <tt class="docutils literal"><span class="pre">DELETE</span></tt> the document which triggered the
+replication. The Couch log will show you an entry like the following:</p>
+<div class="highlight-text"><div class="highlight"><pre>[Thu, 17 Feb 2011 20:16:29 GMT] [info] [&lt;0.125.0&gt;] Stopped replication `c0ebe9256695ff083347cbf95f93e280+continuous+create_target` because replication document `doc_A` was deleted
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">You need to <tt class="docutils literal"><span class="pre">DELETE</span></tt> the document that triggered the replication.
+<tt class="docutils literal"><span class="pre">DELETE</span></tt>-ing another document that describes the same replication
+but did not trigger it, will not cancel the replication.</p>
+</div>
+</div>
+<div class="section" id="server-restart">
+<h2>4.3.4. Server restart<a class="headerlink" href="#server-restart" title="Permalink to this headline">¶</a></h2>
+<p>When CouchDB is restarted, it checks its <tt class="docutils literal"><span class="pre">_replicator</span></tt> database and
+restarts any replication that is described by a document that either has
+its <tt class="docutils literal"><span class="pre">_replication_state</span></tt> field set to <tt class="docutils literal"><span class="pre">triggered</span></tt> or it doesn&#8217;t have
+yet the <tt class="docutils literal"><span class="pre">_replication_state</span></tt> field set.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Continuous replications always have a <tt class="docutils literal"><span class="pre">_replication_state</span></tt> field
+with the value <tt class="docutils literal"><span class="pre">triggered</span></tt>, therefore they&#8217;re always restarted
+when CouchDB is restarted.</p>
+</div>
+</div>
+<div class="section" id="updating-documents-in-the-replicator-database">
+<h2>4.3.5. Updating Documents in the Replicator Database<a class="headerlink" href="#updating-documents-in-the-replicator-database" title="Permalink to this headline">¶</a></h2>
+<p>Once the replicator has started work on a job defined in the <tt class="docutils literal"><span class="pre">_replicator</span></tt>
+database, modifying the replication document is no longer allowed. Attempting
+to do this will result in the following response</p>
+<div class="highlight-javascript"><div class="highlight"><pre><span class="p">{</span>
+    <span class="s2">&quot;error&quot;</span><span class="o">:</span> <span class="s2">&quot;forbidden&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;reason&quot;</span><span class="o">:</span> <span class="s2">&quot;Only the replicator can edit replication documents that are in the triggered state.&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>The way to accomplish this is to first delete the old version and then insert
+the new one.</p>
+</div>
+<div class="section" id="additional-replicator-databases">
+<h2>4.3.6. Additional Replicator Databases<a class="headerlink" href="#additional-replicator-databases" title="Permalink to this headline">¶</a></h2>
+<p>Imagine replicator database (<tt class="docutils literal"><span class="pre">_replicator</span></tt>) has these two
+documents which represent pull replications from servers A and B:</p>
+<div class="highlight-javascript"><div class="highlight"><pre><span class="p">{</span>
+    <span class="s2">&quot;_id&quot;</span><span class="o">:</span> <span class="s2">&quot;rep_from_A&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;source&quot;</span><span class="o">:</span>  <span class="s2">&quot;http://aserver.com:5984/foo&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;target&quot;</span><span class="o">:</span>  <span class="s2">&quot;http://user:pass@localhost:5984/foo_a&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;continuous&quot;</span><span class="o">:</span>  <span class="kc">true</span><span class="p">,</span>
+    <span class="s2">&quot;_replication_id&quot;</span><span class="o">:</span>  <span class="s2">&quot;c0ebe9256695ff083347cbf95f93e280&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;_replication_state&quot;</span><span class="o">:</span>  <span class="s2">&quot;triggered&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;_replication_state_time&quot;</span><span class="o">:</span>  <span class="mi">1297971311</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<div class="highlight-javascript"><div class="highlight"><pre><span class="p">{</span>
+    <span class="s2">&quot;_id&quot;</span><span class="o">:</span> <span class="s2">&quot;rep_from_B&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;source&quot;</span><span class="o">:</span>  <span class="s2">&quot;http://bserver.com:5984/foo&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;target&quot;</span><span class="o">:</span>  <span class="s2">&quot;http://user:pass@localhost:5984/foo_b&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;continuous&quot;</span><span class="o">:</span>  <span class="kc">true</span><span class="p">,</span>
+    <span class="s2">&quot;_replication_id&quot;</span><span class="o">:</span>  <span class="s2">&quot;231bb3cf9d48314eaa8d48a9170570d1&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;_replication_state&quot;</span><span class="o">:</span>  <span class="s2">&quot;triggered&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;_replication_state_time&quot;</span><span class="o">:</span>  <span class="mi">1297974122</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Now without stopping and restarting CouchDB, add another replicator database.
+For example <tt class="docutils literal"><span class="pre">another/_replicator</span></tt>:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>curl -X PUT http://user:pass@localhost:5984/another%2F_replicator/
+<span class="o">{</span><span class="s2">&quot;ok&quot;</span>:true<span class="o">}</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">A / character in a database name, when used in a URL, should be escaped.</p>
+</div>
+<p>Then add a replication document to the new replicator database:</p>
+<div class="highlight-javascript"><div class="highlight"><pre><span class="p">{</span>
+    <span class="s2">&quot;_id&quot;</span><span class="o">:</span> <span class="s2">&quot;rep_from_X&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;source&quot;</span><span class="o">:</span>  <span class="s2">&quot;http://xserver.com:5984/foo&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;target&quot;</span><span class="o">:</span>  <span class="s2">&quot;http://user:pass@localhost:5984/foo_x&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;continuous&quot;</span><span class="o">:</span>  <span class="kc">true</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>From now on, there are three replications active in the system: two replications
+from A and B, and a new one from X.</p>
+<p>Then remove the additional replicator database:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>curl -X DELETE http://user:pass@localhost:5984/another%2F_replicator/
+<span class="o">{</span><span class="s2">&quot;ok&quot;</span>:true<span class="o">}</span>
+</pre></div>
+</div>
+<p>After this operation, replication pulling from server X
+will be stopped and the replications in the <tt class="docutils literal"><span class="pre">_replicator</span></tt>
+database (pulling from servers A and B) will continue.</p>
+</div>
+<div class="section" id="replicating-the-replicator-database">
+<h2>4.3.7. Replicating the replicator database<a class="headerlink" href="#replicating-the-replicator-database" title="Permalink to this headline">¶</a></h2>
+<p>Imagine you have in server C a replicator database with the two
+following pull replication documents in it:</p>
+<div class="highlight-javascript"><div class="highlight"><pre><span class="p">{</span>
+     <span class="s2">&quot;_id&quot;</span><span class="o">:</span> <span class="s2">&quot;rep_from_A&quot;</span><span class="p">,</span>
+     <span class="s2">&quot;source&quot;</span><span class="o">:</span>  <span class="s2">&quot;http://aserver.com:5984/foo&quot;</span><span class="p">,</span>
+     <span class="s2">&quot;target&quot;</span><span class="o">:</span>  <span class="s2">&quot;http://user:pass@localhost:5984/foo_a&quot;</span><span class="p">,</span>
+     <span class="s2">&quot;continuous&quot;</span><span class="o">:</span>  <span class="kc">true</span><span class="p">,</span>
+     <span class="s2">&quot;_replication_id&quot;</span><span class="o">:</span>  <span class="s2">&quot;c0ebe9256695ff083347cbf95f93e280&quot;</span><span class="p">,</span>
+     <span class="s2">&quot;_replication_state&quot;</span><span class="o">:</span>  <span class="s2">&quot;triggered&quot;</span><span class="p">,</span>
+     <span class="s2">&quot;_replication_state_time&quot;</span><span class="o">:</span>  <span class="mi">1297971311</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<div class="highlight-javascript"><div class="highlight"><pre><span class="p">{</span>
+     <span class="s2">&quot;_id&quot;</span><span class="o">:</span> <span class="s2">&quot;rep_from_B&quot;</span><span class="p">,</span>
+     <span class="s2">&quot;source&quot;</span><span class="o">:</span>  <span class="s2">&quot;http://bserver.com:5984/foo&quot;</span><span class="p">,</span>
+     <span class="s2">&quot;target&quot;</span><span class="o">:</span>  <span class="s2">&quot;http://user:pass@localhost:5984/foo_b&quot;</span><span class="p">,</span>
+     <span class="s2">&quot;continuous&quot;</span><span class="o">:</span>  <span class="kc">true</span><span class="p">,</span>
+     <span class="s2">&quot;_replication_id&quot;</span><span class="o">:</span>  <span class="s2">&quot;231bb3cf9d48314eaa8d48a9170570d1&quot;</span><span class="p">,</span>
+     <span class="s2">&quot;_replication_state&quot;</span><span class="o">:</span>  <span class="s2">&quot;triggered&quot;</span><span class="p">,</span>
+     <span class="s2">&quot;_replication_state_time&quot;</span><span class="o">:</span>  <span class="mi">1297974122</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Now you would like to have the same pull replications going on in server
+D, that is, you would like to have server D pull replicating from
+servers A and B. You have two options:</p>
+<ul class="simple">
+<li>Explicitly add two documents to server&#8217;s D replicator database</li>
+<li>Replicate server&#8217;s C replicator database into server&#8217;s D replicator
+database</li>
+</ul>
+<p>Both alternatives accomplish exactly the same goal.</p>
+</div>
+<div class="section" id="delegations">
+<h2>4.3.8. Delegations<a class="headerlink" href="#delegations" title="Permalink to this headline">¶</a></h2>
+<p>Replication documents can have a custom <tt class="docutils literal"><span class="pre">user_ctx</span></tt> property. This
+property defines the user context under which a replication runs. For
+the old way of triggering a replication (POSTing to <tt class="docutils literal"><span class="pre">/_replicate/</span></tt>),
+this property is not needed. That&#8217;s because information about the
+authenticated user is readily available during the replication, which is
+not persistent in that case. Now, with the replicator database, the
+problem is that information about which user is starting a particular
+replication is only present when the replication document is written.
+The information in the replication document and the replication itself
+are persistent, however. This implementation detail implies that in the
+case of a non-admin user, a <tt class="docutils literal"><span class="pre">user_ctx</span></tt> property containing the user&#8217;s
+name and a subset of their roles must be defined in the replication
+document. This is enforced by the document update validation function
+present in the default design document of the replicator database. The
+validation function also ensures that non-admin users are unable to set
+the value of the user context&#8217;s <tt class="docutils literal"><span class="pre">name</span></tt> property to anything other than
+their own user name. The same principle applies for roles.</p>
+<p>For admins, the <tt class="docutils literal"><span class="pre">user_ctx</span></tt> property is optional, and if it&#8217;s missing
+it defaults to a user context with name <tt class="docutils literal"><span class="pre">null</span></tt> and an empty list of
+roles, which means design documents won&#8217;t be written to local targets.
+If writing design documents to local targets is desired, the role
+<tt class="docutils literal"><span class="pre">_admin</span></tt> must be present in the user context&#8217;s list of roles.</p>
+<p>Also, for admins the <tt class="docutils literal"><span class="pre">user_ctx</span></tt> property can be used to trigger a
+replication on behalf of another user. This is the user context that
+will be passed to local target database document validation functions.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">The <tt class="docutils literal"><span class="pre">user_ctx</span></tt> property only has effect for local endpoints.</p>
+</div>
+<p>Example delegated replication document:</p>
+<div class="highlight-javascript"><div class="highlight"><pre><span class="p">{</span>
+    <span class="s2">&quot;_id&quot;</span><span class="o">:</span> <span class="s2">&quot;my_rep&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;source&quot;</span><span class="o">:</span>  <span class="s2">&quot;http://bserver.com:5984/foo&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;target&quot;</span><span class="o">:</span>  <span class="s2">&quot;http://user:pass@localhost:5984/bar&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;continuous&quot;</span><span class="o">:</span>  <span class="kc">true</span><span class="p">,</span>
+    <span class="s2">&quot;user_ctx&quot;</span><span class="o">:</span> <span class="p">{</span>
+        <span class="s2">&quot;name&quot;</span><span class="o">:</span> <span class="s2">&quot;joe&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;roles&quot;</span><span class="o">:</span> <span class="p">[</span><span class="s2">&quot;erlanger&quot;</span><span class="p">,</span> <span class="s2">&quot;researcher&quot;</span><span class="p">]</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>As stated before, the <tt class="docutils literal"><span class="pre">user_ctx</span></tt> property is optional for admins, while
+being mandatory for regular (non-admin) users. When the roles property
+of <tt class="docutils literal"><span class="pre">user_ctx</span></tt> is missing, it defaults to the empty list <tt class="docutils literal"><span class="pre">[]</span></tt>.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+    <p class="logo"><a href="../index.html">
+      <img class="logo" src="../_static/logo.png" alt="Logo"/>
+    </a></p><!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+<div id="searchbox" style="display: none">
+
+<h3>Quick Search</h3>
+
+<form class="search" action="../search.html" method="get">
+<input type="text" name="q" style="width:115px">
+<input type="submit" value="Go">
+<input type="hidden" name="check_keywords" value="yes">
+<input type="hidden" name="area" value="default">
+</form>
+
+<br>
+
+</div>
+
+<script type="text/javascript">$('#searchbox').show(0);</script>
+  <h3><a href="../contents.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">4.3. Replicator Database</a><ul>
+<li><a class="reference internal" href="#basics">4.3.1. Basics</a></li>
+<li><a class="reference internal" href="#documents-describing-the-same-replication">4.3.2. Documents describing the same replication</a></li>
+<li><a class="reference internal" href="#canceling-replications">4.3.3. Canceling replications</a></li>
+<li><a class="reference internal" href="#server-restart">4.3.4. Server restart</a></li>
+<li><a class="reference internal" href="#updating-documents-in-the-replicator-database">4.3.5. Updating Documents in the Replicator Database</a></li>
+<li><a class="reference internal" href="#additional-replicator-databases">4.3.6. Additional Replicator Databases</a></li>
+<li><a class="reference internal" href="#replicating-the-replicator-database">4.3.7. Replicating the replicator database</a></li>
+<li><a class="reference internal" href="#delegations">4.3.8. Delegations</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="protocol.html"
+                        title="previous chapter">4.2. CouchDB Replication Protocol</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="conflicts.html"
+                        title="next chapter">4.4. Replication and conflict model</a></p><!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+
+<h3>Utilities</h3>
+
+<ul>
+<li><a href="../">Fauxton</a></li>
+</ul>
+<!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+<h3>More Help</h3>
+
+<ul>
+<li><a href="https://couchdb.apache.org/">Homepage</a></li>
+<li><a href="https://cwiki.apache.org/confluence/display/COUCHDB/">Wiki</a></li>
+<li><a href="https://couchdb.apache.org/#mailing-list">Mailing Lists</a></li>
+<li><a href="http://webchat.freenode.net/?channels=couchdb">IRC</a></li>
+<li><a href="https://issues.apache.org/jira/browse/CouchDB">Issues</a></li>
+<li><a href="../download.html">Download</a></li>
+<li><a href="https://github.com/apache/couchdb-documentation/blob/master/src/replication/replicator.rst"
+       rel="nofollow">Show on GitHub</a></li>
+<li><a href="https://github.com/apache/couchdb-documentation/edit/master/src/replication/replicator.rst"
+       rel="nofollow">Edit on GitHub</a></li>
+</ul><!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../http-api.html" title="HTTP API Reference"
+             >API Reference</a></li>
+        <li class="right" >
+          <a href="../config-ref.html" title="Configuration Reference"
+             >Config Reference</a> |</li>
+        <li class="right" >
+          <a href="conflicts.html" title="4.4. Replication and conflict model"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="protocol.html" title="4.2. CouchDB Replication Protocol"
+             >previous</a> |</li>
+  <li><a href="../index.html">Apache CouchDB 2.0 Documentation</a> &raquo;</li>
+          <li><a href="index.html" >4. Replication</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2016, Apache Software Foundation.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
+    </div>
+  </body>
+</html>

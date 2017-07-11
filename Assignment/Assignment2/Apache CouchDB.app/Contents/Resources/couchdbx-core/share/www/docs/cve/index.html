@@ -1,0 +1,262 @@
+<!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>16. Security Issues Information &mdash; Apache CouchDB 2.0 Documentation</title>
+    
+    <link rel="stylesheet" href="../_static/rtd.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '2.0.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+    <link rel="author" title="About these documents" href="../about.html" />
+    <link rel="top" title="Apache CouchDB 2.0 Documentation" href="../index.html" />
+    <link rel="next" title="16.1. CVE-2010-0009: Apache CouchDB Timing Attack Vulnerability" href="2010-0009.html" />
+    <link rel="prev" title="15.12. 0.8.x Branch" href="../whatsnew/0.8.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../http-api.html" title="HTTP API Reference"
+             >API Reference</a></li>
+        <li class="right" >
+          <a href="../config-ref.html" title="Configuration Reference"
+             >Config Reference</a> |</li>
+        <li class="right" >
+          <a href="2010-0009.html" title="16.1. CVE-2010-0009: Apache CouchDB Timing Attack Vulnerability"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="../whatsnew/0.8.html" title="15.12. 0.8.x Branch"
+             accesskey="P">previous</a> |</li>
+  <li><a href="../index.html">Apache CouchDB 2.0 Documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="security-issues-information">
+<span id="cve"></span><h1>16. Security Issues Information<a class="headerlink" href="#security-issues-information" title="Permalink to this headline">¶</a></h1>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="2010-0009.html">16.1. CVE-2010-0009: Apache CouchDB Timing Attack Vulnerability</a></li>
+<li class="toctree-l1"><a class="reference internal" href="2010-2234.html">16.2. CVE-2010-2234: Apache CouchDB Cross Site Request Forgery Attack</a></li>
+<li class="toctree-l1"><a class="reference internal" href="2010-3854.html">16.3. CVE-2010-3854: Apache CouchDB Cross Site Scripting Issue</a></li>
+<li class="toctree-l1"><a class="reference internal" href="2012-5641.html">16.4. CVE-2012-5641: Information disclosure via unescaped backslashes in URLs on Windows</a></li>
+<li class="toctree-l1"><a class="reference internal" href="2012-5649.html">16.5. CVE-2012-5649: JSONP arbitrary code execution with Adobe Flash</a></li>
+<li class="toctree-l1"><a class="reference internal" href="2012-5650.html">16.6. CVE-2012-5650: DOM based Cross-Site Scripting via Futon UI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="2014-2668.html">16.7. CVE-2014-2668: DoS (CPU and memory consumption) via the count parameter to /_uuids</a></li>
+</ul>
+</div>
+</div>
+<div class="section" id="reporting-new-security-problems-with-apache-couchdb">
+<span id="cve-report"></span><h1>17. Reporting New Security Problems with Apache CouchDB<a class="headerlink" href="#reporting-new-security-problems-with-apache-couchdb" title="Permalink to this headline">¶</a></h1>
+<p>The Apache Software Foundation takes a very active stance in eliminating
+security problems and denial of service attacks against Apache CouchDB.</p>
+<p>We strongly encourage folks to report such problems to our private security
+mailing list first, before disclosing them in a public forum.</p>
+<p>Please note that the security mailing list should only be used for reporting
+undisclosed security vulnerabilities in Apache CouchDB and managing the
+process of fixing such vulnerabilities. We cannot accept regular bug reports
+or other queries at this address. All mail sent to this address that does not
+relate to an undisclosed security problem in the Apache CouchDB source code
+will be ignored.</p>
+<p>If you need to report a bug that isn&#8217;t an undisclosed security vulnerability,
+please use the <a class="reference external" href="https://issues.apache.org/jira/browse/COUCHDB">bug reporting page</a>.</p>
+<p>Questions about:</p>
+<ul class="simple">
+<li>How to configure CouchDB securely</li>
+<li>If a vulnerability applies to your particular application</li>
+<li>Obtaining further information on a published vulnerability</li>
+<li>Availability of patches and/or new releases</li>
+</ul>
+<p>should be address to the <a class="reference external" href="mailto:user&#37;&#52;&#48;couchdb&#46;apache&#46;org">users mailing list</a>. Please see the <a class="reference external" href="http://couchdb.apache.org/#mailing-list">mailing
+lists page</a> for details of how to subscribe.</p>
+<p>The private security mailing address is: <a class="reference external" href="mailto:security&#37;&#52;&#48;couchdb&#46;apache&#46;org">security<span>&#64;</span>couchdb<span>&#46;</span>apache<span>&#46;</span>org</a></p>
+<p>Please read <a class="reference external" href="http://apache.org/security/committers.html">how the Apache Software Foundation handles security</a> reports to
+know what to expect.</p>
+<p>Note that all networked servers are subject to denial of service attacks,
+and we cannot promise magic workarounds to generic problems (such as a client
+streaming lots of data to your server, or re-requesting the same URL
+repeatedly). In general our philosophy is to avoid any attacks which can
+cause the server to consume resources in a non-linear relationship to the
+size of inputs.</p>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+    <p class="logo"><a href="../index.html">
+      <img class="logo" src="../_static/logo.png" alt="Logo"/>
+    </a></p><!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+<div id="searchbox" style="display: none">
+
+<h3>Quick Search</h3>
+
+<form class="search" action="../search.html" method="get">
+<input type="text" name="q" style="width:115px">
+<input type="submit" value="Go">
+<input type="hidden" name="check_keywords" value="yes">
+<input type="hidden" name="area" value="default">
+</form>
+
+<br>
+
+</div>
+
+<script type="text/javascript">$('#searchbox').show(0);</script>
+  <h3><a href="../contents.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">16. Security Issues Information</a></li>
+<li><a class="reference internal" href="#reporting-new-security-problems-with-apache-couchdb">17. Reporting New Security Problems with Apache CouchDB</a></li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="../whatsnew/0.8.html"
+                        title="previous chapter">15.12. 0.8.x Branch</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="2010-0009.html"
+                        title="next chapter">16.1. CVE-2010-0009: Apache CouchDB Timing Attack Vulnerability</a></p><!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+
+<h3>Utilities</h3>
+
+<ul>
+<li><a href="../">Fauxton</a></li>
+</ul>
+<!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+<h3>More Help</h3>
+
+<ul>
+<li><a href="https://couchdb.apache.org/">Homepage</a></li>
+<li><a href="https://cwiki.apache.org/confluence/display/COUCHDB/">Wiki</a></li>
+<li><a href="https://couchdb.apache.org/#mailing-list">Mailing Lists</a></li>
+<li><a href="http://webchat.freenode.net/?channels=couchdb">IRC</a></li>
+<li><a href="https://issues.apache.org/jira/browse/CouchDB">Issues</a></li>
+<li><a href="../download.html">Download</a></li>
+<li><a href="https://github.com/apache/couchdb-documentation/blob/master/src/cve/index.rst"
+       rel="nofollow">Show on GitHub</a></li>
+<li><a href="https://github.com/apache/couchdb-documentation/edit/master/src/cve/index.rst"
+       rel="nofollow">Edit on GitHub</a></li>
+</ul><!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../http-api.html" title="HTTP API Reference"
+             >API Reference</a></li>
+        <li class="right" >
+          <a href="../config-ref.html" title="Configuration Reference"
+             >Config Reference</a> |</li>
+        <li class="right" >
+          <a href="2010-0009.html" title="16.1. CVE-2010-0009: Apache CouchDB Timing Attack Vulnerability"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="../whatsnew/0.8.html" title="15.12. 0.8.x Branch"
+             >previous</a> |</li>
+  <li><a href="../index.html">Apache CouchDB 2.0 Documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2016, Apache Software Foundation.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
+    </div>
+  </body>
+</html>

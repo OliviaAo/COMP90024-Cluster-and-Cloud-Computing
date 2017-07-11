@@ -1,0 +1,302 @@
+<!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>3.7. Logging &mdash; Apache CouchDB 2.0 Documentation</title>
+    
+    <link rel="stylesheet" href="../_static/rtd.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '2.0.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+    <link rel="author" title="About these documents" href="../about.html" />
+    <link rel="top" title="Apache CouchDB 2.0 Documentation" href="../index.html" />
+    <link rel="up" title="3. Configuring CouchDB" href="index.html" />
+    <link rel="next" title="3.8. Replicator" href="replicator.html" />
+    <link rel="prev" title="3.6. Compaction Configuration" href="compaction.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../http-api.html" title="HTTP API Reference"
+             >API Reference</a></li>
+        <li class="right" >
+          <a href="../config-ref.html" title="Configuration Reference"
+             >Config Reference</a> |</li>
+        <li class="right" >
+          <a href="replicator.html" title="3.8. Replicator"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="compaction.html" title="3.6. Compaction Configuration"
+             accesskey="P">previous</a> |</li>
+  <li><a href="../index.html">Apache CouchDB 2.0 Documentation</a> &raquo;</li>
+          <li><a href="index.html" accesskey="U">3. Configuring CouchDB</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="logging">
+<h1>3.7. Logging<a class="headerlink" href="#logging" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="logging-options">
+<span id="config-log"></span><h2>3.7.1. Logging options<a class="headerlink" href="#logging-options" title="Permalink to this headline">¶</a></h2>
+<dl class="section">
+<dt id="log">
+<tt class="descname">[log]</tt><a class="headerlink" href="#log" title="Permalink to this definition">¶</a></dt>
+<dd><p>CouchDB logging configuration.</p>
+<dl class="option">
+<dt id="log/file">
+<tt class="descname">file</tt><a class="headerlink" href="#log/file" title="Permalink to this definition">¶</a></dt>
+<dd><p>Specifies the location of file for logging output:</p>
+<div class="highlight-ini"><div class="highlight"><pre><span class="k">[log]</span>
+<span class="na">file</span> <span class="o">=</span> <span class="s">/var/log/couchdb/couch.log</span>
+</pre></div>
+</div>
+<p>This path should be readable and writable for user that runs CouchDB
+service (<cite>couchdb</cite> by default).</p>
+</dd></dl>
+
+<dl class="option">
+<dt id="log/level">
+<tt class="descname">level</tt><a class="headerlink" href="#log/level" title="Permalink to this definition">¶</a></dt>
+<dd><div class="versionchanged">
+<p><span class="versionmodified">Changed in version 1.3:: </span>Added <tt class="docutils literal"><span class="pre">warning</span></tt> level.</p>
+</div>
+<p>Logging level defines how verbose and detailed logging will be:</p>
+<div class="highlight-ini"><div class="highlight"><pre><span class="k">[log]</span>
+<span class="na">level</span> <span class="o">=</span> <span class="s">info</span>
+</pre></div>
+</div>
+<p>Available levels:</p>
+<ul class="simple">
+<li><tt class="docutils literal"><span class="pre">debug</span></tt>: Very informative and detailed debug logging. Includes HTTP
+headers, external processes communications, authorization information
+and more;</li>
+<li><tt class="docutils literal"><span class="pre">info</span></tt>: Informative logging. Includes HTTP requests headlines,
+startup of an external processes etc.</li>
+<li><tt class="docutils literal"><span class="pre">warning</span></tt>: Warning messages are alerts about edge situations that
+may lead to errors. For instance, compaction daemon alerts about low
+or insufficient disk space at this level.</li>
+<li><tt class="docutils literal"><span class="pre">error</span></tt>: Error level includes only things that going wrong, crush
+reports and HTTP error responses (5xx codes).</li>
+<li><tt class="docutils literal"><span class="pre">none</span></tt>: Disables logging any messages.</li>
+</ul>
+</dd></dl>
+
+<dl class="option">
+<dt id="log/include_sasl">
+<tt class="descname">include_sasl</tt><a class="headerlink" href="#log/include_sasl" title="Permalink to this definition">¶</a></dt>
+<dd><p>Includes <a class="reference external" href="http://www.erlang.org/doc/apps/sasl/">SASL</a> information in logs:</p>
+<div class="highlight-ini"><div class="highlight"><pre><span class="k">[log]</span>
+<span class="na">include_sasl</span> <span class="o">=</span> <span class="s">true</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="per-module-logging">
+<span id="config-log-level-by-module"></span><h2>3.7.2. Per module logging<a class="headerlink" href="#per-module-logging" title="Permalink to this headline">¶</a></h2>
+<dl class="section">
+<dt id="log_level_by_module">
+<tt class="descname">[log_level_by_module]</tt><a class="headerlink" href="#log_level_by_module" title="Permalink to this definition">¶</a></dt>
+<dd><div class="versionadded">
+<p><span class="versionmodified">New in version 1.3.</span></p>
+</div>
+<p>In this section you can specify <a class="reference internal" href="#log/level" title="level"><tt class="xref config config-option docutils literal"><span class="pre">log</span> <span class="pre">level</span></tt></a> on a
+per-module basis:</p>
+<div class="highlight-ini"><div class="highlight"><pre><span class="k">[log_level_by_module]</span>
+<span class="na">couch_httpd</span> <span class="o">=</span> <span class="s">debug</span>
+<span class="na">couch_replicator</span> <span class="o">=</span> <span class="s">info</span>
+<span class="na">couch_query_servers</span> <span class="o">=</span> <span class="s">error</span>
+</pre></div>
+</div>
+<p>See <a class="reference external" href="https://git-wip-us.apache.org/repos/asf?p=couchdb.git;a=tree;f=src;hb=HEAD">src/*/*.erl</a> for available modules.</p>
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+    <p class="logo"><a href="../index.html">
+      <img class="logo" src="../_static/logo.png" alt="Logo"/>
+    </a></p><!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+<div id="searchbox" style="display: none">
+
+<h3>Quick Search</h3>
+
+<form class="search" action="../search.html" method="get">
+<input type="text" name="q" style="width:115px">
+<input type="submit" value="Go">
+<input type="hidden" name="check_keywords" value="yes">
+<input type="hidden" name="area" value="default">
+</form>
+
+<br>
+
+</div>
+
+<script type="text/javascript">$('#searchbox').show(0);</script>
+  <h3><a href="../contents.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">3.7. Logging</a><ul>
+<li><a class="reference internal" href="#logging-options">3.7.1. Logging options</a></li>
+<li><a class="reference internal" href="#per-module-logging">3.7.2. Per module logging</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="compaction.html"
+                        title="previous chapter">3.6. Compaction Configuration</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="replicator.html"
+                        title="next chapter">3.8. Replicator</a></p><!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+
+<h3>Utilities</h3>
+
+<ul>
+<li><a href="../">Fauxton</a></li>
+</ul>
+<!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+<h3>More Help</h3>
+
+<ul>
+<li><a href="https://couchdb.apache.org/">Homepage</a></li>
+<li><a href="https://cwiki.apache.org/confluence/display/COUCHDB/">Wiki</a></li>
+<li><a href="https://couchdb.apache.org/#mailing-list">Mailing Lists</a></li>
+<li><a href="http://webchat.freenode.net/?channels=couchdb">IRC</a></li>
+<li><a href="https://issues.apache.org/jira/browse/CouchDB">Issues</a></li>
+<li><a href="../download.html">Download</a></li>
+<li><a href="https://github.com/apache/couchdb-documentation/blob/master/src/config/logging.rst"
+       rel="nofollow">Show on GitHub</a></li>
+<li><a href="https://github.com/apache/couchdb-documentation/edit/master/src/config/logging.rst"
+       rel="nofollow">Edit on GitHub</a></li>
+</ul><!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../http-api.html" title="HTTP API Reference"
+             >API Reference</a></li>
+        <li class="right" >
+          <a href="../config-ref.html" title="Configuration Reference"
+             >Config Reference</a> |</li>
+        <li class="right" >
+          <a href="replicator.html" title="3.8. Replicator"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="compaction.html" title="3.6. Compaction Configuration"
+             >previous</a> |</li>
+  <li><a href="../index.html">Apache CouchDB 2.0 Documentation</a> &raquo;</li>
+          <li><a href="index.html" >3. Configuring CouchDB</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2016, Apache Software Foundation.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
+    </div>
+  </body>
+</html>

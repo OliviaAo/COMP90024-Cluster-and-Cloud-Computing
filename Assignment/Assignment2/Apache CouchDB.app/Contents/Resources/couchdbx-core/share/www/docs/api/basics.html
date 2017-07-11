@@ -1,0 +1,708 @@
+<!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>10.1. API Basics &mdash; Apache CouchDB 2.0 Documentation</title>
+    
+    <link rel="stylesheet" href="../_static/rtd.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '2.0.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+    <link rel="author" title="About these documents" href="../about.html" />
+    <link rel="top" title="Apache CouchDB 2.0 Documentation" href="../index.html" />
+    <link rel="up" title="10. API Reference" href="index.html" />
+    <link rel="next" title="10.2. Server" href="server/index.html" />
+    <link rel="prev" title="10. API Reference" href="index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../http-api.html" title="HTTP API Reference"
+             >API Reference</a></li>
+        <li class="right" >
+          <a href="../config-ref.html" title="Configuration Reference"
+             >Config Reference</a> |</li>
+        <li class="right" >
+          <a href="server/index.html" title="10.2. Server"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="10. API Reference"
+             accesskey="P">previous</a> |</li>
+  <li><a href="../index.html">Apache CouchDB 2.0 Documentation</a> &raquo;</li>
+          <li><a href="index.html" accesskey="U">10. API Reference</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="api-basics">
+<span id="id1"></span><h1>10.1. API Basics<a class="headerlink" href="#api-basics" title="Permalink to this headline">¶</a></h1>
+<p>The CouchDB API is the primary method of interfacing to a CouchDB instance.
+Requests are made using HTTP and requests are used to request information from
+the database, store new data, and perform views and formatting of the
+information stored within the documents.</p>
+<p>Requests to the API can be categorised by the different areas of the CouchDB
+system that you are accessing, and the HTTP method used to send the request.
+Different methods imply different operations, for example retrieval of
+information from the database is typically handled by the <tt class="docutils literal"><span class="pre">GET</span></tt> operation,
+while updates are handled by either a <tt class="docutils literal"><span class="pre">POST</span></tt> or <tt class="docutils literal"><span class="pre">PUT</span></tt> request. There are
+some differences between the information that must be supplied for the
+different methods. For a guide to the basic HTTP methods and request structure,
+see <a class="reference internal" href="#api-format"><em>Request Format and Responses</em></a>.</p>
+<p>For nearly all operations, the submitted data, and the returned data structure,
+is defined within a JavaScript Object Notation (JSON) object. Basic information
+on the content and data types for JSON are provided in <a class="reference internal" href="#json"><em>JSON Basics</em></a>.</p>
+<p>Errors when accessing the CouchDB API are reported using standard HTTP Status
+Codes. A guide to the generic codes returned by CouchDB are provided in
+<a class="reference internal" href="#errors"><em>HTTP Status Codes</em></a>.</p>
+<p>When accessing specific areas of the CouchDB API, specific information and
+examples on the HTTP methods and request, JSON structures, and error codes are
+provided.</p>
+<div class="section" id="request-format-and-responses">
+<span id="api-format"></span><h2>10.1.1. Request Format and Responses<a class="headerlink" href="#request-format-and-responses" title="Permalink to this headline">¶</a></h2>
+<p>CouchDB supports the following HTTP request methods:</p>
+<ul>
+<li><p class="first"><tt class="docutils literal"><span class="pre">GET</span></tt></p>
+<p>Request the specified item. As with normal HTTP requests, the format of the
+URL defines what is returned. With CouchDB this can include static items,
+database documents, and configuration and statistical information. In most
+cases the information is returned in the form of a JSON document.</p>
+</li>
+<li><p class="first"><tt class="docutils literal"><span class="pre">HEAD</span></tt></p>
+<p>The <tt class="docutils literal"><span class="pre">HEAD</span></tt> method is used to get the HTTP header of a <tt class="docutils literal"><span class="pre">GET</span></tt> request
+without the body of the response.</p>
+</li>
+<li><p class="first"><tt class="docutils literal"><span class="pre">POST</span></tt></p>
+<p>Upload data. Within CouchDB <tt class="docutils literal"><span class="pre">POST</span></tt> is used to set values, including
+uploading documents, setting document values, and starting certain
+administration commands.</p>
+</li>
+<li><p class="first"><tt class="docutils literal"><span class="pre">PUT</span></tt></p>
+<p>Used to put a specified resource. In CouchDB <tt class="docutils literal"><span class="pre">PUT</span></tt> is used to create new
+objects, including databases, documents, views and design documents.</p>
+</li>
+<li><p class="first"><tt class="docutils literal"><span class="pre">DELETE</span></tt></p>
+<p>Deletes the specified resource, including documents, views, and design
+documents.</p>
+</li>
+<li><p class="first"><tt class="docutils literal"><span class="pre">COPY</span></tt></p>
+<p>A special method that can be used to copy documents and objects.</p>
+</li>
+</ul>
+<p>If you use an unsupported HTTP request type with an URL that does not support
+the specified type then a <tt class="docutils literal"><span class="pre">405</span> <span class="pre">-</span> <span class="pre">Resource</span> <span class="pre">Not</span> <span class="pre">Allowed</span></tt> will be returned,
+listing the supported HTTP methods. For example:</p>
+<div class="highlight-javascript"><div class="highlight"><pre><span class="p">{</span>
+    <span class="s2">&quot;error&quot;</span><span class="o">:</span><span class="s2">&quot;method_not_allowed&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;reason&quot;</span><span class="o">:</span><span class="s2">&quot;Only GET,HEAD allowed&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>The CouchDB design document API and the functions when returning HTML (for
+example as part of a show or list) enables you to include custom HTTP headers
+through the <tt class="docutils literal"><span class="pre">headers</span></tt> block of the return object.</p>
+</div>
+<div class="section" id="http-headers">
+<h2>10.1.2. HTTP Headers<a class="headerlink" href="#http-headers" title="Permalink to this headline">¶</a></h2>
+<p>Because CouchDB uses HTTP for all communication, you need to ensure that the
+correct HTTP headers are supplied (and processed on retrieval) so that you get
+the right format and encoding. Different environments and clients will be more
+or less strict on the effect of these HTTP headers (especially when not
+present). Where possible you should be as specific as possible.</p>
+<div class="section" id="request-headers">
+<h3>Request Headers<a class="headerlink" href="#request-headers" title="Permalink to this headline">¶</a></h3>
+<ul>
+<li><p class="first"><tt class="docutils literal"><span class="pre">Accept</span></tt></p>
+<p>Specifies the list of accepted data types to be returned by the server (i.e.
+that are accepted/understandable by the client). The format should be a list
+of one or more MIME types, separated by colons.</p>
+<p>For the majority of requests the definition should be for JSON data
+(<tt class="docutils literal"><span class="pre">application/json</span></tt>). For attachments you can either specify the MIME type
+explicitly, or use <tt class="docutils literal"><span class="pre">*/*</span></tt> to specify that all file types are supported. If
+the <tt class="docutils literal"><span class="pre">Accept</span></tt> header is not supplied, then the <tt class="docutils literal"><span class="pre">*/*</span></tt> MIME type is assumed
+(i.e. client accepts all formats).</p>
+<p>The use of <tt class="docutils literal"><span class="pre">Accept</span></tt> in queries for CouchDB is not required, but is highly
+recommended as it helps to ensure that the data returned can be processed by
+the client.</p>
+<p>If you specify a data type using the <tt class="docutils literal"><span class="pre">Accept</span></tt> header, CouchDB will honor
+the specified type in the <tt class="docutils literal"><span class="pre">Content-type</span></tt> header field returned. For
+example, if you explicitly request <tt class="docutils literal"><span class="pre">application/json</span></tt> in the <tt class="docutils literal"><span class="pre">Accept</span></tt> of
+a request, the returned HTTP headers will use the value in the returned
+<tt class="docutils literal"><span class="pre">Content-type</span></tt> field.</p>
+<p>For example, when sending a request without an explicit <tt class="docutils literal"><span class="pre">Accept</span></tt> header, or
+when specifying <tt class="docutils literal"><span class="pre">*/*</span></tt>:</p>
+<div class="highlight-http"><div class="highlight"><pre><span class="nf">GET</span> <span class="nn">/recipes</span> <span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span>
+<span class="na">Host</span><span class="o">:</span> <span class="l">couchdb:5984</span>
+<span class="na">Accept</span><span class="o">:</span> <span class="l">*/*</span>
+</pre></div>
+</div>
+<p>The returned headers are:</p>
+<div class="highlight-http"><div class="highlight"><pre><span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span> <span class="m">200</span> <span class="ne">OK</span>
+<span class="na">Server</span><span class="o">:</span> <span class="l">CouchDB (Erlang/OTP)</span>
+<span class="na">Date</span><span class="o">:</span> <span class="l">Thu, 13 Jan 2011 13:39:34 GMT</span>
+<span class="na">Content-Type</span><span class="o">:</span> <span class="l">text/plain;charset=utf-8</span>
+<span class="na">Content-Length</span><span class="o">:</span> <span class="l">227</span>
+<span class="na">Cache-Control</span><span class="o">:</span> <span class="l">must-revalidate</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">The returned content type is <tt class="docutils literal"><span class="pre">text/plain</span></tt> even though the information
+returned by the request is in JSON format.</p>
+</div>
+<p>Explicitly specifying the <tt class="docutils literal"><span class="pre">Accept</span></tt> header:</p>
+<div class="highlight-http"><div class="highlight"><pre><span class="nf">GET</span> <span class="nn">/recipes</span> <span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span>
+<span class="na">Host</span><span class="o">:</span> <span class="l">couchdb:5984</span>
+<span class="na">Accept</span><span class="o">:</span> <span class="l">application/json</span>
+</pre></div>
+</div>
+<p>The headers returned include the <tt class="docutils literal"><span class="pre">application/json</span></tt> content type:</p>
+<div class="highlight-http"><div class="highlight"><pre><span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span> <span class="m">200</span> <span class="ne">OK</span>
+<span class="na">Server</span><span class="o">:</span> <span class="l">CouchDB (Erlang/OTP)</span>
+<span class="na">Date</span><span class="o">:</span> <span class="l">Thu, 13 Jan 2013 13:40:11 GMT</span>
+<span class="na">Content-Type</span><span class="o">:</span> <span class="l">application/json</span>
+<span class="na">Content-Length</span><span class="o">:</span> <span class="l">227</span>
+<span class="na">Cache-Control</span><span class="o">:</span> <span class="l">must-revalidate</span>
+</pre></div>
+</div>
+</li>
+<li><p class="first"><tt class="docutils literal"><span class="pre">Content-type</span></tt></p>
+<p>Specifies the content type of the information being supplied within the
+request. The specification uses MIME type specifications. For the majority of
+requests this will be JSON (<tt class="docutils literal"><span class="pre">application/json</span></tt>). For some settings the MIME
+type will be plain text. When uploading attachments it should be the
+corresponding MIME type for the attachment or binary
+(<tt class="docutils literal"><span class="pre">application/octet-stream</span></tt>).</p>
+<p>The use of the <tt class="docutils literal"><span class="pre">Content-type</span></tt> on a request is highly recommended.</p>
+</li>
+</ul>
+</div>
+<div class="section" id="response-headers">
+<h3>Response Headers<a class="headerlink" href="#response-headers" title="Permalink to this headline">¶</a></h3>
+<p>Response headers are returned by the server when sending back content and
+include a number of different header fields, many of which are standard HTTP
+response header and have no significance to CouchDB operation. The list of
+response headers important to CouchDB are listed below.</p>
+<ul>
+<li><p class="first"><tt class="docutils literal"><span class="pre">Cache-control</span></tt></p>
+<p>The cache control HTTP response header provides a suggestion for client
+caching mechanisms on how to treat the returned information. CouchDB
+typically returns the <tt class="docutils literal"><span class="pre">must-revalidate</span></tt>, which indicates that the
+information should be revalidated if possible. This is used to ensure that
+the dynamic nature of the content is correctly updated.</p>
+</li>
+<li><p class="first"><tt class="docutils literal"><span class="pre">Content-length</span></tt></p>
+<p>The length (in bytes) of the returned content.</p>
+</li>
+<li><p class="first"><tt class="docutils literal"><span class="pre">Content-type</span></tt></p>
+<p>Specifies the MIME type of the returned data. For most request, the returned
+MIME type is <tt class="docutils literal"><span class="pre">text/plain</span></tt>. All text is encoded in Unicode (UTF-8), and this
+is explicitly stated in the returned <tt class="docutils literal"><span class="pre">Content-type</span></tt>, as
+<tt class="docutils literal"><span class="pre">text/plain;charset=utf-8</span></tt>.</p>
+</li>
+<li><p class="first"><tt class="docutils literal"><span class="pre">Etag</span></tt></p>
+<p>The <tt class="docutils literal"><span class="pre">Etag</span></tt> HTTP header field is used to show the revision for a document,
+or a view.</p>
+<p>ETags have been assigned to a map/reduce group (the collection of views in a
+single design document). Any change to any of the indexes for those views
+would generate a new ETag for all view URLs in a single design doc, even if
+that specific view&#8217;s results had not changed.</p>
+<p>Each <tt class="docutils literal"><span class="pre">_view</span></tt> URL has its own ETag which only gets updated when changes are
+made to the database that effect that index. If the index for that specific
+view does not change, that view keeps the original ETag head (therefore
+sending back <tt class="docutils literal"><span class="pre">304</span> <span class="pre">-</span> <span class="pre">Not</span> <span class="pre">Modified</span></tt> more often).</p>
+</li>
+<li><p class="first"><tt class="docutils literal"><span class="pre">Transfer-Encoding</span></tt></p>
+<p>If the response uses an encoding, then it is specified in this header field.</p>
+<p><tt class="docutils literal"><span class="pre">Transfer-Encoding:</span> <span class="pre">chunked</span></tt> means that the response is sent in parts, a
+method known as <a class="reference external" href="https://en.wikipedia.org/wiki/Chunked_transfer_encoding">chunked transfer encoding</a>. This is used when CouchDB does
+not know beforehand the size of the data it will send (for example,
+the <a class="reference internal" href="database/changes.html#changes"><em>changes feed</em></a>).</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="section" id="json-basics">
+<span id="json"></span><h2>10.1.3. JSON Basics<a class="headerlink" href="#json-basics" title="Permalink to this headline">¶</a></h2>
+<p>The majority of requests and responses to CouchDB use the JavaScript Object
+Notation (JSON) for formatting the content and structure of the data and
+responses.</p>
+<p>JSON is used because it is the simplest and easiest solution for working with
+data within a web browser, as JSON structures can be evaluated and used as
+JavaScript objects within the web browser environment. JSON also integrates
+with the server-side JavaScript used within CouchDB.</p>
+<p>JSON supports the same basic types as supported by JavaScript, these are:</p>
+<ul>
+<li><p class="first">Array - a list of values enclosed in square brackets. For example:</p>
+<div class="highlight-javascript"><div class="highlight"><pre><span class="p">[</span><span class="s2">&quot;one&quot;</span><span class="p">,</span> <span class="s2">&quot;two&quot;</span><span class="p">,</span> <span class="s2">&quot;three&quot;</span><span class="p">]</span>
+</pre></div>
+</div>
+</li>
+<li><p class="first">Boolean - a <tt class="docutils literal"><span class="pre">true</span></tt> or <tt class="docutils literal"><span class="pre">false</span></tt> value. You can use these strings directly.
+For example:</p>
+<div class="highlight-javascript"><div class="highlight"><pre><span class="p">{</span> <span class="s2">&quot;value&quot;</span><span class="o">:</span> <span class="kc">true</span><span class="p">}</span>
+</pre></div>
+</div>
+</li>
+<li><p class="first">Number - an integer or floating-point number.</p>
+</li>
+<li><p class="first">Object - a set of key/value pairs (i.e. an associative array, or hash). The
+key must be a string, but the value can be any of the supported JSON values.
+For example:</p>
+<div class="highlight-javascript"><div class="highlight"><pre><span class="p">{</span>
+    <span class="s2">&quot;servings&quot;</span> <span class="o">:</span> <span class="mi">4</span><span class="p">,</span>
+    <span class="s2">&quot;subtitle&quot;</span> <span class="o">:</span> <span class="s2">&quot;Easy to make in advance, and then cook when ready&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;cooktime&quot;</span> <span class="o">:</span> <span class="mi">60</span><span class="p">,</span>
+    <span class="s2">&quot;title&quot;</span> <span class="o">:</span> <span class="s2">&quot;Chicken Coriander&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>In CouchDB, the JSON object is used to represent a variety of structures,
+including the main CouchDB document.</p>
+</li>
+<li><p class="first">String - this should be enclosed by double-quotes and supports Unicode
+characters and backslash escaping. For example:</p>
+<div class="highlight-javascript"><div class="highlight"><pre><span class="s2">&quot;A String&quot;</span>
+</pre></div>
+</div>
+</li>
+</ul>
+<p>Parsing JSON into a JavaScript object is supported through the <tt class="docutils literal"><span class="pre">JSON.parse()</span></tt>
+function in JavaScript, or through various libraries that will perform the
+parsing of the content into a JavaScript object for you. Libraries for parsing
+and generating JSON are available in many languages, including Perl, Python,
+Ruby, Erlang and others.</p>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">Care should be taken to ensure that your JSON structures are valid,
+invalid structures will cause CouchDB to return an HTTP status code of 500
+(server error).</p>
+</div>
+<div class="section" id="number-handling">
+<span id="json-numbers"></span><h3>Number Handling<a class="headerlink" href="#number-handling" title="Permalink to this headline">¶</a></h3>
+<p>Developers and users new to computer handling of numbers often encounter
+suprises when expecting that a number stored in JSON format does not
+necessarily return as the same number as compared character by character.</p>
+<p>Any numbers defined in JSON that contain a decimal point or exponent will be
+passed through the Erlang VM&#8217;s idea of the &#8220;double&#8221; data type. Any numbers that
+are used in views will pass through the view server&#8217;s idea of a number (the
+common JavaScript case means even integers pass through a double due to
+JavaScript&#8217;s definition of a number).</p>
+<p>Consider this document that we write to CouchDB:</p>
+<div class="highlight-javascript"><div class="highlight"><pre><span class="p">{</span>
+    <span class="s2">&quot;_id&quot;</span><span class="o">:</span><span class="s2">&quot;30b3b38cdbd9e3a587de9b8122000cff&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;number&quot;</span><span class="o">:</span> <span class="mf">1.1</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Now let’s read that document back from CouchDB:</p>
+<div class="highlight-javascript"><div class="highlight"><pre><span class="p">{</span>
+    <span class="s2">&quot;_id&quot;</span><span class="o">:</span><span class="s2">&quot;30b3b38cdbd9e3a587de9b8122000cff&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;_rev&quot;</span><span class="o">:</span><span class="s2">&quot;1-f065cee7c3fd93aa50f6c97acde93030&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;number&quot;</span><span class="o">:</span><span class="mf">1.1000000000000000888</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>What happens is CouchDB is changing the textual representation of the
+result of decoding what it was given into some numerical format. In most
+cases this is an <a class="reference external" href="https://en.wikipedia.org/wiki/IEEE_754-2008">IEEE 754</a> double precision floating point number which
+is exactly what almost all other languages use as well.</p>
+<p>What Erlang does a bit differently than other languages is that it does not
+attempt to pretty print the resulting output to use the shortest number of
+characters. For instance, this is why we have this relationship:</p>
+<div class="highlight-erlang"><div class="highlight"><pre><span class="nn">ejson</span><span class="p">:</span><span class="nf">encode</span><span class="p">(</span><span class="nn">ejson</span><span class="p">:</span><span class="nf">decode</span><span class="p">(</span><span class="o">&lt;&lt;</span><span class="s">&quot;1.1&quot;</span><span class="o">&gt;&gt;</span><span class="p">)).</span>
+<span class="o">&lt;&lt;</span><span class="s">&quot;1.1000000000000000888&quot;</span><span class="o">&gt;&gt;</span>
+</pre></div>
+</div>
+<p>What can be confusing here is that internally those two formats decode into the
+same IEEE-754 representation. And more importantly, it will decode into a
+fairly close representation when passed through all major parsers that we know
+about.</p>
+<p>While we&#8217;ve only been discussing cases where the textual representation
+changes, another important case is when an input value contains more precision
+than can actually represented in a double. (You could argue that this case is
+actually &#8220;losing&#8221; data if you don&#8217;t accept that numbers are stored in doubles).</p>
+<p>Here&#8217;s a log for a couple of the more common JSON libraries that happen to be
+on the author&#8217;s machine:</p>
+<p>Ejson (CouchDB&#8217;s current parser) at CouchDB sha 168a663b:</p>
+<div class="highlight-python"><div class="highlight"><pre>$ ./utils/run -i
+Erlang R14B04 (erts-5.8.5) [source] [64-bit] [smp:2:2] [rq:2]
+[async-threads:4] [hipe] [kernel-poll:true]
+
+Eshell V5.8.5  (abort with ^G)
+1&gt; ejson:encode(ejson:decode(&lt;&lt;&quot;1.01234567890123456789012345678901234567890&quot;&gt;&gt;)).
+&lt;&lt;&quot;1.0123456789012346135&quot;&gt;&gt;
+2&gt; F = ejson:encode(ejson:decode(&lt;&lt;&quot;1.01234567890123456789012345678901234567890&quot;&gt;&gt;)).
+&lt;&lt;&quot;1.0123456789012346135&quot;&gt;&gt;
+3&gt; ejson:encode(ejson:decode(F)).
+&lt;&lt;&quot;1.0123456789012346135&quot;&gt;&gt;
+</pre></div>
+</div>
+<p>Node:</p>
+<div class="highlight-python"><div class="highlight"><pre>$ node -v
+v0.6.15
+$ node
+JSON.stringify(JSON.parse(&quot;1.01234567890123456789012345678901234567890&quot;))
+&#39;1.0123456789012346&#39;
+var f = JSON.stringify(JSON.parse(&quot;1.01234567890123456789012345678901234567890&quot;))
+undefined
+JSON.stringify(JSON.parse(f))
+&#39;1.0123456789012346&#39;
+</pre></div>
+</div>
+<p>Python:</p>
+<div class="highlight-python"><div class="highlight"><pre>$ python
+Python 2.7.2 (default, Jun 20 2012, 16:23:33)
+[GCC 4.2.1 Compatible Apple Clang 4.0 (tags/Apple/clang-418.0.60)] on darwin
+Type &quot;help&quot;, &quot;copyright&quot;, &quot;credits&quot; or &quot;license&quot; for more information.
+import json
+json.dumps(json.loads(&quot;1.01234567890123456789012345678901234567890&quot;))
+&#39;1.0123456789012346&#39;
+f = json.dumps(json.loads(&quot;1.01234567890123456789012345678901234567890&quot;))
+json.dumps(json.loads(f))
+&#39;1.0123456789012346&#39;
+</pre></div>
+</div>
+<p>Ruby:</p>
+<div class="highlight-python"><div class="highlight"><pre>$ irb --version
+irb 0.9.5(05/04/13)
+require &#39;JSON&#39;
+=&gt; true
+JSON.dump(JSON.load(&quot;[1.01234567890123456789012345678901234567890]&quot;))
+=&gt; &quot;[1.01234567890123]&quot;
+f = JSON.dump(JSON.load(&quot;[1.01234567890123456789012345678901234567890]&quot;))
+=&gt; &quot;[1.01234567890123]&quot;
+JSON.dump(JSON.load(f))
+=&gt; &quot;[1.01234567890123]&quot;
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">A small aside on Ruby, it requires a top level object or array, so I just
+wrapped the value. Should be obvious it doesn&#8217;t affect the result of
+parsing the number though.</p>
+</div>
+<p>Spidermonkey:</p>
+<div class="highlight-python"><div class="highlight"><pre>$ js -h 2&gt;&amp;1 | head -n 1
+JavaScript-C 1.8.5 2011-03-31
+$ js
+js&gt; JSON.stringify(JSON.parse(&quot;1.01234567890123456789012345678901234567890&quot;))
+&quot;1.0123456789012346&quot;
+js&gt; var f = JSON.stringify(JSON.parse(&quot;1.01234567890123456789012345678901234567890&quot;))
+js&gt; JSON.stringify(JSON.parse(f))
+&quot;1.0123456789012346&quot;
+</pre></div>
+</div>
+<p>As you can see they all pretty much behave the same except for Ruby actually
+does appear to be losing some precision over the other libraries.</p>
+<p>The astute observer will notice that ejson (the CouchDB JSON library) reported
+an extra three digits. While its tempting to think that this is due to some
+internal difference, its just a more specific case of the 1.1 input as
+described above.</p>
+<p>The important point to realize here is that a double can only hold a finite
+number of values. What we&#8217;re doing here is generating a string that when passed
+through the &#8220;standard&#8221; floating point parsing algorithms (ie, <tt class="docutils literal"><span class="pre">strtod</span></tt>) will
+result in the same bit pattern in memory as we started with. Or, slightly
+different, the bytes in a JSON serialized number are chosen such that they
+refer to a single specific value that a double can represent.</p>
+<p>The important point to understand is that we&#8217;re mapping from one infinite set
+onto a finite set. An easy way to see this is by reflecting on this:</p>
+<div class="highlight-python"><div class="highlight"><pre>1.0 == 1.00 == 1.000 = 1.(infinite zeroes)
+</pre></div>
+</div>
+<p>Obviously a computer can&#8217;t hold infinite bytes so we have to decimate our
+infinitely sized set to a finite set that can be represented concisely.</p>
+<p>The game that other JSON libraries are playing is merely:</p>
+<p>&#8220;How few characters do I have to use to select this specific value for a
+double&#8221;</p>
+<p>And that game has lots and lots of subtle details that are difficult to
+duplicate in C without a significant amount of effort (it took Python over a
+year to get it sorted with their fancy build systems that automatically run on
+a number of different architectures).</p>
+<p>Hopefully we&#8217;ve shown that CouchDB is not doing anything &#8220;funky&#8221; by changing
+input. Its behaving the same as any other common JSON library does, its just
+not pretty printing its output.</p>
+<p>On the other hand, if you actually are in a position where an IEEE-754 double
+is not a satisfactory datatype for your numbers, then the answer as has been
+stated is to not pass your numbers through this representation. In JSON this is
+accomplished by encoding them as a string or by using integer types (although
+integer types can still bite you if you use a platform that has a different
+integer representation than normal, ie, JavaScript).</p>
+<p>Further information can be found easily, including the
+<a class="reference external" href="http://floating-point-gui.de/">Floating Point Guide</a>, and  <a class="reference external" href="http://docs.oracle.com/cd/E19957-01/806-3568/ncg_goldberg.html">David Goldberg&#8217;s Reference</a>.</p>
+<p>Also, if anyone is really interested in changing this behavior, we&#8217;re all ears
+for contributions to <a class="reference external" href="https://github.com/davisp/jiffy">jiffy</a> (which is theoretically going to replace ejson
+when we get around to updating the build system). The places we&#8217;ve looked for
+inspiration are TCL and Python. If you know a decent implementation of this
+float printing algorithm give us a holler.</p>
+</div>
+</div>
+<div class="section" id="http-status-codes">
+<span id="errors"></span><h2>10.1.4. HTTP Status Codes<a class="headerlink" href="#http-status-codes" title="Permalink to this headline">¶</a></h2>
+<p>With the interface to CouchDB working through HTTP, error codes and statuses
+are reported using a combination of the HTTP status code number, and
+corresponding data in the body of the response data.</p>
+<p>A list of the error codes returned by CouchDB, and generic descriptions of the
+related errors are provided below. The meaning of different status codes for
+specific request types are provided in the corresponding API call reference.</p>
+<ul>
+<li><p class="first"><tt class="docutils literal"><span class="pre">200</span> <span class="pre">-</span> <span class="pre">OK</span></tt></p>
+<p>Request completed successfully.</p>
+</li>
+<li><p class="first"><tt class="docutils literal"><span class="pre">201</span> <span class="pre">-</span> <span class="pre">Created</span></tt></p>
+<p>Document created successfully.</p>
+</li>
+<li><p class="first"><tt class="docutils literal"><span class="pre">202</span> <span class="pre">-</span> <span class="pre">Accepted</span></tt></p>
+<p>Request has been accepted, but the corresponding operation may not have
+completed. This is used for background operations, such as database
+compaction.</p>
+</li>
+<li><p class="first"><tt class="docutils literal"><span class="pre">304</span> <span class="pre">-</span> <span class="pre">Not</span> <span class="pre">Modified</span></tt></p>
+<p>The additional content requested has not been modified. This is used with the
+ETag system to identify the version of information returned.</p>
+</li>
+<li><p class="first"><tt class="docutils literal"><span class="pre">400</span> <span class="pre">-</span> <span class="pre">Bad</span> <span class="pre">Request</span></tt></p>
+<p>Bad request structure. The error can indicate an error with the request URL,
+path or headers. Differences in the supplied MD5 hash and content also
+trigger this error, as this may indicate message corruption.</p>
+</li>
+<li><p class="first"><tt class="docutils literal"><span class="pre">401</span> <span class="pre">-</span> <span class="pre">Unauthorized</span></tt></p>
+<p>The item requested was not available using the supplied authorization, or
+authorization was not supplied.</p>
+</li>
+<li><p class="first"><tt class="docutils literal"><span class="pre">403</span> <span class="pre">-</span> <span class="pre">Forbidden</span></tt></p>
+<p>The requested item or operation is forbidden.</p>
+</li>
+<li><p class="first"><tt class="docutils literal"><span class="pre">404</span> <span class="pre">-</span> <span class="pre">Not</span> <span class="pre">Found</span></tt></p>
+<p>The requested content could not be found. The content will include further
+information, as a JSON object, if available. The structure will contain two
+keys, <tt class="docutils literal"><span class="pre">error</span></tt> and <tt class="docutils literal"><span class="pre">reason</span></tt>. For example:</p>
+<div class="highlight-javascript"><div class="highlight"><pre><span class="p">{</span><span class="s2">&quot;error&quot;</span><span class="o">:</span><span class="s2">&quot;not_found&quot;</span><span class="p">,</span><span class="s2">&quot;reason&quot;</span><span class="o">:</span><span class="s2">&quot;no_db_file&quot;</span><span class="p">}</span>
+</pre></div>
+</div>
+</li>
+<li><p class="first"><tt class="docutils literal"><span class="pre">405</span> <span class="pre">-</span> <span class="pre">Resource</span> <span class="pre">Not</span> <span class="pre">Allowed</span></tt></p>
+<p>A request was made using an invalid HTTP request type for the URL requested.
+For example, you have requested a <tt class="docutils literal"><span class="pre">PUT</span></tt> when a <tt class="docutils literal"><span class="pre">POST</span></tt> is required. Errors
+of this type can also triggered by invalid URL strings.</p>
+</li>
+<li><p class="first"><tt class="docutils literal"><span class="pre">406</span> <span class="pre">-</span> <span class="pre">Not</span> <span class="pre">Acceptable</span></tt></p>
+<p>The requested content type is not supported by the server.</p>
+</li>
+<li><p class="first"><tt class="docutils literal"><span class="pre">409</span> <span class="pre">-</span> <span class="pre">Conflict</span></tt></p>
+<p>Request resulted in an update conflict.</p>
+</li>
+<li><p class="first"><tt class="docutils literal"><span class="pre">412</span> <span class="pre">-</span> <span class="pre">Precondition</span> <span class="pre">Failed</span></tt></p>
+<p>The request headers from the client and the capabilities of the server do not
+match.</p>
+</li>
+<li><p class="first"><tt class="docutils literal"><span class="pre">415</span> <span class="pre">-</span> <span class="pre">Bad</span> <span class="pre">Content</span> <span class="pre">Type</span></tt></p>
+<p>The content types supported, and the content type of the information being
+requested or submitted indicate that the content type is not supported.</p>
+</li>
+<li><p class="first"><tt class="docutils literal"><span class="pre">416</span> <span class="pre">-</span> <span class="pre">Requested</span> <span class="pre">Range</span> <span class="pre">Not</span> <span class="pre">Satisfiable</span></tt></p>
+<p>The range specified in the request header cannot be satisfied by the server.</p>
+</li>
+<li><p class="first"><tt class="docutils literal"><span class="pre">417</span> <span class="pre">-</span> <span class="pre">Expectation</span> <span class="pre">Failed</span></tt></p>
+<p>When sending documents in bulk, the bulk load operation failed.</p>
+</li>
+<li><p class="first"><tt class="docutils literal"><span class="pre">500</span> <span class="pre">-</span> <span class="pre">Internal</span> <span class="pre">Server</span> <span class="pre">Error</span></tt></p>
+<p>The request was invalid, either because the supplied JSON was invalid, or
+invalid information was supplied as part of the request.</p>
+</li>
+</ul>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+    <p class="logo"><a href="../index.html">
+      <img class="logo" src="../_static/logo.png" alt="Logo"/>
+    </a></p><!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+<div id="searchbox" style="display: none">
+
+<h3>Quick Search</h3>
+
+<form class="search" action="../search.html" method="get">
+<input type="text" name="q" style="width:115px">
+<input type="submit" value="Go">
+<input type="hidden" name="check_keywords" value="yes">
+<input type="hidden" name="area" value="default">
+</form>
+
+<br>
+
+</div>
+
+<script type="text/javascript">$('#searchbox').show(0);</script>
+  <h3><a href="../contents.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">10.1. API Basics</a><ul>
+<li><a class="reference internal" href="#request-format-and-responses">10.1.1. Request Format and Responses</a></li>
+<li><a class="reference internal" href="#http-headers">10.1.2. HTTP Headers</a><ul>
+<li><a class="reference internal" href="#request-headers">Request Headers</a></li>
+<li><a class="reference internal" href="#response-headers">Response Headers</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#json-basics">10.1.3. JSON Basics</a><ul>
+<li><a class="reference internal" href="#number-handling">Number Handling</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#http-status-codes">10.1.4. HTTP Status Codes</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="index.html"
+                        title="previous chapter">10. API Reference</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="server/index.html"
+                        title="next chapter">10.2. Server</a></p><!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+
+<h3>Utilities</h3>
+
+<ul>
+<li><a href="../">Fauxton</a></li>
+</ul>
+<!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+<h3>More Help</h3>
+
+<ul>
+<li><a href="https://couchdb.apache.org/">Homepage</a></li>
+<li><a href="https://cwiki.apache.org/confluence/display/COUCHDB/">Wiki</a></li>
+<li><a href="https://couchdb.apache.org/#mailing-list">Mailing Lists</a></li>
+<li><a href="http://webchat.freenode.net/?channels=couchdb">IRC</a></li>
+<li><a href="https://issues.apache.org/jira/browse/CouchDB">Issues</a></li>
+<li><a href="../download.html">Download</a></li>
+<li><a href="https://github.com/apache/couchdb-documentation/blob/master/src/api/basics.rst"
+       rel="nofollow">Show on GitHub</a></li>
+<li><a href="https://github.com/apache/couchdb-documentation/edit/master/src/api/basics.rst"
+       rel="nofollow">Edit on GitHub</a></li>
+</ul><!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../http-api.html" title="HTTP API Reference"
+             >API Reference</a></li>
+        <li class="right" >
+          <a href="../config-ref.html" title="Configuration Reference"
+             >Config Reference</a> |</li>
+        <li class="right" >
+          <a href="server/index.html" title="10.2. Server"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="10. API Reference"
+             >previous</a> |</li>
+  <li><a href="../index.html">Apache CouchDB 2.0 Documentation</a> &raquo;</li>
+          <li><a href="index.html" >10. API Reference</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2016, Apache Software Foundation.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
+    </div>
+  </body>
+</html>

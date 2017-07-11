@@ -1,0 +1,302 @@
+<!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>1.7. cURL: Your Command Line Friend &mdash; Apache CouchDB 2.0 Documentation</title>
+    
+    <link rel="stylesheet" href="../_static/rtd.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '2.0.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+    <link rel="author" title="About these documents" href="../about.html" />
+    <link rel="top" title="Apache CouchDB 2.0 Documentation" href="../index.html" />
+    <link rel="up" title="1. Introduction" href="index.html" />
+    <link rel="next" title="2. Installation" href="../install/index.html" />
+    <link rel="prev" title="1.6. Security" href="security.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../http-api.html" title="HTTP API Reference"
+             >API Reference</a></li>
+        <li class="right" >
+          <a href="../config-ref.html" title="Configuration Reference"
+             >Config Reference</a> |</li>
+        <li class="right" >
+          <a href="../install/index.html" title="2. Installation"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="security.html" title="1.6. Security"
+             accesskey="P">previous</a> |</li>
+  <li><a href="../index.html">Apache CouchDB 2.0 Documentation</a> &raquo;</li>
+          <li><a href="index.html" accesskey="U">1. Introduction</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="curl-your-command-line-friend">
+<span id="intro-curl"></span><h1>1.7. cURL: Your Command Line Friend<a class="headerlink" href="#curl-your-command-line-friend" title="Permalink to this headline">¶</a></h1>
+<p>The <tt class="docutils literal"><span class="pre">curl</span></tt> utility is a command line tool available on Unix, Linux,
+Mac OS X and Windows and many other platforms. <tt class="docutils literal"><span class="pre">curl</span></tt> provides easy
+access to the HTTP protocol (among others) directly from the
+command-line and is therefore an ideal way of interacting with CouchDB
+over the HTTP REST API.</p>
+<p>For simple <tt class="docutils literal"><span class="pre">GET</span></tt> requests you can supply the URL of the request. For
+example, to get the database information:</p>
+<div class="highlight-bash"><div class="highlight"><pre>shell&gt; curl http://127.0.0.1:5984
+</pre></div>
+</div>
+<p>This returns the database information (formatted in the output below for
+clarity):</p>
+<div class="highlight-json"><div class="highlight"><pre><span class="p">{</span>
+    <span class="nt">&quot;couchdb&quot;</span><span class="p">:</span> <span class="s2">&quot;Welcome&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;uuid&quot;</span><span class="p">:</span> <span class="s2">&quot;85fb71bf700c17267fef77535820e371&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;vendor&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;The Apache Software Foundation&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;version&quot;</span><span class="p">:</span> <span class="s2">&quot;1.4.0&quot;</span>
+    <span class="p">},</span>
+    <span class="nt">&quot;version&quot;</span><span class="p">:</span> <span class="s2">&quot;1.4.0&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p>For some URLs, especially those that include special characters such as
+ampersand, exclamation mark, or question mark, you should quote the URL you
+are specifying on the command line. For example:</p>
+<div class="last highlight-bash"><div class="highlight"><pre>shell&gt; curl <span class="s1">&#39;http://couchdb:5984/_uuids?count=5&#39;</span>
+</pre></div>
+</div>
+</div>
+<p>You can explicitly set the HTTP command using the <tt class="docutils literal"><span class="pre">-X</span></tt> command line option.
+For example, when creating a database, you set the name of the database in the
+URL you send using a PUT request:</p>
+<div class="highlight-bash"><div class="highlight"><pre>shell&gt; curl -X PUT http://127.0.0.1:5984/demo
+<span class="o">{</span><span class="s2">&quot;ok&quot;</span>:true<span class="o">}</span>
+</pre></div>
+</div>
+<p>But to obtain the database information you use a <tt class="docutils literal"><span class="pre">GET</span></tt> request (with
+the return information formatted for clarity):</p>
+<div class="highlight-bash"><div class="highlight"><pre>shell&gt; curl -X GET http://127.0.0.1:5984/demo
+<span class="o">{</span>
+    <span class="s2">&quot;compact_running&quot;</span> : <span class="nb">false</span>,
+    <span class="s2">&quot;doc_count&quot;</span> : 0,
+    <span class="s2">&quot;db_name&quot;</span> : <span class="s2">&quot;demo&quot;</span>,
+    <span class="s2">&quot;purge_seq&quot;</span> : 0,
+    <span class="s2">&quot;committed_update_seq&quot;</span> : 0,
+    <span class="s2">&quot;doc_del_count&quot;</span> : 0,
+    <span class="s2">&quot;disk_format_version&quot;</span> : 5,
+    <span class="s2">&quot;update_seq&quot;</span> : 0,
+    <span class="s2">&quot;instance_start_time&quot;</span> : <span class="s2">&quot;1306421773496000&quot;</span>,
+    <span class="s2">&quot;disk_size&quot;</span> : 79
+<span class="o">}</span>
+</pre></div>
+</div>
+<p>For certain operations, you must specify the content type of request, which you
+do by specifying the <tt class="docutils literal"><span class="pre">Content-Type</span></tt> header using the <tt class="docutils literal"><span class="pre">-H</span></tt> command-line
+option:</p>
+<div class="highlight-bash"><div class="highlight"><pre>shell&gt; curl -H <span class="s1">&#39;Content-Type: application/json&#39;</span> http://127.0.0.1:5984/_uuids
+</pre></div>
+</div>
+<p>You can also submit &#8216;payload&#8217; data, that is, data in the body of the HTTP
+request using the <tt class="docutils literal"><span class="pre">-d</span></tt> option. This is useful if you need to submit JSON
+structures, for example document data, as part of the request. For example, to
+submit a simple document to the <tt class="docutils literal"><span class="pre">demo</span></tt> database:</p>
+<div class="highlight-bash"><div class="highlight"><pre>shell&gt; curl -H <span class="s1">&#39;Content-Type: application/json&#39;</span> <span class="se">\</span>
+            -X POST http://127.0.0.1:5984/demo <span class="se">\</span>
+            -d <span class="s1">&#39;{&quot;company&quot;: &quot;Example, Inc.&quot;}&#39;</span>
+<span class="o">{</span><span class="s2">&quot;ok&quot;</span>:true,<span class="s2">&quot;id&quot;</span>:<span class="s2">&quot;8843faaf0b831d364278331bc3001bd8&quot;</span>,
+ <span class="s2">&quot;rev&quot;</span>:<span class="s2">&quot;1-33b9fbce46930280dab37d672bbc8bb9&quot;</span><span class="o">}</span>
+</pre></div>
+</div>
+<p>In the above example, the argument after the <tt class="docutils literal"><span class="pre">-d</span></tt> option is the JSON of the
+document we want to submit.</p>
+<p>The document can be accessed by using the automatically generated document ID
+that was returned:</p>
+<div class="highlight-bash"><div class="highlight"><pre>shell&gt; curl -X GET http://127.0.0.1:5984/demo/8843faaf0b831d364278331bc3001bd8
+<span class="o">{</span><span class="s2">&quot;_id&quot;</span>:<span class="s2">&quot;8843faaf0b831d364278331bc3001bd8&quot;</span>,
+ <span class="s2">&quot;_rev&quot;</span>:<span class="s2">&quot;1-33b9fbce46930280dab37d672bbc8bb9&quot;</span>,
+ <span class="s2">&quot;company&quot;</span>:<span class="s2">&quot;Example, Inc.&quot;</span><span class="o">}</span>
+</pre></div>
+</div>
+<p>The API samples in the <a class="reference internal" href="../api/basics.html#api-basics"><em>API Basics</em></a> show the HTTP command, URL and any
+payload information that needs to be submitted (and the expected return value).
+All of these examples can be reproduced using <tt class="docutils literal"><span class="pre">curl</span></tt> with the command-line
+examples shown above.</p>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+    <p class="logo"><a href="../index.html">
+      <img class="logo" src="../_static/logo.png" alt="Logo"/>
+    </a></p><!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+<div id="searchbox" style="display: none">
+
+<h3>Quick Search</h3>
+
+<form class="search" action="../search.html" method="get">
+<input type="text" name="q" style="width:115px">
+<input type="submit" value="Go">
+<input type="hidden" name="check_keywords" value="yes">
+<input type="hidden" name="area" value="default">
+</form>
+
+<br>
+
+</div>
+
+<script type="text/javascript">$('#searchbox').show(0);</script>
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="security.html"
+                        title="previous chapter">1.6. Security</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="../install/index.html"
+                        title="next chapter">2. Installation</a></p><!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+
+<h3>Utilities</h3>
+
+<ul>
+<li><a href="../">Fauxton</a></li>
+</ul>
+<!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+<h3>More Help</h3>
+
+<ul>
+<li><a href="https://couchdb.apache.org/">Homepage</a></li>
+<li><a href="https://cwiki.apache.org/confluence/display/COUCHDB/">Wiki</a></li>
+<li><a href="https://couchdb.apache.org/#mailing-list">Mailing Lists</a></li>
+<li><a href="http://webchat.freenode.net/?channels=couchdb">IRC</a></li>
+<li><a href="https://issues.apache.org/jira/browse/CouchDB">Issues</a></li>
+<li><a href="../download.html">Download</a></li>
+<li><a href="https://github.com/apache/couchdb-documentation/blob/master/src/intro/curl.rst"
+       rel="nofollow">Show on GitHub</a></li>
+<li><a href="https://github.com/apache/couchdb-documentation/edit/master/src/intro/curl.rst"
+       rel="nofollow">Edit on GitHub</a></li>
+</ul><!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../http-api.html" title="HTTP API Reference"
+             >API Reference</a></li>
+        <li class="right" >
+          <a href="../config-ref.html" title="Configuration Reference"
+             >Config Reference</a> |</li>
+        <li class="right" >
+          <a href="../install/index.html" title="2. Installation"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="security.html" title="1.6. Security"
+             >previous</a> |</li>
+  <li><a href="../index.html">Apache CouchDB 2.0 Documentation</a> &raquo;</li>
+          <li><a href="index.html" >1. Introduction</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2016, Apache Software Foundation.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
+    </div>
+  </body>
+</html>

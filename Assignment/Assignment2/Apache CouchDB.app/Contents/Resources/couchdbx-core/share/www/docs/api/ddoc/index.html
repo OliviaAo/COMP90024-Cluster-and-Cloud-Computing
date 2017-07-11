@@ -1,0 +1,257 @@
+<!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>10.5. Design Documents &mdash; Apache CouchDB 2.0 Documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/rtd.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '2.0.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <link rel="author" title="About these documents" href="../../about.html" />
+    <link rel="top" title="Apache CouchDB 2.0 Documentation" href="../../index.html" />
+    <link rel="up" title="10. API Reference" href="../index.html" />
+    <link rel="next" title="10.5.1. /db/_design/design-doc" href="common.html" />
+    <link rel="prev" title="10.4.2. /db/doc/attachment" href="../document/attachments.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../http-api.html" title="HTTP API Reference"
+             >API Reference</a></li>
+        <li class="right" >
+          <a href="../../config-ref.html" title="Configuration Reference"
+             >Config Reference</a> |</li>
+        <li class="right" >
+          <a href="common.html" title="10.5.1. /db/_design/design-doc"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="../document/attachments.html" title="10.4.2. /db/doc/attachment"
+             accesskey="P">previous</a> |</li>
+  <li><a href="../../index.html">Apache CouchDB 2.0 Documentation</a> &raquo;</li>
+          <li><a href="../index.html" accesskey="U">10. API Reference</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="design-documents">
+<span id="api-design-docs"></span><h1>10.5. Design Documents<a class="headerlink" href="#design-documents" title="Permalink to this headline">¶</a></h1>
+<p>In CouchDB, design documents provide the main interface for building a CouchDB
+application. The design document defines the views used to extract information
+from CouchDB through one or more views. Design documents are created within
+your CouchDB instance in the same way as you create database documents, but the
+content and definition of the documents is different. Design Documents are
+named using an ID defined with the design document URL path, and this URL can
+then be used to access the database contents.</p>
+<p>Views and lists operate together to provide automated (and formatted) output
+from your database.</p>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="common.html">10.5.1. <tt class="docutils literal"><span class="pre">/db/_design/design-doc</span></tt></a></li>
+<li class="toctree-l1"><a class="reference internal" href="common.html#db-design-design-doc-attachment">10.5.2. <tt class="docutils literal"><span class="pre">/db/_design/design-doc/attachment</span></tt></a></li>
+<li class="toctree-l1"><a class="reference internal" href="common.html#db-design-design-doc-info">10.5.3. <tt class="docutils literal"><span class="pre">/db/_design/design-doc/_info</span></tt></a><ul>
+<li class="toctree-l2"><a class="reference internal" href="common.html#view-index-information">View Index Information</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="views.html">10.5.4. <tt class="docutils literal"><span class="pre">/db/_design/design-doc/_view/view-name</span></tt></a><ul>
+<li class="toctree-l2"><a class="reference internal" href="views.html#view-options">View Options</a></li>
+<li class="toctree-l2"><a class="reference internal" href="views.html#querying-views-and-indexes">Querying Views and Indexes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="views.html#sorting-returned-rows">Sorting Returned Rows</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="views.html#sorting-order-and-startkey-endkey">Sorting order and startkey/endkey</a></li>
+<li class="toctree-l3"><a class="reference internal" href="views.html#raw-collation">Raw collation</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="views.html#using-limits-and-skipping-rows">Using Limits and Skipping Rows</a></li>
+<li class="toctree-l2"><a class="reference internal" href="views.html#sending-multiple-queries-to-a-view">Sending multiple queries to a view</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="render.html">10.5.5. <tt class="docutils literal"><span class="pre">/db/_design/design-doc/_show/show-name</span></tt></a></li>
+<li class="toctree-l1"><a class="reference internal" href="render.html#db-design-design-doc-show-show-name-doc-id">10.5.6. <tt class="docutils literal"><span class="pre">/db/_design/design-doc/_show/show-name/doc-id</span></tt></a></li>
+<li class="toctree-l1"><a class="reference internal" href="render.html#db-design-design-doc-list-list-name-view-name">10.5.7. <tt class="docutils literal"><span class="pre">/db/_design/design-doc/_list/list-name/view-name</span></tt></a></li>
+<li class="toctree-l1"><a class="reference internal" href="render.html#db-design-design-doc-list-list-name-other-ddoc-view-name">10.5.8. <tt class="docutils literal"><span class="pre">/db/_design/design-doc/_list/list-name/other-ddoc/view-name</span></tt></a></li>
+<li class="toctree-l1"><a class="reference internal" href="render.html#db-design-design-doc-update-update-name">10.5.9. <tt class="docutils literal"><span class="pre">/db/_design/design-doc/_update/update-name</span></tt></a></li>
+<li class="toctree-l1"><a class="reference internal" href="render.html#db-design-design-doc-update-update-name-doc-id">10.5.10. <tt class="docutils literal"><span class="pre">/db/_design/design-doc/_update/update-name/doc-id</span></tt></a></li>
+<li class="toctree-l1"><a class="reference internal" href="rewrites.html">10.5.11. <tt class="docutils literal"><span class="pre">/db/_design/design-doc/_rewrite/path</span></tt></a><ul>
+<li class="toctree-l2"><a class="reference internal" href="rewrites.html#rewrite-section-a-is-stringified-function">Rewrite section a is stringified function</a></li>
+<li class="toctree-l2"><a class="reference internal" href="rewrites.html#rewrite-section-is-an-array">Rewrite section is an array</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+    <p class="logo"><a href="../../index.html">
+      <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+    </a></p><!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+<div id="searchbox" style="display: none">
+
+<h3>Quick Search</h3>
+
+<form class="search" action="../../search.html" method="get">
+<input type="text" name="q" style="width:115px">
+<input type="submit" value="Go">
+<input type="hidden" name="check_keywords" value="yes">
+<input type="hidden" name="area" value="default">
+</form>
+
+<br>
+
+</div>
+
+<script type="text/javascript">$('#searchbox').show(0);</script>
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="../document/attachments.html"
+                        title="previous chapter">10.4.2. <tt class="docutils literal"><span class="pre">/db/doc/attachment</span></tt></a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="common.html"
+                        title="next chapter">10.5.1. <tt class="docutils literal"><span class="pre">/db/_design/design-doc</span></tt></a></p><!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+
+<h3>Utilities</h3>
+
+<ul>
+<li><a href="../">Fauxton</a></li>
+</ul>
+<!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+<h3>More Help</h3>
+
+<ul>
+<li><a href="https://couchdb.apache.org/">Homepage</a></li>
+<li><a href="https://cwiki.apache.org/confluence/display/COUCHDB/">Wiki</a></li>
+<li><a href="https://couchdb.apache.org/#mailing-list">Mailing Lists</a></li>
+<li><a href="http://webchat.freenode.net/?channels=couchdb">IRC</a></li>
+<li><a href="https://issues.apache.org/jira/browse/CouchDB">Issues</a></li>
+<li><a href="../../download.html">Download</a></li>
+<li><a href="https://github.com/apache/couchdb-documentation/blob/master/src/api/ddoc/index.rst"
+       rel="nofollow">Show on GitHub</a></li>
+<li><a href="https://github.com/apache/couchdb-documentation/edit/master/src/api/ddoc/index.rst"
+       rel="nofollow">Edit on GitHub</a></li>
+</ul><!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../http-api.html" title="HTTP API Reference"
+             >API Reference</a></li>
+        <li class="right" >
+          <a href="../../config-ref.html" title="Configuration Reference"
+             >Config Reference</a> |</li>
+        <li class="right" >
+          <a href="common.html" title="10.5.1. /db/_design/design-doc"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="../document/attachments.html" title="10.4.2. /db/doc/attachment"
+             >previous</a> |</li>
+  <li><a href="../../index.html">Apache CouchDB 2.0 Documentation</a> &raquo;</li>
+          <li><a href="../index.html" >10. API Reference</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2016, Apache Software Foundation.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
+    </div>
+  </body>
+</html>

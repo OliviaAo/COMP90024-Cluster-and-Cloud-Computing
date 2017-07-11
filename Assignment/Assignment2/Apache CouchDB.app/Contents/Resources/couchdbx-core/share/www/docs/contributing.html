@@ -1,0 +1,428 @@
+<!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>14. Contributing to this Documentation &mdash; Apache CouchDB 2.0 Documentation</title>
+    
+    <link rel="stylesheet" href="_static/rtd.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '2.0.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="shortcut icon" href="_static/favicon.ico"/>
+    <link rel="author" title="About these documents" href="about.html" />
+    <link rel="top" title="Apache CouchDB 2.0 Documentation" href="index.html" />
+    <link rel="next" title="15. Release History" href="whatsnew/index.html" />
+    <link rel="prev" title="13. Experimental Features" href="experimental.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="http-api.html" title="HTTP API Reference"
+             >API Reference</a></li>
+        <li class="right" >
+          <a href="config-ref.html" title="Configuration Reference"
+             >Config Reference</a> |</li>
+        <li class="right" >
+          <a href="whatsnew/index.html" title="15. Release History"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="experimental.html" title="13. Experimental Features"
+             accesskey="P">previous</a> |</li>
+  <li><a href="index.html">Apache CouchDB 2.0 Documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="contributing-to-this-documentation">
+<span id="contributing"></span><h1>14. Contributing to this Documentation<a class="headerlink" href="#contributing-to-this-documentation" title="Permalink to this headline">¶</a></h1>
+<p>The documentation lives in the CouchDB source tree. We&#8217;ll start by forking and
+closing the CouchDB GitHub mirror. That will allow us to send the contribution
+to CouchDB with a pull request.</p>
+<p>If you don&#8217;t have a GitHub account yet, it is a good time to get one, they are
+free. If you don&#8217;t want to use GitHub, there are alternate ways to
+contributing back, that we&#8217;ll cover next time.</p>
+<p>Go to <a class="reference external" href="https://github.com/apache/couchdb">https://github.com/apache/couchdb</a> and click the &#8220;fork&#8221; button in the top
+right. This will create a fork of CouchDB in your GitHub account. Mine is
+<cite>janl</cite>, so my fork lives at <a class="reference external" href="https://github.com/janl/couchdb">https://github.com/janl/couchdb</a>. In the header, it
+tells me me my &#8220;GitHub Clone URL&#8221;. We need to copy that and start a terminal:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>git clone https://github.com/janl/couchdb.git
+<span class="nv">$ </span><span class="nb">cd </span>couchdb
+<span class="nv">$ </span>subl .
+</pre></div>
+</div>
+<p>I&#8217;m opening the whole CouchDB source tree in my favourite editor. It gives
+me the usual directory listing:</p>
+<div class="highlight-bash"><div class="highlight"><pre>.git/
+.gitignore
+.mailmap
+.travis.yml
+AUTHORS
+BUGS
+CHANGES
+DEVELOPERS
+INSTALL
+INSTALL.Unix
+INSTALL.Windows
+LICENSE
+Makefile.am
+NEWS
+NOTICE
+README
+THANKS.in
+acinclude.m4.in
+bin/
+bootstrap
+build-aux/
+configure.ac
+etc/
+license.skip
+share/
+src/
+<span class="nb">test</span>/
+utils/
+var/
+</pre></div>
+</div>
+<p>The documentation sources live in <cite>share/doc/src</cite>, you can safely ignore all
+the other files and directories.</p>
+<p>First we should determine where we want to document this inside the
+documentation. We can look through <a class="reference external" href="http://docs.couchdb.org/en/latest/">http://docs.couchdb.org/en/latest/</a>
+for inspiration. The <a class="reference external" href="http://docs.couchdb.org/en/latest/json-structure.html">JSON Structure Reference</a> looks like a fine place to
+write this up.</p>
+<p>The current state includes mostly tables describing the JSON structure (after
+all, that&#8217;s the title of this chapter), but some prose about the number
+representation can&#8217;t hurt. For future reference, since the topic in the thread
+includes views and different encoding in views (as opposed to the storage
+engine), we should remember to make a note in the views documentation as well,
+but we&#8217;ll leave this for later.</p>
+<p>Let&#8217;s try and find the source file that builds the file
+<a class="reference external" href="http://docs.couchdb.org/en/latest/json-structure.html">http://docs.couchdb.org/en/latest/json-structure.html</a> &#8211; we are in luck, under
+<cite>share/doc/src</cite> we find the file <cite>json-structure.rst</cite>. That looks promising.
+<cite>.rst</cite> stands for ReStructured Text (see
+<a class="reference external" href="http://thomas-cokelaer.info/tutorials/sphinx/rest_syntax.html">http://thomas-cokelaer.info/tutorials/sphinx/rest_syntax.html</a>
+for a markup reference), which is an ascii format for writing
+documents, documentation in this case. Let&#8217;s have a look and open it.</p>
+<p>We see ascii tables with some additional formatting, all looking like the
+final HTML. So far so easy. For now, let&#8217;s just add to the bottom of this. We
+can worry about organising this better later.</p>
+<p>We start by adding a new headline:</p>
+<div class="highlight-python"><div class="highlight"><pre>Number Handling
+===============
+</pre></div>
+</div>
+<p>Now we paste in the rest of the main email of the thread. It is mostly text,
+but it includes some code listings. Let&#8217;s mark them up. We&#8217;ll turn:</p>
+<div class="highlight-python"><div class="highlight"><pre>ejson:encode(ejson:decode(&lt;&lt;&quot;1.1&quot;&gt;&gt;)).
+&lt;&lt;&quot;1.1000000000000000888&quot;&gt;&gt;
+</pre></div>
+</div>
+<p>Into:</p>
+<div class="highlight-python"><div class="highlight"><pre>.. code-block:: erlang
+
+    ejson:encode(ejson:decode(&lt;&lt;&quot;1.1&quot;&gt;&gt;)).
+    &lt;&lt;&quot;1.1000000000000000888&quot;&gt;&gt;
+</pre></div>
+</div>
+<p>And we follow along with the other code samples. We turn:</p>
+<div class="highlight-python"><div class="highlight"><pre>Spidermonkey
+
+$ js -h 2&gt;&amp;1 | head -n 1
+JavaScript-C 1.8.5 2011-03-31
+$ js
+js&gt; JSON.stringify(JSON.parse(&quot;1.01234567890123456789012345678901234567890&quot;))
+&quot;1.0123456789012346&quot;
+js&gt; var f = JSON.stringify(JSON.parse(&quot;1.01234567890123456789012345678901234567890&quot;))
+js&gt; JSON.stringify(JSON.parse(f))
+&quot;1.0123456789012346&quot;
+</pre></div>
+</div>
+<p>into:</p>
+<div class="highlight-python"><div class="highlight"><pre>Spidermonkey::
+
+    $ js -h 2&gt;&amp;1 | head -n 1
+    JavaScript-C 1.8.5 2011-03-31
+    $ js
+    js&gt; JSON.stringify(JSON.parse(&quot;1.01234567890123456789012345678901234567890&quot;))
+    &quot;1.0123456789012346&quot;
+    js&gt; var f = JSON.stringify(JSON.parse(&quot;1.01234567890123456789012345678901234567890&quot;))
+    js&gt; JSON.stringify(JSON.parse(f))
+    &quot;1.0123456789012346&quot;
+</pre></div>
+</div>
+<p>And then follow all the other ones.</p>
+<p>I cleaned up the text a little but to make it sound more like a documentation
+entry as opposed to a post on a mailing list.</p>
+<p>The next step would be to validate that we got all the markup right. I&#8217;ll
+leave this for later. For now we&#8217;ll contribute our change back to CouchDB.</p>
+<p>First, we commit our changes:</p>
+<div class="highlight-python"><div class="highlight"><pre>$ &gt; git commit -am &#39;document number encoding&#39;
+[master a84b2cf] document number encoding
+1 file changed, 199 insertions(+)
+</pre></div>
+</div>
+<p>Then we push the commit to our CouchDB fork:</p>
+<div class="highlight-python"><div class="highlight"><pre>$ git push origin master
+</pre></div>
+</div>
+<p>Next, we go back to our GitHub page <a class="reference external" href="https://github.com/janl/couchdb">https://github.com/janl/couchdb</a> and click
+the &#8220;Pull Request&#8221; button. Fill in the description with something useful and
+hit the &#8220;Send Pull Request&#8221; button.</p>
+<p>And we&#8217;re done!</p>
+<div class="section" id="style-guidelines-for-this-documentation">
+<h2>14.1. Style Guidelines for this Documentation<a class="headerlink" href="#style-guidelines-for-this-documentation" title="Permalink to this headline">¶</a></h2>
+<p>When you make a change to the documentation, you should make sure that you
+follow the style. Look through some files and you will see that the style is
+quite straightforward. If you do not know if your formating is in compliance
+with the style, ask yourself the following question:</p>
+<div class="highlight-python"><div class="highlight"><pre>Is it needed for correct syntax?
+</pre></div>
+</div>
+<p>If the answer is <tt class="docutils literal"><span class="pre">No.</span></tt> then it is probably not.</p>
+<p>These guidelines strive be simple, without contradictions and exceptions. The
+best style is the one that is followed because it seems to be the natural way of
+doing it.</p>
+<div class="section" id="the-guidelines">
+<h3>14.1.1. The guidelines<a class="headerlink" href="#the-guidelines" title="Permalink to this headline">¶</a></h3>
+<p>The guidelines are in descending priority.</p>
+<ol class="arabic">
+<li><p class="first">Syntax</p>
+<ul class="simple">
+<li>Correct syntax is always more important than style. This includes
+configuration files, HTML responses, etc.</li>
+</ul>
+</li>
+<li><p class="first">Encoding</p>
+<ul class="simple">
+<li>All files are <tt class="docutils literal"><span class="pre">UTF-8</span></tt>.</li>
+</ul>
+</li>
+<li><p class="first">Line ending</p>
+<ul class="simple">
+<li>All lines end with <tt class="docutils literal"><span class="pre">\n</span></tt>.</li>
+<li>No trailing whitespaces.</li>
+</ul>
+</li>
+<li><p class="first">Line length</p>
+<ul class="simple">
+<li>The maximum line length is <tt class="docutils literal"><span class="pre">80</span></tt> characters.</li>
+</ul>
+</li>
+<li><p class="first">Links</p>
+<ul class="simple">
+<li>All internal links are relative.</li>
+</ul>
+</li>
+<li><p class="first">Indentation</p>
+<ul class="simple">
+<li><tt class="docutils literal"><span class="pre">4</span></tt> spaces.</li>
+</ul>
+</li>
+<li><p class="first">Titles</p>
+<ul>
+<li><p class="first">The highest level titles in a file is over and underlined with <tt class="docutils literal"><span class="pre">=</span></tt>.</p>
+</li>
+<li><p class="first">Lower level titles are underlined with the following characters in
+descending order:</p>
+<div class="highlight-python"><div class="highlight"><pre>= - ^ *  + # ` : . &quot; ~ _
+</pre></div>
+</div>
+</li>
+<li><p class="first">Over and underline match the title length.</p>
+</li>
+</ul>
+</li>
+<li><p class="first">Empty lines</p>
+<ul class="simple">
+<li>No empty line at the end of the file.</li>
+<li>Lists may separated each item with an empty line.</li>
+</ul>
+</li>
+</ol>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+    <p class="logo"><a href="index.html">
+      <img class="logo" src="_static/logo.png" alt="Logo"/>
+    </a></p><!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+<div id="searchbox" style="display: none">
+
+<h3>Quick Search</h3>
+
+<form class="search" action="search.html" method="get">
+<input type="text" name="q" style="width:115px">
+<input type="submit" value="Go">
+<input type="hidden" name="check_keywords" value="yes">
+<input type="hidden" name="area" value="default">
+</form>
+
+<br>
+
+</div>
+
+<script type="text/javascript">$('#searchbox').show(0);</script>
+  <h3><a href="contents.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">14. Contributing to this Documentation</a><ul>
+<li><a class="reference internal" href="#style-guidelines-for-this-documentation">14.1. Style Guidelines for this Documentation</a><ul>
+<li><a class="reference internal" href="#the-guidelines">14.1.1. The guidelines</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="experimental.html"
+                        title="previous chapter">13. Experimental Features</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="whatsnew/index.html"
+                        title="next chapter">15. Release History</a></p><!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+
+<h3>Utilities</h3>
+
+<ul>
+<li><a href="../">Fauxton</a></li>
+</ul>
+<!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+<h3>More Help</h3>
+
+<ul>
+<li><a href="https://couchdb.apache.org/">Homepage</a></li>
+<li><a href="https://cwiki.apache.org/confluence/display/COUCHDB/">Wiki</a></li>
+<li><a href="https://couchdb.apache.org/#mailing-list">Mailing Lists</a></li>
+<li><a href="http://webchat.freenode.net/?channels=couchdb">IRC</a></li>
+<li><a href="https://issues.apache.org/jira/browse/CouchDB">Issues</a></li>
+<li><a href="download.html">Download</a></li>
+<li><a href="https://github.com/apache/couchdb-documentation/blob/master/src/contributing.rst"
+       rel="nofollow">Show on GitHub</a></li>
+<li><a href="https://github.com/apache/couchdb-documentation/edit/master/src/contributing.rst"
+       rel="nofollow">Edit on GitHub</a></li>
+</ul><!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="http-api.html" title="HTTP API Reference"
+             >API Reference</a></li>
+        <li class="right" >
+          <a href="config-ref.html" title="Configuration Reference"
+             >Config Reference</a> |</li>
+        <li class="right" >
+          <a href="whatsnew/index.html" title="15. Release History"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="experimental.html" title="13. Experimental Features"
+             >previous</a> |</li>
+  <li><a href="index.html">Apache CouchDB 2.0 Documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2016, Apache Software Foundation.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
+    </div>
+  </body>
+</html>

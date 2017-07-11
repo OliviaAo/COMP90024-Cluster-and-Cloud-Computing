@@ -1,0 +1,376 @@
+<!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>15.10. 0.10.x Branch &mdash; Apache CouchDB 2.0 Documentation</title>
+    
+    <link rel="stylesheet" href="../_static/rtd.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '2.0.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+    <link rel="author" title="About these documents" href="../about.html" />
+    <link rel="top" title="Apache CouchDB 2.0 Documentation" href="../index.html" />
+    <link rel="up" title="15. Release History" href="index.html" />
+    <link rel="next" title="15.11. 0.9.x Branch" href="0.9.html" />
+    <link rel="prev" title="15.9. 0.11.x Branch" href="0.11.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../http-api.html" title="HTTP API Reference"
+             >API Reference</a></li>
+        <li class="right" >
+          <a href="../config-ref.html" title="Configuration Reference"
+             >Config Reference</a> |</li>
+        <li class="right" >
+          <a href="0.9.html" title="15.11. 0.9.x Branch"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="0.11.html" title="15.9. 0.11.x Branch"
+             accesskey="P">previous</a> |</li>
+  <li><a href="../index.html">Apache CouchDB 2.0 Documentation</a> &raquo;</li>
+          <li><a href="index.html" accesskey="U">15. Release History</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="x-branch">
+<span id="release-0-10-x"></span><h1>15.10. 0.10.x Branch<a class="headerlink" href="#x-branch" title="Permalink to this headline">¶</a></h1>
+<div class="contents local topic" id="contents">
+<ul class="simple">
+<li><a class="reference internal" href="#upgrade-notes" id="id4">Upgrade Notes</a></li>
+<li><a class="reference internal" href="#version-0-10-2" id="id5">Version 0.10.2</a></li>
+<li><a class="reference internal" href="#version-0-10-1" id="id6">Version 0.10.1</a></li>
+<li><a class="reference internal" href="#version-0-10-0" id="id7">Version 0.10.0</a></li>
+</ul>
+</div>
+<div class="section" id="upgrade-notes">
+<span id="release-0-10-x-upgrade"></span><h2><a class="toc-backref" href="#id4">15.10.1. Upgrade Notes</a><a class="headerlink" href="#upgrade-notes" title="Permalink to this headline">¶</a></h2>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last"><a class="reference internal" href="#release-0-10-2"><em>Version 0.10.2</em></a> contains important security fixes. Previous <cite>0.10.x</cite>
+releases are not recommended for regular usage.</p>
+</div>
+<div class="section" id="modular-configuration-directories">
+<h3>Modular Configuration Directories<a class="headerlink" href="#modular-configuration-directories" title="Permalink to this headline">¶</a></h3>
+<p>CouchDB now loads configuration from the following places (<a class="reference external" href="http://linux.die.net/man/7/glob">glob(7)</a> syntax)
+in order:</p>
+<ul class="simple">
+<li>PREFIX/default.ini</li>
+<li>PREFIX/default.d/*</li>
+<li>PREFIX/local.ini</li>
+<li>PREFIX/local.d/*</li>
+</ul>
+<p>The configuration options for <cite>couchdb</cite> script have changed to:</p>
+<div class="highlight-python"><div class="highlight"><pre>-a FILE     add configuration FILE to chain
+-A DIR      add configuration DIR to chain
+-n          reset configuration file chain (including system default)
+-c          print configuration file chain and exit
+</pre></div>
+</div>
+</div>
+<div class="section" id="show-and-list-api-change">
+<h3>Show and List API change<a class="headerlink" href="#show-and-list-api-change" title="Permalink to this headline">¶</a></h3>
+<p>Show and List functions must have a new structure in 0.10.
+See <a class="reference external" href="http://wiki.apache.org/couchdb/Formatting_with_Show_and_List">Formatting_with_Show_and_List</a> for details.</p>
+</div>
+<div class="section" id="stricter-enforcing-of-reduciness-in-reduce-functions">
+<h3>Stricter enforcing of reduciness in reduce-functions<a class="headerlink" href="#stricter-enforcing-of-reduciness-in-reduce-functions" title="Permalink to this headline">¶</a></h3>
+<p>Reduce functions are now required to reduce the number of values for a key.</p>
+</div>
+<div class="section" id="view-query-reduce-parameter-strictness">
+<h3>View query reduce parameter strictness<a class="headerlink" href="#view-query-reduce-parameter-strictness" title="Permalink to this headline">¶</a></h3>
+<p>CouchDB now considers the parameter <tt class="docutils literal"><span class="pre">reduce=false</span></tt> to be an error for queries
+of map-only views, and responds with status code 400.</p>
+</div>
+</div>
+<div class="section" id="version-0-10-2">
+<span id="release-0-10-2"></span><h2><a class="toc-backref" href="#id5">15.10.2. Version 0.10.2</a><a class="headerlink" href="#version-0-10-2" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="build-and-system-integration">
+<h3>Build and System Integration<a class="headerlink" href="#build-and-system-integration" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>Fixed distribution preparation for building on Mac OS X.</li>
+</ul>
+</div>
+<div class="section" id="security">
+<h3>Security<a class="headerlink" href="#security" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>Fixed <a class="reference internal" href="../cve/2010-0009.html#cve-2010-0009"><em>CVE-2010-0009: Apache CouchDB Timing Attack Vulnerability</em></a></li>
+</ul>
+</div>
+<div class="section" id="replicator">
+<h3>Replicator<a class="headerlink" href="#replicator" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>Avoid leaking file descriptors on automatic replication restarts.</li>
+</ul>
+</div>
+</div>
+<div class="section" id="version-0-10-1">
+<span id="release-0-10-1"></span><h2><a class="toc-backref" href="#id6">15.10.3. Version 0.10.1</a><a class="headerlink" href="#version-0-10-1" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id1">
+<h3>Build and System Integration<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>Test suite now works with the distcheck target.</li>
+</ul>
+</div>
+<div class="section" id="id2">
+<h3>Replicator<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>Stability enhancements regarding redirects, timeouts, OAuth.</li>
+</ul>
+</div>
+<div class="section" id="query-server">
+<h3>Query Server<a class="headerlink" href="#query-server" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>Avoid process leaks</li>
+<li>Allow list and view to span languages</li>
+</ul>
+</div>
+<div class="section" id="stats">
+<h3>Stats<a class="headerlink" href="#stats" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>Eliminate new process flood on system wake</li>
+</ul>
+</div>
+</div>
+<div class="section" id="version-0-10-0">
+<span id="release-0-10-0"></span><h2><a class="toc-backref" href="#id7">15.10.4. Version 0.10.0</a><a class="headerlink" href="#version-0-10-0" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id3">
+<h3>Build and System Integration<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>Changed <cite>couchdb</cite> script configuration options.</li>
+<li>Added default.d and local.d configuration directories to load sequence.</li>
+</ul>
+</div>
+<div class="section" id="http-interface">
+<h3>HTTP Interface<a class="headerlink" href="#http-interface" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>Added optional cookie-based authentication handler.</li>
+<li>Added optional two-legged OAuth authentication handler.</li>
+</ul>
+</div>
+<div class="section" id="storage-format">
+<h3>Storage Format<a class="headerlink" href="#storage-format" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>Add move headers with checksums to the end of database files for extra robust
+storage and faster storage.</li>
+</ul>
+</div>
+<div class="section" id="view-server">
+<h3>View Server<a class="headerlink" href="#view-server" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>Added native Erlang views for high-performance applications.</li>
+</ul>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+    <p class="logo"><a href="../index.html">
+      <img class="logo" src="../_static/logo.png" alt="Logo"/>
+    </a></p><!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+<div id="searchbox" style="display: none">
+
+<h3>Quick Search</h3>
+
+<form class="search" action="../search.html" method="get">
+<input type="text" name="q" style="width:115px">
+<input type="submit" value="Go">
+<input type="hidden" name="check_keywords" value="yes">
+<input type="hidden" name="area" value="default">
+</form>
+
+<br>
+
+</div>
+
+<script type="text/javascript">$('#searchbox').show(0);</script>
+  <h3><a href="../contents.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">15.10. 0.10.x Branch</a><ul>
+<li><a class="reference internal" href="#upgrade-notes">15.10.1. Upgrade Notes</a><ul>
+<li><a class="reference internal" href="#modular-configuration-directories">Modular Configuration Directories</a></li>
+<li><a class="reference internal" href="#show-and-list-api-change">Show and List API change</a></li>
+<li><a class="reference internal" href="#stricter-enforcing-of-reduciness-in-reduce-functions">Stricter enforcing of reduciness in reduce-functions</a></li>
+<li><a class="reference internal" href="#view-query-reduce-parameter-strictness">View query reduce parameter strictness</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#version-0-10-2">15.10.2. Version 0.10.2</a><ul>
+<li><a class="reference internal" href="#build-and-system-integration">Build and System Integration</a></li>
+<li><a class="reference internal" href="#security">Security</a></li>
+<li><a class="reference internal" href="#replicator">Replicator</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#version-0-10-1">15.10.3. Version 0.10.1</a><ul>
+<li><a class="reference internal" href="#id1">Build and System Integration</a></li>
+<li><a class="reference internal" href="#id2">Replicator</a></li>
+<li><a class="reference internal" href="#query-server">Query Server</a></li>
+<li><a class="reference internal" href="#stats">Stats</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#version-0-10-0">15.10.4. Version 0.10.0</a><ul>
+<li><a class="reference internal" href="#id3">Build and System Integration</a></li>
+<li><a class="reference internal" href="#http-interface">HTTP Interface</a></li>
+<li><a class="reference internal" href="#storage-format">Storage Format</a></li>
+<li><a class="reference internal" href="#view-server">View Server</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="0.11.html"
+                        title="previous chapter">15.9. 0.11.x Branch</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="0.9.html"
+                        title="next chapter">15.11. 0.9.x Branch</a></p><!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+
+<h3>Utilities</h3>
+
+<ul>
+<li><a href="../">Fauxton</a></li>
+</ul>
+<!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+<h3>More Help</h3>
+
+<ul>
+<li><a href="https://couchdb.apache.org/">Homepage</a></li>
+<li><a href="https://cwiki.apache.org/confluence/display/COUCHDB/">Wiki</a></li>
+<li><a href="https://couchdb.apache.org/#mailing-list">Mailing Lists</a></li>
+<li><a href="http://webchat.freenode.net/?channels=couchdb">IRC</a></li>
+<li><a href="https://issues.apache.org/jira/browse/CouchDB">Issues</a></li>
+<li><a href="../download.html">Download</a></li>
+<li><a href="https://github.com/apache/couchdb-documentation/blob/master/src/whatsnew/0.10.rst"
+       rel="nofollow">Show on GitHub</a></li>
+<li><a href="https://github.com/apache/couchdb-documentation/edit/master/src/whatsnew/0.10.rst"
+       rel="nofollow">Edit on GitHub</a></li>
+</ul><!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../http-api.html" title="HTTP API Reference"
+             >API Reference</a></li>
+        <li class="right" >
+          <a href="../config-ref.html" title="Configuration Reference"
+             >Config Reference</a> |</li>
+        <li class="right" >
+          <a href="0.9.html" title="15.11. 0.9.x Branch"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="0.11.html" title="15.9. 0.11.x Branch"
+             >previous</a> |</li>
+  <li><a href="../index.html">Apache CouchDB 2.0 Documentation</a> &raquo;</li>
+          <li><a href="index.html" >15. Release History</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2016, Apache Software Foundation.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
+    </div>
+  </body>
+</html>

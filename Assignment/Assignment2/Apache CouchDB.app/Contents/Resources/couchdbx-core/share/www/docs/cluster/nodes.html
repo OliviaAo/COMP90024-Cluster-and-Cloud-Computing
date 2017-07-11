@@ -1,0 +1,273 @@
+<!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>11.3. Node Management &mdash; Apache CouchDB 2.0 Documentation</title>
+    
+    <link rel="stylesheet" href="../_static/rtd.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '2.0.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+    <link rel="author" title="About these documents" href="../about.html" />
+    <link rel="top" title="Apache CouchDB 2.0 Documentation" href="../index.html" />
+    <link rel="up" title="11. Cluster Reference" href="index.html" />
+    <link rel="next" title="11.4. Database Management" href="databases.html" />
+    <link rel="prev" title="11.2. Theory" href="theory.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../http-api.html" title="HTTP API Reference"
+             >API Reference</a></li>
+        <li class="right" >
+          <a href="../config-ref.html" title="Configuration Reference"
+             >Config Reference</a> |</li>
+        <li class="right" >
+          <a href="databases.html" title="11.4. Database Management"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="theory.html" title="11.2. Theory"
+             accesskey="P">previous</a> |</li>
+  <li><a href="../index.html">Apache CouchDB 2.0 Documentation</a> &raquo;</li>
+          <li><a href="index.html" accesskey="U">11. Cluster Reference</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="node-management">
+<span id="cluster-nodes"></span><h1>11.3. Node Management<a class="headerlink" href="#node-management" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="adding-a-node">
+<span id="cluster-nodes-add"></span><h2>11.3.1. Adding a node<a class="headerlink" href="#adding-a-node" title="Permalink to this headline">¶</a></h2>
+<p>Go to <tt class="docutils literal"><span class="pre">http://server1:45984/_membership</span></tt> to see the name of the node and all
+the nodes it knows about and are connected too.</p>
+<div class="highlight-text"><div class="highlight"><pre>curl -X GET &quot;http://xxx.xxx.xxx.xxx:5984/_membership&quot; --user admin-user
+</pre></div>
+</div>
+<div class="highlight-javascript"><div class="highlight"><pre><span class="p">{</span>
+    <span class="s2">&quot;all_nodes&quot;</span><span class="o">:</span><span class="p">[</span>
+        <span class="s2">&quot;node1@xxx.xxx.xxx.xxx&quot;</span><span class="p">],</span>
+    <span class="s2">&quot;cluster_nodes&quot;</span><span class="o">:</span><span class="p">[</span>
+        <span class="s2">&quot;node1@xxx.xxx.xxx.xxx&quot;</span><span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><tt class="docutils literal"><span class="pre">all_nodes</span></tt> are all the nodes thats this node knows about.</li>
+<li><tt class="docutils literal"><span class="pre">cluster_nodes</span></tt> are the nodes that are connected to this node.</li>
+</ul>
+<p>To add a node simply do:</p>
+<div class="highlight-text"><div class="highlight"><pre>curl -X PUT &quot;http://xxx.xxx.xxx.xxx:5986/_nodes/node2@yyy.yyy.yyy.yyy&quot; -d {}
+</pre></div>
+</div>
+<p>Now look at <tt class="docutils literal"><span class="pre">http://server1:5984/_membership</span></tt> again.</p>
+<div class="highlight-javascript"><div class="highlight"><pre><span class="p">{</span>
+    <span class="s2">&quot;all_nodes&quot;</span><span class="o">:</span><span class="p">[</span>
+        <span class="s2">&quot;node1@xxx.xxx.xxx.xxx&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;node2@yyy.yyy.yyy.yyy&quot;</span>
+    <span class="p">],</span>
+    <span class="s2">&quot;cluster_nodes&quot;</span><span class="o">:</span><span class="p">[</span>
+        <span class="s2">&quot;node1@xxx.xxx.xxx.xxx&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;node2@yyy.yyy.yyy.yyy&quot;</span>
+    <span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>And you have a 2 node cluster :)</p>
+<p><tt class="docutils literal"><span class="pre">http://yyy.yyy.yyy.yyy:5984/_membership</span></tt> will show the same thing, so you
+only have to add a node once.</p>
+</div>
+<div class="section" id="removing-a-node">
+<span id="cluster-nodes-remove"></span><h2>11.3.2. Removing a node<a class="headerlink" href="#removing-a-node" title="Permalink to this headline">¶</a></h2>
+<p>Before you remove a node, make sure that you have moved all
+<a class="reference internal" href="sharding.html#cluster-sharding-move"><em>shards</em></a> away from that node.</p>
+<p>To remove <tt class="docutils literal"><span class="pre">node2</span></tt> from server <tt class="docutils literal"><span class="pre">yyy.yyy.yyy.yyy</span></tt>:</p>
+<div class="highlight-text"><div class="highlight"><pre>curl -X DELETE &quot;http://xxx.xxx.xxx.xxx:5986/_nodes/node2@yyy.yyy.yyy.yyy&quot; -d {}
+</pre></div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+    <p class="logo"><a href="../index.html">
+      <img class="logo" src="../_static/logo.png" alt="Logo"/>
+    </a></p><!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+<div id="searchbox" style="display: none">
+
+<h3>Quick Search</h3>
+
+<form class="search" action="../search.html" method="get">
+<input type="text" name="q" style="width:115px">
+<input type="submit" value="Go">
+<input type="hidden" name="check_keywords" value="yes">
+<input type="hidden" name="area" value="default">
+</form>
+
+<br>
+
+</div>
+
+<script type="text/javascript">$('#searchbox').show(0);</script>
+  <h3><a href="../contents.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">11.3. Node Management</a><ul>
+<li><a class="reference internal" href="#adding-a-node">11.3.1. Adding a node</a></li>
+<li><a class="reference internal" href="#removing-a-node">11.3.2. Removing a node</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="theory.html"
+                        title="previous chapter">11.2. Theory</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="databases.html"
+                        title="next chapter">11.4. Database Management</a></p><!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+
+<h3>Utilities</h3>
+
+<ul>
+<li><a href="../">Fauxton</a></li>
+</ul>
+<!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+<h3>More Help</h3>
+
+<ul>
+<li><a href="https://couchdb.apache.org/">Homepage</a></li>
+<li><a href="https://cwiki.apache.org/confluence/display/COUCHDB/">Wiki</a></li>
+<li><a href="https://couchdb.apache.org/#mailing-list">Mailing Lists</a></li>
+<li><a href="http://webchat.freenode.net/?channels=couchdb">IRC</a></li>
+<li><a href="https://issues.apache.org/jira/browse/CouchDB">Issues</a></li>
+<li><a href="../download.html">Download</a></li>
+<li><a href="https://github.com/apache/couchdb-documentation/blob/master/src/cluster/nodes.rst"
+       rel="nofollow">Show on GitHub</a></li>
+<li><a href="https://github.com/apache/couchdb-documentation/edit/master/src/cluster/nodes.rst"
+       rel="nofollow">Edit on GitHub</a></li>
+</ul><!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../http-api.html" title="HTTP API Reference"
+             >API Reference</a></li>
+        <li class="right" >
+          <a href="../config-ref.html" title="Configuration Reference"
+             >Config Reference</a> |</li>
+        <li class="right" >
+          <a href="databases.html" title="11.4. Database Management"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="theory.html" title="11.2. Theory"
+             >previous</a> |</li>
+  <li><a href="../index.html">Apache CouchDB 2.0 Documentation</a> &raquo;</li>
+          <li><a href="index.html" >11. Cluster Reference</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2016, Apache Software Foundation.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
+    </div>
+  </body>
+</html>

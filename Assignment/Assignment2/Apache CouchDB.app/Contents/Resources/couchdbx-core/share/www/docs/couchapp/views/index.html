@@ -1,0 +1,284 @@
+<!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>6.2. Guide to Views &mdash; Apache CouchDB 2.0 Documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/rtd.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '2.0.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <link rel="author" title="About these documents" href="../../about.html" />
+    <link rel="top" title="Apache CouchDB 2.0 Documentation" href="../../index.html" />
+    <link rel="up" title="6. CouchApp" href="../index.html" />
+    <link rel="next" title="6.2.1. Introduction to Views" href="intro.html" />
+    <link rel="prev" title="6.1. Design Documents" href="../ddocs.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../http-api.html" title="HTTP API Reference"
+             >API Reference</a></li>
+        <li class="right" >
+          <a href="../../config-ref.html" title="Configuration Reference"
+             >Config Reference</a> |</li>
+        <li class="right" >
+          <a href="intro.html" title="6.2.1. Introduction to Views"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="../ddocs.html" title="6.1. Design Documents"
+             accesskey="P">previous</a> |</li>
+  <li><a href="../../index.html">Apache CouchDB 2.0 Documentation</a> &raquo;</li>
+          <li><a href="../index.html" accesskey="U">6. CouchApp</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="guide-to-views">
+<span id="views"></span><h1>6.2. Guide to Views<a class="headerlink" href="#guide-to-views" title="Permalink to this headline">¶</a></h1>
+<p>Views are the primary tool used for querying and reporting on CouchDB documents.
+There you&#8217;ll learn how they works and how to use them to build effective
+applications with CouchDB</p>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="intro.html">6.2.1. Introduction to Views</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="intro.html#what-is-a-view">What Is a View?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="intro.html#efficient-lookups">Efficient Lookups</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="intro.html#find-one">Find One</a></li>
+<li class="toctree-l3"><a class="reference internal" href="intro.html#find-many">Find Many</a></li>
+<li class="toctree-l3"><a class="reference internal" href="intro.html#reversed-results">Reversed Results</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="intro.html#the-view-to-get-comments-for-posts">The View to Get Comments for Posts</a></li>
+<li class="toctree-l2"><a class="reference internal" href="intro.html#reduce-rereduce">Reduce/Rereduce</a></li>
+<li class="toctree-l2"><a class="reference internal" href="intro.html#lessons-learned">Lessons Learned</a></li>
+<li class="toctree-l2"><a class="reference internal" href="intro.html#wrapping-up">Wrapping Up</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="collation.html">6.2.2. Views Collation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="collation.html#basics">Basics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="collation.html#examples">Examples</a></li>
+<li class="toctree-l2"><a class="reference internal" href="collation.html#sorting-by-dates">Sorting by Dates</a></li>
+<li class="toctree-l2"><a class="reference internal" href="collation.html#string-ranges">String Ranges</a></li>
+<li class="toctree-l2"><a class="reference internal" href="collation.html#collation-specification">Collation Specification</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="collation.html#key-ranges">Key ranges</a></li>
+<li class="toctree-l3"><a class="reference internal" href="collation.html#complex-keys">Complex keys</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="collation.html#all-docs">_all_docs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="collation.html#raw-collation">Raw collation</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="joins.html">6.2.3. Joins With Views</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="joins.html#linked-documents">Linked Documents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="joins.html#using-view-collation">Using View Collation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="joins.html#approach-1-comments-inlined">Approach #1: Comments Inlined</a></li>
+<li class="toctree-l3"><a class="reference internal" href="joins.html#approach-2-comments-separate">Approach #2: Comments Separate</a></li>
+<li class="toctree-l3"><a class="reference internal" href="joins.html#optimization-using-the-power-of-view-collation">Optimization: Using the Power of View Collation</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="nosql.html">6.2.4. View Cookbook for SQL Jockeys</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="nosql.html#using-views">Using Views</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="nosql.html#defining-a-view">Defining a View</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nosql.html#querying-a-view">Querying a View</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nosql.html#mapreduce-functions">MapReduce Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nosql.html#map-functions">Map functions</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="nosql.html#look-up-by-key">Look Up by Key</a></li>
+<li class="toctree-l2"><a class="reference internal" href="nosql.html#look-up-by-prefix">Look Up by Prefix</a></li>
+<li class="toctree-l2"><a class="reference internal" href="nosql.html#aggregate-functions">Aggregate Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="nosql.html#get-unique-values">Get Unique Values</a></li>
+<li class="toctree-l2"><a class="reference internal" href="nosql.html#enforcing-uniqueness">Enforcing Uniqueness</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="pagination.html">6.2.5. Pagination Recipe</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="pagination.html#example-data">Example Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pagination.html#a-view">A View</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pagination.html#setup">Setup</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pagination.html#paging">Paging</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pagination.html#paging-alternate-method">Paging (Alternate Method)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pagination.html#jump-to-page">Jump to Page</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+    <p class="logo"><a href="../../index.html">
+      <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+    </a></p><!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+<div id="searchbox" style="display: none">
+
+<h3>Quick Search</h3>
+
+<form class="search" action="../../search.html" method="get">
+<input type="text" name="q" style="width:115px">
+<input type="submit" value="Go">
+<input type="hidden" name="check_keywords" value="yes">
+<input type="hidden" name="area" value="default">
+</form>
+
+<br>
+
+</div>
+
+<script type="text/javascript">$('#searchbox').show(0);</script>
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="../ddocs.html"
+                        title="previous chapter">6.1. Design Documents</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="intro.html"
+                        title="next chapter">6.2.1. Introduction to Views</a></p><!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+
+<h3>Utilities</h3>
+
+<ul>
+<li><a href="../">Fauxton</a></li>
+</ul>
+<!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+<h3>More Help</h3>
+
+<ul>
+<li><a href="https://couchdb.apache.org/">Homepage</a></li>
+<li><a href="https://cwiki.apache.org/confluence/display/COUCHDB/">Wiki</a></li>
+<li><a href="https://couchdb.apache.org/#mailing-list">Mailing Lists</a></li>
+<li><a href="http://webchat.freenode.net/?channels=couchdb">IRC</a></li>
+<li><a href="https://issues.apache.org/jira/browse/CouchDB">Issues</a></li>
+<li><a href="../../download.html">Download</a></li>
+<li><a href="https://github.com/apache/couchdb-documentation/blob/master/src/couchapp/views/index.rst"
+       rel="nofollow">Show on GitHub</a></li>
+<li><a href="https://github.com/apache/couchdb-documentation/edit/master/src/couchapp/views/index.rst"
+       rel="nofollow">Edit on GitHub</a></li>
+</ul><!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../http-api.html" title="HTTP API Reference"
+             >API Reference</a></li>
+        <li class="right" >
+          <a href="../../config-ref.html" title="Configuration Reference"
+             >Config Reference</a> |</li>
+        <li class="right" >
+          <a href="intro.html" title="6.2.1. Introduction to Views"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="../ddocs.html" title="6.1. Design Documents"
+             >previous</a> |</li>
+  <li><a href="../../index.html">Apache CouchDB 2.0 Documentation</a> &raquo;</li>
+          <li><a href="../index.html" >6. CouchApp</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2016, Apache Software Foundation.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,293 @@
+<!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>13. Experimental Features &mdash; Apache CouchDB 2.0 Documentation</title>
+    
+    <link rel="stylesheet" href="_static/rtd.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '2.0.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="shortcut icon" href="_static/favicon.ico"/>
+    <link rel="author" title="About these documents" href="about.html" />
+    <link rel="top" title="Apache CouchDB 2.0 Documentation" href="index.html" />
+    <link rel="next" title="14. Contributing to this Documentation" href="contributing.html" />
+    <link rel="prev" title="12. JSON Structure Reference" href="json-structure.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="http-api.html" title="HTTP API Reference"
+             >API Reference</a></li>
+        <li class="right" >
+          <a href="config-ref.html" title="Configuration Reference"
+             >Config Reference</a> |</li>
+        <li class="right" >
+          <a href="contributing.html" title="14. Contributing to this Documentation"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="json-structure.html" title="12. JSON Structure Reference"
+             accesskey="P">previous</a> |</li>
+  <li><a href="index.html">Apache CouchDB 2.0 Documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="experimental-features">
+<span id="experimental"></span><h1>13. Experimental Features<a class="headerlink" href="#experimental-features" title="Permalink to this headline">¶</a></h1>
+<p>This is a list of experimental features in CouchDB. They are included in
+a release because the development team is requesting feedback from the
+larger developer community. As such, please play around with these features
+and send us feedback, thanks!</p>
+<p>Use at your own risk! Do not rely on these features for critical applications.</p>
+<div class="section" id="nodejs-query-server">
+<h2>13.1. NodeJS Query Server<a class="headerlink" href="#nodejs-query-server" title="Permalink to this headline">¶</a></h2>
+<p>The NodeJS Query Server is an alternative runtime environment for
+the default JavaScript Query Server that runs on top of Node.JS and
+not SpiderMonkey like the default Query Server.</p>
+<div class="section" id="setup">
+<h3>13.1.1. Setup<a class="headerlink" href="#setup" title="Permalink to this headline">¶</a></h3>
+<p>You will need to install Node.JS version 0.10.0 or later. See <a class="reference external" href="http://nodejs.org/download/">Node.JS
+Downloads</a> for options.</p>
+<ol class="arabic">
+<li><p class="first">Install the <cite>couchjs-node</cite> binary. Either from the CouchDB sources:</p>
+<div class="highlight-python"><div class="highlight"><pre>cd src/couchjs-node
+npm link
+</pre></div>
+</div>
+</li>
+</ol>
+<p>Or via NPM:</p>
+<div class="highlight-python"><div class="highlight"><pre>npm install -g couchjs
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p><strong>NPM in non-standard locations</strong>
+If your Node.JS installation doesn’t store binaries in <cite>/usr/local/bin</cite>
+you will need to adjust CouchDB’s configuration. Add this to your
+<cite>local.ini</cite> file:</p>
+<div class="highlight-ini"><div class="highlight"><pre><span class="k">[query_servers]</span>
+<span class="na">nodejs</span> <span class="o">=</span> <span class="s">/path/to/couchjs-node /path/to/couchdb/share/server/main.js</span>
+</pre></div>
+</div>
+<p class="last">And then restart your CouchDB instance.</p>
+</div>
+<p>2. Done. Now you can create design documents with the <cite>language</cite> parameter
+set to <cite>nodejs</cite> and all JavaScript functions in this design document will
+be processed by the Node.JS query server.</p>
+<p>Enjoy!</p>
+</div>
+<div class="section" id="differences-from-the-spidermonkey-query-server">
+<h3>13.1.2. Differences from the SpiderMonkey Query Server<a class="headerlink" href="#differences-from-the-spidermonkey-query-server" title="Permalink to this headline">¶</a></h3>
+<p>V8 and SpiderMonkey roughly behave similar, but there might be engine- specific
+differences that make or break a JavaScript function in one or the other server.</p>
+</div>
+</div>
+<div class="section" id="plugins">
+<h2>13.2. Plugins<a class="headerlink" href="#plugins" title="Permalink to this headline">¶</a></h2>
+<p>See <cite>src/couch_plugins/README.md</cite>.</p>
+</div>
+<div class="section" id="content-security-policy-csp-header-support-for-utils-fauxton">
+<h2>13.3. Content-Security-Policy (CSP) Header Support for /_utils (Fauxton)<a class="headerlink" href="#content-security-policy-csp-header-support-for-utils-fauxton" title="Permalink to this headline">¶</a></h2>
+<p>This will just work with Fauxton, and not Futon. You can enable it
+in your config: you can enable the feature in general and change
+the default header that is sent for everything in /_utils.</p>
+<blockquote>
+<div><div class="highlight-ini"><div class="highlight"><pre><span class="k">[csp]</span>
+<span class="na">enable</span> <span class="o">=</span> <span class="s">true</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>Then restart CouchDB.</p>
+<p>Have fun!</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+    <p class="logo"><a href="index.html">
+      <img class="logo" src="_static/logo.png" alt="Logo"/>
+    </a></p><!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+<div id="searchbox" style="display: none">
+
+<h3>Quick Search</h3>
+
+<form class="search" action="search.html" method="get">
+<input type="text" name="q" style="width:115px">
+<input type="submit" value="Go">
+<input type="hidden" name="check_keywords" value="yes">
+<input type="hidden" name="area" value="default">
+</form>
+
+<br>
+
+</div>
+
+<script type="text/javascript">$('#searchbox').show(0);</script>
+  <h3><a href="contents.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">13. Experimental Features</a><ul>
+<li><a class="reference internal" href="#nodejs-query-server">13.1. NodeJS Query Server</a><ul>
+<li><a class="reference internal" href="#setup">13.1.1. Setup</a></li>
+<li><a class="reference internal" href="#differences-from-the-spidermonkey-query-server">13.1.2. Differences from the SpiderMonkey Query Server</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#plugins">13.2. Plugins</a></li>
+<li><a class="reference internal" href="#content-security-policy-csp-header-support-for-utils-fauxton">13.3. Content-Security-Policy (CSP) Header Support for /_utils (Fauxton)</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="json-structure.html"
+                        title="previous chapter">12. JSON Structure Reference</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="contributing.html"
+                        title="next chapter">14. Contributing to this Documentation</a></p><!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+
+<h3>Utilities</h3>
+
+<ul>
+<li><a href="../">Fauxton</a></li>
+</ul>
+<!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+<h3>More Help</h3>
+
+<ul>
+<li><a href="https://couchdb.apache.org/">Homepage</a></li>
+<li><a href="https://cwiki.apache.org/confluence/display/COUCHDB/">Wiki</a></li>
+<li><a href="https://couchdb.apache.org/#mailing-list">Mailing Lists</a></li>
+<li><a href="http://webchat.freenode.net/?channels=couchdb">IRC</a></li>
+<li><a href="https://issues.apache.org/jira/browse/CouchDB">Issues</a></li>
+<li><a href="download.html">Download</a></li>
+<li><a href="https://github.com/apache/couchdb-documentation/blob/master/src/experimental.rst"
+       rel="nofollow">Show on GitHub</a></li>
+<li><a href="https://github.com/apache/couchdb-documentation/edit/master/src/experimental.rst"
+       rel="nofollow">Edit on GitHub</a></li>
+</ul><!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="http-api.html" title="HTTP API Reference"
+             >API Reference</a></li>
+        <li class="right" >
+          <a href="config-ref.html" title="Configuration Reference"
+             >Config Reference</a> |</li>
+        <li class="right" >
+          <a href="contributing.html" title="14. Contributing to this Documentation"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="json-structure.html" title="12. JSON Structure Reference"
+             >previous</a> |</li>
+  <li><a href="index.html">Apache CouchDB 2.0 Documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2016, Apache Software Foundation.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
+    </div>
+  </body>
+</html>

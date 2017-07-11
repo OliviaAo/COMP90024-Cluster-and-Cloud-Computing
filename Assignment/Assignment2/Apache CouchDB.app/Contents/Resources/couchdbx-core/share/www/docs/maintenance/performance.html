@@ -1,0 +1,473 @@
+<!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>5.2. Performance &mdash; Apache CouchDB 2.0 Documentation</title>
+    
+    <link rel="stylesheet" href="../_static/rtd.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '2.0.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+    <link rel="author" title="About these documents" href="../about.html" />
+    <link rel="top" title="Apache CouchDB 2.0 Documentation" href="../index.html" />
+    <link rel="up" title="5. CouchDB Maintenance" href="index.html" />
+    <link rel="next" title="6. CouchApp" href="../couchapp/index.html" />
+    <link rel="prev" title="5.1. Compaction" href="compaction.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../http-api.html" title="HTTP API Reference"
+             >API Reference</a></li>
+        <li class="right" >
+          <a href="../config-ref.html" title="Configuration Reference"
+             >Config Reference</a> |</li>
+        <li class="right" >
+          <a href="../couchapp/index.html" title="6. CouchApp"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="compaction.html" title="5.1. Compaction"
+             accesskey="P">previous</a> |</li>
+  <li><a href="../index.html">Apache CouchDB 2.0 Documentation</a> &raquo;</li>
+          <li><a href="index.html" accesskey="U">5. CouchDB Maintenance</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="performance">
+<span id="id1"></span><h1>5.2. Performance<a class="headerlink" href="#performance" title="Permalink to this headline">¶</a></h1>
+<p>With up to tens of thousands of documents you will generally find CouchDB to
+perform well no matter how you write your code. Once you start getting into
+the millions of documents you need to be a lot more careful.</p>
+<div class="section" id="disk-i-o">
+<h2>5.2.1. Disk I/O<a class="headerlink" href="#disk-i-o" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="file-size">
+<h3>File Size<a class="headerlink" href="#file-size" title="Permalink to this headline">¶</a></h3>
+<p>The smaller your file size, the less <cite>I/O</cite> operations there will be,
+the more of the file can be cached by CouchDB and the operating system,
+the quicker it is to replicate, backup etc. Consequently you should carefully
+examine the data you are storing. For example it would be silly to use keys
+that are hundreds of characters long, but your program would be hard to
+maintain if you only used single character keys. Carefully consider data
+that is duplicated by putting it in views.</p>
+</div>
+<div class="section" id="disk-and-file-system-performance">
+<h3>Disk and File System Performance<a class="headerlink" href="#disk-and-file-system-performance" title="Permalink to this headline">¶</a></h3>
+<p>Using faster disks, striped RAID arrays and modern file systems can all speed
+up your CouchDB deployment. However, there is one option that can increase
+the responsiveness of your CouchDB server when disk performance is a
+bottleneck. From the Erlang documentation for the file module:</p>
+<blockquote>
+<div>On operating systems with thread support, it is possible to let file
+operations be performed in threads of their own, allowing other Erlang
+processes to continue executing in parallel with the file operations.
+See the <a class="reference external" href="http://erlang.org/doc/man/erl.html">command line flag +A in erl(1)</a>.</div></blockquote>
+<p>Setting this argument to a number greater than zero can keep your CouchDB
+installation responsive even during periods of heavy disk utilization. The
+easiest way to set this option is through the <tt class="docutils literal"><span class="pre">ERL_FLAGS</span></tt> environment
+variable. For example, to give Erlang four threads with which to perform I/O
+operations add the following to <tt class="docutils literal"><span class="pre">(prefix)/etc/defaults/couchdb</span></tt>
+(or equivalent):</p>
+<div class="highlight-python"><div class="highlight"><pre>export ERL_FLAGS=&quot;+A 4&quot;
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="system-resource-limits">
+<h2>5.2.2. System Resource Limits<a class="headerlink" href="#system-resource-limits" title="Permalink to this headline">¶</a></h2>
+<p>One of the problems that administrators run into as their deployments become
+large are resource limits imposed by the system and by the application
+configuration. Raising these limits can allow your deployment to grow beyond
+what the default configuration will support.</p>
+<div class="section" id="couchdb-configuration-options">
+<h3>CouchDB Configuration Options<a class="headerlink" href="#couchdb-configuration-options" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="delayed-commits">
+<h4>delayed_commits<a class="headerlink" href="#delayed-commits" title="Permalink to this headline">¶</a></h4>
+<p>The <a class="reference internal" href="../config/couchdb.html#couchdb/delayed_commits" title="delayed_commits"><tt class="xref config config-option docutils literal"><span class="pre">delayed</span> <span class="pre">commits</span></tt></a> allows to
+achieve better write performance for some workloads while sacrificing a small
+amount of durability. The setting causes CouchDB to wait up to a full second
+before committing new data after an update. If the server crashes before
+the header is written then any writes since the last commit are lost. Keep this
+option enabled on your own risk.</p>
+</div>
+<div class="section" id="max-dbs-open">
+<h4>max_dbs_open<a class="headerlink" href="#max-dbs-open" title="Permalink to this headline">¶</a></h4>
+<p>In your <a class="reference internal" href="../config/index.html#config"><em>configuration</em></a> (local.ini or similar) familiarize
+yourself with the <a class="reference internal" href="../config/couchdb.html#couchdb/max_dbs_open" title="max_dbs_open"><tt class="xref config config-option docutils literal"><span class="pre">couchdb/max_dbs_open</span></tt></a>:</p>
+<div class="highlight-ini"><div class="highlight"><pre><span class="k">[couchdb]</span>
+<span class="na">max_dbs_open</span> <span class="o">=</span> <span class="s">100</span>
+</pre></div>
+</div>
+<p>This option places an upper bound on the number of databases that can be
+open at one time. CouchDB reference counts database accesses internally and
+will close idle databases when it must. Sometimes it is necessary to keep
+more than the default open at once, such as in deployments where many databases
+will be continuously replicating.</p>
+</div>
+</div>
+<div class="section" id="erlang">
+<h3>Erlang<a class="headerlink" href="#erlang" title="Permalink to this headline">¶</a></h3>
+<p>Even if you&#8217;ve increased the maximum connections CouchDB will allow,
+the Erlang runtime system will not allow more than 1024 connections by
+default. Adding the following directive to <tt class="docutils literal"><span class="pre">(prefix)/etc/default/couchdb</span></tt> (or
+equivalent) will increase this limit (in this case to 4096):</p>
+<div class="highlight-python"><div class="highlight"><pre>export ERL_MAX_PORTS=4096
+</pre></div>
+</div>
+<p>CouchDB versions up to 1.1.x also create Erlang Term Storage (<a class="reference external" href="http://www.erlang.org/doc/man/ets.html">ETS</a>) tables for
+each replication. If you are using a version of CouchDB older than 1.2 and
+must support many replications, also set the <tt class="docutils literal"><span class="pre">ERL_MAX_ETS_TABLES</span></tt> variable.
+The default is approximately 1400 tables.</p>
+<p>Note that on Mac OS X, Erlang will not actually increase the file descriptor
+limit past 1024 (i.e. the system header–defined value of <tt class="docutils literal"><span class="pre">FD_SETSIZE</span></tt>). See
+<a class="reference external" href="http://erlang.org/pipermail/erlang-questions/2011-December/063119.html">this tip for a possible workaround</a> and <a class="reference external" href="http://erlang.org/pipermail/erlang-questions/2011-October/061971.html">this thread for a deeper
+explanation</a>.</p>
+</div>
+<div class="section" id="pam-and-ulimit">
+<h3>PAM and ulimit<a class="headerlink" href="#pam-and-ulimit" title="Permalink to this headline">¶</a></h3>
+<p>Finally, most *nix operating systems impose various resource limits on every
+process. If your system is set up to use the Pluggable Authentication Modules
+(<a class="reference external" href="http://www.linux-pam.org/">PAM</a>) system, increasing this limit is straightforward. For example,
+creating a file named <tt class="docutils literal"><span class="pre">/etc/security/limits.d/100-couchdb.conf</span></tt> with the
+following contents will ensure that CouchDB can open enough file descriptors
+to service your increased maximum open databases and Erlang ports:</p>
+<div class="highlight-python"><div class="highlight"><pre>#&lt;domain&gt;    &lt;type&gt;    &lt;item&gt;    &lt;value&gt;
+couchdb      hard      nofile    4096
+couchdb      soft      nofile    4096
+</pre></div>
+</div>
+<p>If your system does not use PAM, a <cite>ulimit</cite> command is usually available for
+use in a custom script to launch CouchDB with increased resource limits.
+If necessary, feel free to increase this limits as long as your hardware can
+handle the load.</p>
+</div>
+</div>
+<div class="section" id="network">
+<h2>5.2.3. Network<a class="headerlink" href="#network" title="Permalink to this headline">¶</a></h2>
+<p>There is latency overhead making and receiving each request/response.
+In general you should do your requests in batches. Most APIs have some
+mechanism to do batches, usually by supplying lists of documents or keys in
+the request body. Be careful what size you pick for the batches. The larger
+batch requires more time your client has to spend encoding the items into JSON
+and more time is spent decoding that number of responses. Do some benchmarking
+with your own configuration and typical data to find the sweet spot.
+It is likely to be between one and ten thousand documents.</p>
+<p>If you have a fast I/O system then you can also use concurrency - have
+multiple requests/responses at the same time. This mitigates the latency
+involved in assembling JSON, doing the networking and decoding JSON.</p>
+<p>As of CouchDB 1.1.0, users often report lower write performance of documents
+compared to older releases. The main reason is that this release ships with
+the more recent version of the HTTP server library Mochiweb, which by default
+sets the TCP socket option <a class="reference external" href="http://en.wikipedia.org/wiki/Nagle%27s_algorithm">SO_NODELAY</a> to false. This means that small data
+sent to the TCP socket, like the reply to a document write request (or reading
+a very small document), will not be sent immediately to the network - TCP will
+buffer it for a while hoping that it will be asked to send more data through
+the same socket and then send all the data at once for increased performance.
+This TCP buffering behaviour can be disabled via
+<a class="reference internal" href="../config/http.html#httpd/socket_options" title="socket_options"><tt class="xref config config-option docutils literal"><span class="pre">httpd/socket_options</span></tt></a>:</p>
+<div class="highlight-ini"><div class="highlight"><pre><span class="k">[httpd]</span>
+<span class="na">socket_options</span> <span class="o">=</span> <span class="s">[{nodelay, true}]</span>
+</pre></div>
+</div>
+<div class="admonition seealso">
+<p class="first admonition-title">See also</p>
+<p class="last">Bulk <a class="reference internal" href="../api/database/bulk-api.html#api-db-all-docs"><em>load</em></a> and <a class="reference internal" href="../api/database/bulk-api.html#api-db-bulk-docs"><em>store</em></a> API.</p>
+</div>
+</div>
+<div class="section" id="couchdb">
+<h2>5.2.4. CouchDB<a class="headerlink" href="#couchdb" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="delete-operation">
+<h3>DELETE operation<a class="headerlink" href="#delete-operation" title="Permalink to this headline">¶</a></h3>
+<p>When you <a class="reference external" href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.7">DELETE</a> a document the database will create a new
+revision which contains the <tt class="docutils literal"><span class="pre">_id</span></tt> and <tt class="docutils literal"><span class="pre">_rev</span></tt> fields as well as
+the <cite>_deleted</cite> flag. This revision will remain even after a <cite>database
+compaction</cite> so that the deletion can be replicated. Deleted documents, like
+non-deleted documents, can affect view build times, <a class="reference external" href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.6">PUT</a> and
+<a class="reference external" href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.7">DELETE</a> requests time and size of database on disk, since they
+increase the size of the B+Tree&#8217;s. You can see the number of deleted documents
+in <a class="reference internal" href="../api/database/common.html#get--db" title="GET /{db}"><tt class="xref http http-get docutils literal"><span class="pre">database</span> <span class="pre">information</span></tt></a>. If your use case creates lots of
+deleted documents (for example, if you are storing short-term data like logfile
+entries, message queues, etc), you might want to periodically switch to a new
+database and delete the old one (once the entries in it have all expired).</p>
+</div>
+<div class="section" id="document-s-id">
+<h3>Document&#8217;s ID<a class="headerlink" href="#document-s-id" title="Permalink to this headline">¶</a></h3>
+<p>The db file size is derived from your document and view sizes but also on a
+multiple of your <tt class="docutils literal"><span class="pre">_id</span></tt> sizes. Not only is the <tt class="docutils literal"><span class="pre">_id</span></tt> present in the document,
+but it and parts of it are duplicated in the binary tree structure CouchDB uses
+to navigate the file to find the document in the first place. As a real world
+example for one user switching from 16 byte ids to 4 byte ids made a database
+go from 21GB to 4GB with 10 million documents (the raw JSON text when from
+2.5GB to 2GB).</p>
+<p>Inserting with sequential (and at least sorted) ids is faster than random ids.
+Consequently you should consider generating ids yourself, allocating them
+sequentially and using an encoding scheme that consumes fewer bytes.
+For example, something that takes 16 hex digits to represent can be done in
+4 base 62 digits (10 numerals, 26 lower case, 26 upper case).</p>
+</div>
+</div>
+<div class="section" id="views">
+<h2>5.2.5. Views<a class="headerlink" href="#views" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="views-generation">
+<h3>Views Generation<a class="headerlink" href="#views-generation" title="Permalink to this headline">¶</a></h3>
+<p>Views with the JavaScript query server are extremely slow to generate when
+there are a non-trivial number of documents to process. The generation process
+won&#8217;t even saturate a single CPU let alone your I/O. The cause is the latency
+involved in the CouchDB server and separate <cite>couchjs</cite> query server, dramatically
+indicating how important it is to take latency out of your implementation.</p>
+<p>You can let view access be &#8220;stale&#8221; but it isn&#8217;t practical to determine when
+that will occur giving you a quick response and when views will be updated
+which will take a long time. (A 10 million document database took about 10
+minutes to load into CouchDB but about 4 hours to do view generation).</p>
+<p>View information isn&#8217;t replicated - it is rebuilt on each database so you
+can&#8217;t do the view generation on a separate sever.</p>
+</div>
+<div class="section" id="builtin-reduce-functions">
+<h3>Builtin Reduce Functions<a class="headerlink" href="#builtin-reduce-functions" title="Permalink to this headline">¶</a></h3>
+<p>If you’re using a very simple view function that only performs a sum or count
+reduction, you can call native Erlang implementations of them by simply
+writing <tt class="docutils literal"><span class="pre">_sum</span></tt> or <tt class="docutils literal"><span class="pre">_count</span></tt> in place of your function declaration.
+This will speed up things dramatically, as it cuts down on IO between CouchDB
+and the <a class="reference internal" href="../query-server/javascript.html#query-server-js"><em>JavaScript query server</em></a>. For example, as
+<a class="reference external" href="http://mail-archives.apache.org/mod_mbox/couchdb-user/201003.mbox/%3c5E07E00E-3D69-4A8C-ADA3-1B20CF0BA4C8&#64;julianstahnke.com%3e">mentioned on the mailing list</a>, the time for outputting an (already indexed
+and cached) view with about 78,000 items went down from 60 seconds to 4 seconds.</p>
+<p>Before:</p>
+<div class="highlight-javascript"><div class="highlight"><pre><span class="p">{</span>
+    <span class="s2">&quot;_id&quot;</span><span class="o">:</span> <span class="s2">&quot;_design/foo&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;views&quot;</span><span class="o">:</span> <span class="p">{</span>
+        <span class="s2">&quot;bar&quot;</span><span class="o">:</span> <span class="p">{</span>
+            <span class="s2">&quot;map&quot;</span><span class="o">:</span> <span class="s2">&quot;function (doc) { emit(doc.author, 1); }&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;reduce&quot;</span><span class="o">:</span> <span class="s2">&quot;function (keys, values, rereduce) { return sum(values); }&quot;</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>After:</p>
+<div class="highlight-javascript"><div class="highlight"><pre><span class="p">{</span>
+    <span class="s2">&quot;_id&quot;</span><span class="o">:</span> <span class="s2">&quot;_design/foo&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;views&quot;</span><span class="o">:</span> <span class="p">{</span>
+        <span class="s2">&quot;bar&quot;</span><span class="o">:</span> <span class="p">{</span>
+            <span class="s2">&quot;map&quot;</span><span class="o">:</span> <span class="s2">&quot;function (doc) { emit(doc.author, 1); }&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;reduce&quot;</span><span class="o">:</span> <span class="s2">&quot;_sum&quot;</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<div class="admonition seealso">
+<p class="first admonition-title">See also</p>
+<p class="last"><a class="reference internal" href="../couchapp/ddocs.html#reducefun-builtin"><em>Builtin Reduce Functions</em></a></p>
+</div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+    <p class="logo"><a href="../index.html">
+      <img class="logo" src="../_static/logo.png" alt="Logo"/>
+    </a></p><!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+<div id="searchbox" style="display: none">
+
+<h3>Quick Search</h3>
+
+<form class="search" action="../search.html" method="get">
+<input type="text" name="q" style="width:115px">
+<input type="submit" value="Go">
+<input type="hidden" name="check_keywords" value="yes">
+<input type="hidden" name="area" value="default">
+</form>
+
+<br>
+
+</div>
+
+<script type="text/javascript">$('#searchbox').show(0);</script>
+  <h3><a href="../contents.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">5.2. Performance</a><ul>
+<li><a class="reference internal" href="#disk-i-o">5.2.1. Disk I/O</a><ul>
+<li><a class="reference internal" href="#file-size">File Size</a></li>
+<li><a class="reference internal" href="#disk-and-file-system-performance">Disk and File System Performance</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#system-resource-limits">5.2.2. System Resource Limits</a><ul>
+<li><a class="reference internal" href="#couchdb-configuration-options">CouchDB Configuration Options</a><ul>
+<li><a class="reference internal" href="#delayed-commits">delayed_commits</a></li>
+<li><a class="reference internal" href="#max-dbs-open">max_dbs_open</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#erlang">Erlang</a></li>
+<li><a class="reference internal" href="#pam-and-ulimit">PAM and ulimit</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#network">5.2.3. Network</a></li>
+<li><a class="reference internal" href="#couchdb">5.2.4. CouchDB</a><ul>
+<li><a class="reference internal" href="#delete-operation">DELETE operation</a></li>
+<li><a class="reference internal" href="#document-s-id">Document&#8217;s ID</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#views">5.2.5. Views</a><ul>
+<li><a class="reference internal" href="#views-generation">Views Generation</a></li>
+<li><a class="reference internal" href="#builtin-reduce-functions">Builtin Reduce Functions</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="compaction.html"
+                        title="previous chapter">5.1. Compaction</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="../couchapp/index.html"
+                        title="next chapter">6. CouchApp</a></p><!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+
+<h3>Utilities</h3>
+
+<ul>
+<li><a href="../">Fauxton</a></li>
+</ul>
+<!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+<h3>More Help</h3>
+
+<ul>
+<li><a href="https://couchdb.apache.org/">Homepage</a></li>
+<li><a href="https://cwiki.apache.org/confluence/display/COUCHDB/">Wiki</a></li>
+<li><a href="https://couchdb.apache.org/#mailing-list">Mailing Lists</a></li>
+<li><a href="http://webchat.freenode.net/?channels=couchdb">IRC</a></li>
+<li><a href="https://issues.apache.org/jira/browse/CouchDB">Issues</a></li>
+<li><a href="../download.html">Download</a></li>
+<li><a href="https://github.com/apache/couchdb-documentation/blob/master/src/maintenance/performance.rst"
+       rel="nofollow">Show on GitHub</a></li>
+<li><a href="https://github.com/apache/couchdb-documentation/edit/master/src/maintenance/performance.rst"
+       rel="nofollow">Edit on GitHub</a></li>
+</ul><!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../http-api.html" title="HTTP API Reference"
+             >API Reference</a></li>
+        <li class="right" >
+          <a href="../config-ref.html" title="Configuration Reference"
+             >Config Reference</a> |</li>
+        <li class="right" >
+          <a href="../couchapp/index.html" title="6. CouchApp"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="compaction.html" title="5.1. Compaction"
+             >previous</a> |</li>
+  <li><a href="../index.html">Apache CouchDB 2.0 Documentation</a> &raquo;</li>
+          <li><a href="index.html" >5. CouchDB Maintenance</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2016, Apache Software Foundation.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
+    </div>
+  </body>
+</html>

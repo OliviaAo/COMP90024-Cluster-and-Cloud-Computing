@@ -1,0 +1,498 @@
+<!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>15.5. 1.3.x Branch &mdash; Apache CouchDB 2.0 Documentation</title>
+    
+    <link rel="stylesheet" href="../_static/rtd.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '2.0.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+    <link rel="author" title="About these documents" href="../about.html" />
+    <link rel="top" title="Apache CouchDB 2.0 Documentation" href="../index.html" />
+    <link rel="up" title="15. Release History" href="index.html" />
+    <link rel="next" title="15.6. 1.2.x Branch" href="1.2.html" />
+    <link rel="prev" title="15.4. 1.4.x Branch" href="1.4.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../http-api.html" title="HTTP API Reference"
+             >API Reference</a></li>
+        <li class="right" >
+          <a href="../config-ref.html" title="Configuration Reference"
+             >Config Reference</a> |</li>
+        <li class="right" >
+          <a href="1.2.html" title="15.6. 1.2.x Branch"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="1.4.html" title="15.4. 1.4.x Branch"
+             accesskey="P">previous</a> |</li>
+  <li><a href="../index.html">Apache CouchDB 2.0 Documentation</a> &raquo;</li>
+          <li><a href="index.html" accesskey="U">15. Release History</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="x-branch">
+<span id="release-1-3-x"></span><h1>15.5. 1.3.x Branch<a class="headerlink" href="#x-branch" title="Permalink to this headline">¶</a></h1>
+<div class="contents local topic" id="contents">
+<ul class="simple">
+<li><a class="reference internal" href="#upgrade-notes" id="id3">Upgrade Notes</a></li>
+<li><a class="reference internal" href="#version-1-3-1" id="id4">Version 1.3.1</a></li>
+<li><a class="reference internal" href="#version-1-3-0" id="id5">Version 1.3.0</a></li>
+</ul>
+</div>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last"><a class="reference internal" href="#release-1-3-x"><em>1.3.x Branch</em></a> is affected by the issue described in
+<a class="reference internal" href="../cve/2014-2668.html#cve-2014-2668"><em>CVE-2014-2668: DoS (CPU and memory consumption) via the count parameter to /_uuids</em></a>. Upgrading to a more recent release is strongly
+recommended.</p>
+</div>
+<div class="section" id="upgrade-notes">
+<span id="release-1-3-x-upgrade"></span><h2><a class="toc-backref" href="#id3">15.5.1. Upgrade Notes</a><a class="headerlink" href="#upgrade-notes" title="Permalink to this headline">¶</a></h2>
+<p>You can upgrade your existing CouchDB 1.0.x installation to 1.3.0
+without any specific steps or migration. When you run CouchDB, the
+existing data and index files will be opened and used as normal.</p>
+<p>The first time you run a compaction routine on your database within 1.3.0,
+the data structure and indexes will be updated to the new version of the
+CouchDB database format that can only be read by CouchDB 1.3.0 and later.
+This step is not reversible. Once the data files have been updated and
+migrated to the new version the data files will no longer work with a
+CouchDB 1.0.x release.</p>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">If you want to retain support for opening the data files in
+CouchDB 1.0.x you must back up your data files before performing the
+upgrade and compaction process.</p>
+</div>
+</div>
+<div class="section" id="version-1-3-1">
+<span id="release-1-3-1"></span><h2><a class="toc-backref" href="#id4">15.5.2. Version 1.3.1</a><a class="headerlink" href="#version-1-3-1" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="replicator">
+<h3>Replicator<a class="headerlink" href="#replicator" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><a class="reference external" href="https://issues.apache.org/jira/browse/COUCHDB-1788">COUCHDB-1788</a>: Tolerate missing source and target fields in _replicator docs.
+<a class="reference external" href="https://git-wip-us.apache.org/repos/asf?p=couchdb.git;a=commit;h=869f42e2">#869f42e2</a></li>
+</ul>
+</div>
+<div class="section" id="log-system">
+<h3>Log System<a class="headerlink" href="#log-system" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><a class="reference external" href="https://issues.apache.org/jira/browse/COUCHDB-1794">COUCHDB-1794</a>: Fix bug in WARN level logging from 1.3.0.</li>
+<li>Don&#8217;t log about missing .compact files. <a class="reference external" href="https://git-wip-us.apache.org/repos/asf?p=couchdb.git;a=commit;h=06f1a8dc">#06f1a8dc</a></li>
+</ul>
+</div>
+<div class="section" id="view-server">
+<h3>View Server<a class="headerlink" href="#view-server" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><a class="reference external" href="https://issues.apache.org/jira/browse/COUCHDB-1792">COUCHDB-1792</a>: Fix the -S option to couchjs to increase memory limits.
+<a class="reference external" href="https://git-wip-us.apache.org/repos/asf?p=couchdb.git;a=commit;h=cfaa66cd">#cfaa66cd</a></li>
+</ul>
+</div>
+<div class="section" id="miscellaneous">
+<h3>Miscellaneous<a class="headerlink" href="#miscellaneous" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><a class="reference external" href="https://issues.apache.org/jira/browse/COUCHDB-1784">COUCHDB-1784</a>: Improvements to test suite and VPATH build system.
+<a class="reference external" href="https://git-wip-us.apache.org/repos/asf?p=couchdb.git;a=commit;h=01afaa4f">#01afaa4f</a></li>
+<li>Improve documentation: better structure, improve language, less duplication.</li>
+</ul>
+</div>
+</div>
+<div class="section" id="version-1-3-0">
+<span id="release-1-3-0"></span><h2><a class="toc-backref" href="#id5">15.5.3. Version 1.3.0</a><a class="headerlink" href="#version-1-3-0" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="database-core">
+<h3>Database core<a class="headerlink" href="#database-core" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><a class="reference external" href="https://issues.apache.org/jira/browse/COUCHDB-1512">COUCHDB-1512</a>: Validate bind address before assignment. <a class="reference external" href="https://git-wip-us.apache.org/repos/asf?p=couchdb.git;a=commit;h=09ead8a0">#09ead8a0</a></li>
+<li>Restore <tt class="docutils literal"><span class="pre">max_document_size</span></tt> protection. <a class="reference external" href="https://git-wip-us.apache.org/repos/asf?p=couchdb.git;a=commit;h=bf1eb135">#bf1eb135</a></li>
+</ul>
+</div>
+<div class="section" id="documentation">
+<h3>Documentation<a class="headerlink" href="#documentation" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><a class="reference external" href="https://issues.apache.org/jira/browse/COUCHDB-1523">COUCHDB-1523</a>: Import CouchBase documentation and convert them into
+<a class="reference external" href="http://sphinx.pocoo.org/">Sphinx docs</a></li>
+</ul>
+</div>
+<div class="section" id="futon">
+<h3>Futon<a class="headerlink" href="#futon" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><a class="reference external" href="https://issues.apache.org/jira/browse/COUCHDB-509">COUCHDB-509</a>: Added view request duration to Futon. <a class="reference external" href="https://git-wip-us.apache.org/repos/asf?p=couchdb.git;a=commit;h=2d2c7d1e">#2d2c7d1e</a></li>
+<li><a class="reference external" href="https://issues.apache.org/jira/browse/COUCHDB-627">COUCHDB-627</a>: Support all timezones. <a class="reference external" href="https://git-wip-us.apache.org/repos/asf?p=couchdb.git;a=commit;h=b1a049bb">#b1a049bb</a></li>
+<li><a class="reference external" href="https://issues.apache.org/jira/browse/COUCHDB-1383">COUCHDB-1383</a>: Futon view editor won&#8217;t allow you to save original view after
+saving a revision. <a class="reference external" href="https://git-wip-us.apache.org/repos/asf?p=couchdb.git;a=commit;h=ce48342">#ce48342</a></li>
+<li><a class="reference external" href="https://issues.apache.org/jira/browse/COUCHDB-1470">COUCHDB-1470</a>: Futon raises popup on attempt to navigate to missed/deleted
+document. <a class="reference external" href="https://git-wip-us.apache.org/repos/asf?p=couchdb.git;a=commit;h=5da40eef">#5da40eef</a></li>
+<li><a class="reference external" href="https://issues.apache.org/jira/browse/COUCHDB-1473">COUCHDB-1473</a>, <a class="reference external" href="https://issues.apache.org/jira/browse/COUCHDB-1472">COUCHDB-1472</a>: Disable buttons for actions that the user
+doesn&#8217;t have permissions to. <a class="reference external" href="https://git-wip-us.apache.org/repos/asf?p=couchdb.git;a=commit;h=7156254d">#7156254d</a></li>
+</ul>
+</div>
+<div class="section" id="http-interface">
+<h3>HTTP Interface<a class="headerlink" href="#http-interface" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><a class="reference external" href="https://issues.apache.org/jira/browse/COUCHDB-431">COUCHDB-431</a>: Introduce experimental <a class="reference internal" href="../config/http.html#cors"><em>CORS support</em></a>.
+<a class="reference external" href="https://git-wip-us.apache.org/repos/asf?p=couchdb.git;a=commit;h=b90e4021">#b90e4021</a></li>
+<li><a class="reference external" href="https://issues.apache.org/jira/browse/COUCHDB-764">COUCHDB-764</a>, <a class="reference external" href="https://issues.apache.org/jira/browse/COUCHDB-514">COUCHDB-514</a>, <a class="reference external" href="https://issues.apache.org/jira/browse/COUCHDB-430">COUCHDB-430</a>: Fix sending HTTP headers from
+<tt class="docutils literal"><span class="pre">_list</span></tt> function, <a class="reference external" href="https://git-wip-us.apache.org/repos/asf?p=couchdb.git;a=commit;h=2a74f88375">#2a74f88375</a></li>
+<li><a class="reference external" href="https://issues.apache.org/jira/browse/COUCHDB-887">COUCHDB-887</a>: Fix <tt class="docutils literal"><span class="pre">bytes</span></tt> and <tt class="docutils literal"><span class="pre">offset</span></tt> parameters semantic for <cite>_log</cite>
+resource (<a class="reference external" href="https://git-wip-us.apache.org/repos/asf?p=couchdb.git;a=blobdiff;f=src/couchdb/couch_log.erl;h=1b05f4db2;hp=0befe7aab;hb=ad700014;hpb=7809f3ca">explanation</a>)
+<a class="reference external" href="https://git-wip-us.apache.org/repos/asf?p=couchdb.git;a=commit;h=ad700014">#ad700014</a></li>
+<li><a class="reference external" href="https://issues.apache.org/jira/browse/COUCHDB-986">COUCHDB-986</a>: Added Server-Sent Events protocol to db changes API.
+See <a class="reference external" href="http://www.w3.org/TR/eventsource/">http://www.w3.org/TR/eventsource/</a> for details. <a class="reference external" href="https://git-wip-us.apache.org/repos/asf?p=couchdb.git;a=commit;h=093d2aa6">#093d2aa6</a></li>
+<li><a class="reference external" href="https://issues.apache.org/jira/browse/COUCHDB-1026">COUCHDB-1026</a>: Database names are encoded with respect of special characters
+in the rewriter now. <a class="reference external" href="https://git-wip-us.apache.org/repos/asf?p=couchdb.git;a=commit;h=272d6415">#272d6415</a></li>
+<li><a class="reference external" href="https://issues.apache.org/jira/browse/COUCHDB-1097">COUCHDB-1097</a>: Allow <cite>OPTIONS</cite> request to shows and lists functions.
+<a class="reference external" href="https://git-wip-us.apache.org/repos/asf?p=couchdb.git;a=commit;h=9f53704a">#9f53704a</a></li>
+<li><a class="reference external" href="https://issues.apache.org/jira/browse/COUCHDB-1210">COUCHDB-1210</a>: Files starting with underscore can be attached and updated now.
+<a class="reference external" href="https://git-wip-us.apache.org/repos/asf?p=couchdb.git;a=commit;h=05858792">#05858792</a></li>
+<li><a class="reference external" href="https://issues.apache.org/jira/browse/COUCHDB-1277">COUCHDB-1277</a>: Better query parameter support and code clarity:
+<a class="reference external" href="https://git-wip-us.apache.org/repos/asf?p=couchdb.git;a=commit;h=7e3c69ba">#7e3c69ba</a><ul>
+<li>Responses to documents created/modified via form data <cite>POST</cite> to /db/doc or
+copied with <cite>COPY</cite> should now include <cite>Location</cite> header.</li>
+<li>Form data POST to /db/doc now includes an <cite>ETag</cite> response header.</li>
+<li><tt class="docutils literal"><span class="pre">?batch=ok</span></tt> is now supported for <cite>COPY</cite> and <cite>POST</cite> /db/doc updates.</li>
+<li><tt class="docutils literal"><span class="pre">?new_edits=false</span></tt> is now supported for more operations.</li>
+</ul>
+</li>
+<li><a class="reference external" href="https://issues.apache.org/jira/browse/COUCHDB-1285">COUCHDB-1285</a>: Allow configuration of vendor and modules version in CouchDB
+welcome message. <a class="reference external" href="https://git-wip-us.apache.org/repos/asf?p=couchdb.git;a=commit;h=3c24a94d">#3c24a94d</a></li>
+<li><a class="reference external" href="https://issues.apache.org/jira/browse/COUCHDB-1321">COUCHDB-1321</a>: Variables in rewrite rules breaks OAuth authentication.
+<a class="reference external" href="https://git-wip-us.apache.org/repos/asf?p=couchdb.git;a=commit;h=c307ba95">#c307ba95</a></li>
+<li><a class="reference external" href="https://issues.apache.org/jira/browse/COUCHDB-1337">COUCHDB-1337</a>: Use MD5 for attachment ETag header value. <a class="reference external" href="https://git-wip-us.apache.org/repos/asf?p=couchdb.git;a=commit;h=6d912c9f">#6d912c9f</a></li>
+<li><a class="reference external" href="https://issues.apache.org/jira/browse/COUCHDB-1381">COUCHDB-1381</a>: Add jquery.couch support for Windows 8 Metro apps.
+<a class="reference external" href="https://git-wip-us.apache.org/repos/asf?p=couchdb.git;a=commit;h=dfc5d37c">#dfc5d37c</a></li>
+<li><a class="reference external" href="https://issues.apache.org/jira/browse/COUCHDB-1441">COUCHDB-1441</a>: Limit recursion depth in the URL rewriter.
+Defaults to a maximum of 100 invocations but is configurable.
+<a class="reference external" href="https://git-wip-us.apache.org/repos/asf?p=couchdb.git;a=commit;h=d076976c">#d076976c</a></li>
+<li><a class="reference external" href="https://issues.apache.org/jira/browse/COUCHDB-1442">COUCHDB-1442</a>: No longer rewrites the <cite>X-CouchDB-Requested-Path</cite> during
+recursive calls to the rewriter. <a class="reference external" href="https://git-wip-us.apache.org/repos/asf?p=couchdb.git;a=commit;h=56744f2f">#56744f2f</a></li>
+<li><a class="reference external" href="https://issues.apache.org/jira/browse/COUCHDB-1501">COUCHDB-1501</a>: <a class="reference internal" href="../api/database/changes.html#changes"><em>Changes feed</em></a> now can take special parameter
+<tt class="docutils literal"><span class="pre">since=now</span></tt> to emit changes since current point of time. <a class="reference external" href="https://git-wip-us.apache.org/repos/asf?p=couchdb.git;a=commit;h=3bbb2612">#3bbb2612</a></li>
+<li><a class="reference external" href="https://issues.apache.org/jira/browse/COUCHDB-1502">COUCHDB-1502</a>: Allow users to delete own _users doc. <a class="reference external" href="https://git-wip-us.apache.org/repos/asf?p=couchdb.git;a=commit;h=f0d6f19bc8">#f0d6f19bc8</a></li>
+<li><a class="reference external" href="https://issues.apache.org/jira/browse/COUCHDB-1511">COUCHDB-1511</a>: CouchDB checks <cite>roles</cite> field for <cite>_users</cite> database documents
+with more care. <a class="reference external" href="https://git-wip-us.apache.org/repos/asf?p=couchdb.git;a=commit;h=41205000">#41205000</a></li>
+<li><a class="reference external" href="https://issues.apache.org/jira/browse/COUCHDB-1537">COUCHDB-1537</a>: Include user name in show/list <cite>ETags</cite>. <a class="reference external" href="https://git-wip-us.apache.org/repos/asf?p=couchdb.git;a=commit;h=ac320479">#ac320479</a></li>
+<li>Send a 202 response for <cite>_restart</cite>. <a class="reference external" href="https://git-wip-us.apache.org/repos/asf?p=couchdb.git;a=commit;h=b213e16f">#b213e16f</a></li>
+<li>Make password hashing synchronous when using the /_config/admins API.
+<a class="reference external" href="https://git-wip-us.apache.org/repos/asf?p=couchdb.git;a=commit;h=08071a80">#08071a80</a></li>
+<li>Add support to serve single file with CouchDB, <a class="reference external" href="https://git-wip-us.apache.org/repos/asf?p=couchdb.git;a=commit;h=2774531ff2">#2774531ff2</a></li>
+<li>Allow any 2xx code to indicate success, <a class="reference external" href="https://git-wip-us.apache.org/repos/asf?p=couchdb.git;a=commit;h=0d50103cfd">#0d50103cfd</a></li>
+<li>Fix <cite>_session</cite> for IE7.</li>
+<li>Restore 400 error for empty PUT, <a class="reference external" href="https://git-wip-us.apache.org/repos/asf?p=couchdb.git;a=commit;h=2057b895">#2057b895</a></li>
+<li>Return <tt class="docutils literal"><span class="pre">X-Couch-Id</span></tt> header if doc is created, <a class="reference external" href="https://git-wip-us.apache.org/repos/asf?p=couchdb.git;a=commit;h=98515bf0b9">#98515bf0b9</a></li>
+<li>Support auth cookies with <tt class="docutils literal"><span class="pre">:</span></tt> characters, <a class="reference external" href="https://git-wip-us.apache.org/repos/asf?p=couchdb.git;a=commit;h=d9566c831d">#d9566c831d</a></li>
+</ul>
+</div>
+<div class="section" id="id1">
+<h3>Log System<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><a class="reference external" href="https://issues.apache.org/jira/browse/COUCHDB-1380">COUCHDB-1380</a>: Minor fixes for logrotate support.</li>
+<li>Improve file I/O error logging and handling, <a class="reference external" href="https://git-wip-us.apache.org/repos/asf?p=couchdb.git;a=commit;h=4b6475da">#4b6475da</a></li>
+<li>Module Level Logging, <a class="reference external" href="https://git-wip-us.apache.org/repos/asf?p=couchdb.git;a=commit;h=b58f069167">#b58f069167</a></li>
+<li>Log 5xx responses at error level, <a class="reference external" href="https://git-wip-us.apache.org/repos/asf?p=couchdb.git;a=commit;h=e896b0b7">#e896b0b7</a></li>
+<li>Log problems opening database at ERROR level except for auto-created
+system dbs, <a class="reference external" href="https://git-wip-us.apache.org/repos/asf?p=couchdb.git;a=commit;h=41667642f7">#41667642f7</a></li>
+</ul>
+</div>
+<div class="section" id="id2">
+<h3>Replicator<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><a class="reference external" href="https://issues.apache.org/jira/browse/COUCHDB-1248">COUCHDB-1248</a>: <cite>HTTP 500</cite> error now doesn&#8217;t occurs when replicating with
+<tt class="docutils literal"><span class="pre">?doc_ids=null</span></tt>. <a class="reference external" href="https://git-wip-us.apache.org/repos/asf?p=couchdb.git;a=commit;h=bea76dbf">#bea76dbf</a></li>
+<li><a class="reference external" href="https://issues.apache.org/jira/browse/COUCHDB-1259">COUCHDB-1259</a>: Stabilize replication id, <a class="reference external" href="https://git-wip-us.apache.org/repos/asf?p=couchdb.git;a=commit;h=c6252d6d7f">#c6252d6d7f</a></li>
+<li><a class="reference external" href="https://issues.apache.org/jira/browse/COUCHDB-1323">COUCHDB-1323</a>: Replicator now acts as standalone application.
+<a class="reference external" href="https://git-wip-us.apache.org/repos/asf?p=couchdb.git;a=commit;h=f913ca6e">#f913ca6e</a></li>
+<li><a class="reference external" href="https://issues.apache.org/jira/browse/COUCHDB-1363">COUCHDB-1363</a>: Fix rarely occurred, but still race condition in changes feed
+if a quick burst of changes happens while replication is starting the
+replication can go stale. <a class="reference external" href="https://git-wip-us.apache.org/repos/asf?p=couchdb.git;a=commit;h=573a7bb9">#573a7bb9</a></li>
+<li><a class="reference external" href="https://issues.apache.org/jira/browse/COUCHDB-1557">COUCHDB-1557</a>: Upgrade some code to use BIFs bring good improvements for
+replication.</li>
+</ul>
+</div>
+<div class="section" id="security">
+<h3>Security<a class="headerlink" href="#security" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><a class="reference external" href="https://issues.apache.org/jira/browse/COUCHDB-1060">COUCHDB-1060</a>: Passwords are now hashed using the PBKDF2 algorithm with a
+configurable work factor. <a class="reference external" href="https://git-wip-us.apache.org/repos/asf?p=couchdb.git;a=commit;h=7d418134">#7d418134</a></li>
+</ul>
+</div>
+<div class="section" id="source-repository">
+<h3>Source Repository<a class="headerlink" href="#source-repository" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>The source repository was migrated from <a class="reference external" href="https://svn.apache.org/repos/asf/couchdb">SVN</a> to <a class="reference external" href="https://git-wip-us.apache.org/repos/asf/couchdb.git">Git</a>.</li>
+</ul>
+</div>
+<div class="section" id="storage-system">
+<h3>Storage System<a class="headerlink" href="#storage-system" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>Fixed unnecessary conflict when deleting and creating a
+document in the same batch.</li>
+</ul>
+</div>
+<div class="section" id="test-suite">
+<h3>Test Suite<a class="headerlink" href="#test-suite" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><a class="reference external" href="https://issues.apache.org/jira/browse/COUCHDB-1321">COUCHDB-1321</a>: Moved the JS test suite to the CLI.</li>
+<li><a class="reference external" href="https://issues.apache.org/jira/browse/COUCHDB-1338">COUCHDB-1338</a>: Start CouchDB with <tt class="docutils literal"><span class="pre">port=0</span></tt>. While CouchDB might be already
+running on the default port 5984, port number 0 let the TCP stack figure out a
+free port to run. <a class="reference external" href="https://git-wip-us.apache.org/repos/asf?p=couchdb.git;a=commit;h=127cbe3">#127cbe3</a></li>
+<li><a class="reference external" href="https://issues.apache.org/jira/browse/COUCHDB-1339">COUCHDB-1339</a>: Use shell trap to catch dying beam processes during test runs.
+<a class="reference external" href="https://git-wip-us.apache.org/repos/asf?p=couchdb.git;a=commit;h=2921c78">#2921c78</a></li>
+<li><a class="reference external" href="https://issues.apache.org/jira/browse/COUCHDB-1389">COUCHDB-1389</a>: Improved tracebacks printed by the JS CLI tests.</li>
+<li><a class="reference external" href="https://issues.apache.org/jira/browse/COUCHDB-1563">COUCHDB-1563</a>: Ensures urlPrefix is set in all ajax requests.
+<a class="reference external" href="https://git-wip-us.apache.org/repos/asf?p=couchdb.git;a=commit;h=07a6af222">#07a6af222</a></li>
+<li>Fix race condition for test running on faster hardware.</li>
+<li>Improved the reliability of a number of tests.</li>
+</ul>
+</div>
+<div class="section" id="url-rewriter-vhosts">
+<h3>URL Rewriter &amp; Vhosts<a class="headerlink" href="#url-rewriter-vhosts" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><a class="reference external" href="https://issues.apache.org/jira/browse/COUCHDB-1026">COUCHDB-1026</a>: Database name is encoded during rewriting
+(allowing embedded /&#8217;s, etc). <a class="reference external" href="https://git-wip-us.apache.org/repos/asf?p=couchdb.git;a=commit;h=272d6415">#272d6415</a></li>
+</ul>
+</div>
+<div class="section" id="uuid-algorithms">
+<h3>UUID Algorithms<a class="headerlink" href="#uuid-algorithms" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><a class="reference external" href="https://issues.apache.org/jira/browse/COUCHDB-1373">COUCHDB-1373</a>: Added the utc_id algorithm <a class="reference external" href="https://git-wip-us.apache.org/repos/asf?p=couchdb.git;a=commit;h=5ab712a2">#5ab712a2</a></li>
+</ul>
+</div>
+<div class="section" id="query-and-view-server">
+<h3>Query and View Server<a class="headerlink" href="#query-and-view-server" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><a class="reference external" href="https://issues.apache.org/jira/browse/COUCHDB-111">COUCHDB-111</a>: Improve the errors reported by the javascript view server
+to provide a more friendly error report when something goes wrong.
+<a class="reference external" href="https://git-wip-us.apache.org/repos/asf?p=couchdb.git;a=commit;h=0c619ed">#0c619ed</a></li>
+<li><a class="reference external" href="https://issues.apache.org/jira/browse/COUCHDB-410">COUCHDB-410</a>: More graceful error handling for JavaScript validate_doc_update
+functions.</li>
+<li><a class="reference external" href="https://issues.apache.org/jira/browse/COUCHDB-1372">COUCHDB-1372</a>: <cite>_stats</cite> builtin reduce function no longer produces error for
+empty view result.</li>
+<li><a class="reference external" href="https://issues.apache.org/jira/browse/COUCHDB-1444">COUCHDB-1444</a>: Fix missed_named_view error that occurs on existed design
+documents and views. <a class="reference external" href="https://git-wip-us.apache.org/repos/asf?p=couchdb.git;a=commit;h=b59ac98b">#b59ac98b</a></li>
+<li><a class="reference external" href="https://issues.apache.org/jira/browse/COUCHDB-1445">COUCHDB-1445</a>: CouchDB tries no more to delete view file if it couldn&#8217;t open
+it, even if the error is <cite>emfile</cite>.</li>
+<li><a class="reference external" href="https://issues.apache.org/jira/browse/COUCHDB-1483">COUCHDB-1483</a>: Update handlers requires valid doc ids. <a class="reference external" href="https://git-wip-us.apache.org/repos/asf?p=couchdb.git;a=commit;h=72ea7e38">#72ea7e38</a></li>
+<li><a class="reference external" href="https://issues.apache.org/jira/browse/COUCHDB-1491">COUCHDB-1491</a>: Clenaup view tables. <a class="reference external" href="https://git-wip-us.apache.org/repos/asf?p=couchdb.git;a=commit;h=c37204b7">#c37204b7</a></li>
+<li>Deprecate E4X support, <a class="reference external" href="https://git-wip-us.apache.org/repos/asf?p=couchdb.git;a=commit;h=cdfdda2314">#cdfdda2314</a></li>
+</ul>
+</div>
+<div class="section" id="windows">
+<h3>Windows<a class="headerlink" href="#windows" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><a class="reference external" href="https://issues.apache.org/jira/browse/COUCHDB-1482">COUCHDB-1482</a>: Use correct linker flag to build <cite>snappy_nif.dll</cite> on Windows.
+<a class="reference external" href="https://git-wip-us.apache.org/repos/asf?p=couchdb.git;a=commit;h=a6eaf9f1">#a6eaf9f1</a></li>
+<li>Allows building cleanly on Windows without cURL, <a class="reference external" href="https://git-wip-us.apache.org/repos/asf?p=couchdb.git;a=commit;h=fb670f5712">#fb670f5712</a></li>
+</ul>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+    <p class="logo"><a href="../index.html">
+      <img class="logo" src="../_static/logo.png" alt="Logo"/>
+    </a></p><!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+<div id="searchbox" style="display: none">
+
+<h3>Quick Search</h3>
+
+<form class="search" action="../search.html" method="get">
+<input type="text" name="q" style="width:115px">
+<input type="submit" value="Go">
+<input type="hidden" name="check_keywords" value="yes">
+<input type="hidden" name="area" value="default">
+</form>
+
+<br>
+
+</div>
+
+<script type="text/javascript">$('#searchbox').show(0);</script>
+  <h3><a href="../contents.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">15.5. 1.3.x Branch</a><ul>
+<li><a class="reference internal" href="#upgrade-notes">15.5.1. Upgrade Notes</a></li>
+<li><a class="reference internal" href="#version-1-3-1">15.5.2. Version 1.3.1</a><ul>
+<li><a class="reference internal" href="#replicator">Replicator</a></li>
+<li><a class="reference internal" href="#log-system">Log System</a></li>
+<li><a class="reference internal" href="#view-server">View Server</a></li>
+<li><a class="reference internal" href="#miscellaneous">Miscellaneous</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#version-1-3-0">15.5.3. Version 1.3.0</a><ul>
+<li><a class="reference internal" href="#database-core">Database core</a></li>
+<li><a class="reference internal" href="#documentation">Documentation</a></li>
+<li><a class="reference internal" href="#futon">Futon</a></li>
+<li><a class="reference internal" href="#http-interface">HTTP Interface</a></li>
+<li><a class="reference internal" href="#id1">Log System</a></li>
+<li><a class="reference internal" href="#id2">Replicator</a></li>
+<li><a class="reference internal" href="#security">Security</a></li>
+<li><a class="reference internal" href="#source-repository">Source Repository</a></li>
+<li><a class="reference internal" href="#storage-system">Storage System</a></li>
+<li><a class="reference internal" href="#test-suite">Test Suite</a></li>
+<li><a class="reference internal" href="#url-rewriter-vhosts">URL Rewriter &amp; Vhosts</a></li>
+<li><a class="reference internal" href="#uuid-algorithms">UUID Algorithms</a></li>
+<li><a class="reference internal" href="#query-and-view-server">Query and View Server</a></li>
+<li><a class="reference internal" href="#windows">Windows</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="1.4.html"
+                        title="previous chapter">15.4. 1.4.x Branch</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="1.2.html"
+                        title="next chapter">15.6. 1.2.x Branch</a></p><!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+
+<h3>Utilities</h3>
+
+<ul>
+<li><a href="../">Fauxton</a></li>
+</ul>
+<!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+<h3>More Help</h3>
+
+<ul>
+<li><a href="https://couchdb.apache.org/">Homepage</a></li>
+<li><a href="https://cwiki.apache.org/confluence/display/COUCHDB/">Wiki</a></li>
+<li><a href="https://couchdb.apache.org/#mailing-list">Mailing Lists</a></li>
+<li><a href="http://webchat.freenode.net/?channels=couchdb">IRC</a></li>
+<li><a href="https://issues.apache.org/jira/browse/CouchDB">Issues</a></li>
+<li><a href="../download.html">Download</a></li>
+<li><a href="https://github.com/apache/couchdb-documentation/blob/master/src/whatsnew/1.3.rst"
+       rel="nofollow">Show on GitHub</a></li>
+<li><a href="https://github.com/apache/couchdb-documentation/edit/master/src/whatsnew/1.3.rst"
+       rel="nofollow">Edit on GitHub</a></li>
+</ul><!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../http-api.html" title="HTTP API Reference"
+             >API Reference</a></li>
+        <li class="right" >
+          <a href="../config-ref.html" title="Configuration Reference"
+             >Config Reference</a> |</li>
+        <li class="right" >
+          <a href="1.2.html" title="15.6. 1.2.x Branch"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="1.4.html" title="15.4. 1.4.x Branch"
+             >previous</a> |</li>
+  <li><a href="../index.html">Apache CouchDB 2.0 Documentation</a> &raquo;</li>
+          <li><a href="index.html" >15. Release History</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2016, Apache Software Foundation.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
+    </div>
+  </body>
+</html>

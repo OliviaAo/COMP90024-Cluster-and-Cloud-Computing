@@ -1,0 +1,591 @@
+<!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>1.4. Getting Started &mdash; Apache CouchDB 2.0 Documentation</title>
+    
+    <link rel="stylesheet" href="../_static/rtd.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '2.0.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+    <link rel="author" title="About these documents" href="../about.html" />
+    <link rel="top" title="Apache CouchDB 2.0 Documentation" href="../index.html" />
+    <link rel="up" title="1. Introduction" href="index.html" />
+    <link rel="next" title="1.5. The Core API" href="api.html" />
+    <link rel="prev" title="1.3. Eventual Consistency" href="consistency.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../http-api.html" title="HTTP API Reference"
+             >API Reference</a></li>
+        <li class="right" >
+          <a href="../config-ref.html" title="Configuration Reference"
+             >Config Reference</a> |</li>
+        <li class="right" >
+          <a href="api.html" title="1.5. The Core API"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="consistency.html" title="1.3. Eventual Consistency"
+             accesskey="P">previous</a> |</li>
+  <li><a href="../index.html">Apache CouchDB 2.0 Documentation</a> &raquo;</li>
+          <li><a href="index.html" accesskey="U">1. Introduction</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="getting-started">
+<span id="intro-tour"></span><h1>1.4. Getting Started<a class="headerlink" href="#getting-started" title="Permalink to this headline">¶</a></h1>
+<p>In this document, we&#8217;ll take a quick tour of CouchDB&#8217;s features.
+We&#8217;ll create our first document and experiment with CouchDB views.</p>
+<div class="section" id="all-systems-are-go">
+<h2>1.4.1. All Systems Are Go!<a class="headerlink" href="#all-systems-are-go" title="Permalink to this headline">¶</a></h2>
+<p>We&#8217;ll have a very quick look at CouchDB&#8217;s bare-bones Application Programming
+Interface (API) by using the command-line utility curl. Please note that this
+is not the only way of talking to CouchDB. We will show you plenty more
+throughout the rest of the documents. What&#8217;s interesting about curl is that it
+gives you control over raw HTTP requests, and you can see exactly what is
+going on &#8220;underneath the hood&#8221; of your database.</p>
+<p>Make sure CouchDB is still running, and then do:</p>
+<div class="highlight-python"><div class="highlight"><pre>curl http://127.0.0.1:5984/
+</pre></div>
+</div>
+<p>This issues a GET request to your newly installed CouchDB instance.</p>
+<p>The reply should look something like:</p>
+<div class="highlight-javascript"><div class="highlight"><pre><span class="p">{</span>
+    <span class="s2">&quot;couchdb&quot;</span><span class="o">:</span> <span class="s2">&quot;Welcome&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;uuid&quot;</span><span class="o">:</span> <span class="s2">&quot;85fb71bf700c17267fef77535820e371&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;version&quot;</span><span class="o">:</span> <span class="s2">&quot;1.4.0&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;vendor&quot;</span><span class="o">:</span> <span class="p">{</span>
+        <span class="s2">&quot;version&quot;</span><span class="o">:</span> <span class="s2">&quot;1.4.0&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;name&quot;</span><span class="o">:</span> <span class="s2">&quot;The Apache Software Foundation&quot;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Not all that spectacular. CouchDB is saying &#8220;hello&#8221; with the running version
+number.</p>
+<p>Next, we can get a list of databases:</p>
+<div class="highlight-python"><div class="highlight"><pre>curl -X GET http://127.0.0.1:5984/_all_dbs
+</pre></div>
+</div>
+<p>All we added to the previous request is the _all_dbs string.</p>
+<p>The response should look like:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="p">[</span><span class="s">&quot;_replicator&quot;</span><span class="p">,</span><span class="s">&quot;_users&quot;</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>Oh, that&#8217;s right, we didn&#8217;t create any databases yet! All we see is an empty
+list.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p>The curl command issues GET requests by default. You can issue POST requests
+using <tt class="docutils literal"><span class="pre">curl</span> <span class="pre">-X</span> <span class="pre">POST</span></tt>. To make it easy to work with our terminal history,
+we usually use the <tt class="docutils literal"><span class="pre">-X</span></tt> option even when issuing GET requests.
+If we want to send a POST next time, all we have to change is the method.</p>
+<p class="last">HTTP does a bit more under the hood than you can see in the examples here.
+If you&#8217;re interested in every last detail that goes over the wire,
+pass in the <tt class="docutils literal"><span class="pre">-v</span></tt> option (e.g., <tt class="docutils literal"><span class="pre">curl</span> <span class="pre">-vX</span> <span class="pre">GET</span></tt>), which will show you
+the server curl tries to connect to, the request headers it sends,
+and response headers it receives back. Great for debugging!</p>
+</div>
+<p>Let&#8217;s create a database:</p>
+<div class="highlight-python"><div class="highlight"><pre>curl -X PUT http://127.0.0.1:5984/baseball
+</pre></div>
+</div>
+<p>CouchDB will reply with:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="p">{</span><span class="s">&quot;ok&quot;</span><span class="p">:</span><span class="n">true</span><span class="p">}</span>
+</pre></div>
+</div>
+<p>Retrieving the list of databases again shows some useful results this time:</p>
+<div class="highlight-python"><div class="highlight"><pre>curl -X GET http://127.0.0.1:5984/_all_dbs
+</pre></div>
+</div>
+<div class="highlight-python"><div class="highlight"><pre><span class="p">[</span><span class="s">&quot;baseball&quot;</span><span class="p">]</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p>We should mention JavaScript Object Notation (JSON) here, the data format
+CouchDB speaks. JSON is a lightweight data interchange format based on
+JavaScript syntax. Because JSON is natively compatible with JavaScript, your
+web browser is an ideal client for CouchDB.</p>
+<p class="last">Brackets (<tt class="docutils literal"><span class="pre">[]</span></tt>) represent ordered lists, and curly braces (<tt class="docutils literal"><span class="pre">{}</span></tt>)
+represent key/value dictionaries. Keys must be strings, delimited by quotes
+(<tt class="docutils literal"><span class="pre">&quot;</span></tt>), and values can be strings, numbers, booleans, lists, or key/value
+dictionaries. For a more detailed description of JSON, see Appendix E, JSON
+Primer.</p>
+</div>
+<p>Let&#8217;s create another database:</p>
+<div class="highlight-python"><div class="highlight"><pre>curl -X PUT http://127.0.0.1:5984/baseball
+</pre></div>
+</div>
+<p>CouchDB will reply with:</p>
+<div class="highlight-python"><div class="highlight"><pre>{&quot;error&quot;:&quot;file_exists&quot;,&quot;reason&quot;:&quot;The database could not be created,
+the file already exists.&quot;}
+</pre></div>
+</div>
+<p>We already have a database with that name, so CouchDB will respond with an
+error. Let&#8217;s try again with a different database name:</p>
+<div class="highlight-python"><div class="highlight"><pre>curl -X PUT http://127.0.0.1:5984/plankton
+</pre></div>
+</div>
+<p>CouchDB will reply with:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="p">{</span><span class="s">&quot;ok&quot;</span><span class="p">:</span><span class="n">true</span><span class="p">}</span>
+</pre></div>
+</div>
+<p>Retrieving the list of databases yet again shows some useful results:</p>
+<div class="highlight-python"><div class="highlight"><pre>curl -X GET http://127.0.0.1:5984/_all_dbs
+</pre></div>
+</div>
+<p>CouchDB will respond with:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="p">[</span><span class="s">&quot;baseball&quot;</span><span class="p">,</span> <span class="s">&quot;plankton&quot;</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>To round things off, let&#8217;s delete the second database:</p>
+<div class="highlight-python"><div class="highlight"><pre>curl -X DELETE http://127.0.0.1:5984/plankton
+</pre></div>
+</div>
+<p>CouchDB will reply with:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="p">{</span><span class="s">&quot;ok&quot;</span><span class="p">:</span><span class="n">true</span><span class="p">}</span>
+</pre></div>
+</div>
+<p>The list of databases is now the same as it was before:</p>
+<div class="highlight-python"><div class="highlight"><pre>curl -X GET http://127.0.0.1:5984/_all_dbs
+</pre></div>
+</div>
+<p>CouchDB will respond with:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="p">[</span><span class="s">&quot;baseball&quot;</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>For brevity, we&#8217;ll skip working with documents, as the next section covers a
+different and potentially easier way of working with CouchDB that should
+provide experience with this. As we work through the example,
+keep in mind that &#8220;under the hood&#8221; everything is being done by the
+application exactly as you have been doing here manually.
+Everything is done using GET, PUT, POST, and DELETE with a URI.</p>
+</div>
+<div class="section" id="welcome-to-fauxton">
+<span id="intro-tour-fauxton"></span><h2>1.4.2. Welcome to Fauxton<a class="headerlink" href="#welcome-to-fauxton" title="Permalink to this headline">¶</a></h2>
+<p>After having seen CouchDB&#8217;s raw API, let&#8217;s get our feet wet by playing with
+Fauxuton, the built-in administration interface. Fauxuton provides full access
+to all of CouchDB&#8217;s features and makes it easy to work with some of the more
+complex ideas involved. With Fauxton we can create and destroy databases; view
+and edit documents; compose and run MapReduce views; and trigger replication
+between databases.</p>
+<p>To load Fauxuton in your browser, visit:</p>
+<div class="highlight-python"><div class="highlight"><pre>http://127.0.0.1:5984/_utils/
+</pre></div>
+</div>
+<p>In later documents, we&#8217;ll focus on using CouchDB from
+server-side languages such as Ruby and Python. As such, this document is a great
+opportunity to showcase an example of natively serving up a dynamic web
+application using nothing more than CouchDB&#8217;s integrated web server, something
+you may wish to do with your own applications.</p>
+<p>The first thing we should do with a fresh installation of CouchDB is run the
+test suite to verify that everything is working properly. This assures us
+that any problems we may run into aren&#8217;t due to bothersome issues with our
+setup. By the same token, failures in the Fauxton test suite are a red flag,
+telling us to double-check our installation before attempting to use a
+potentially broken database server, saving us the confusion when nothing
+seems to be working quite like we expect!</p>
+<p>To validate your installation, click on the <cite>Verify</cite> link on the left-hand
+side, then press the green <cite>Verify Installation</cite> button. All tests should
+pass with a check mark. If any fail, re-check your installation steps.</p>
+</div>
+<div class="section" id="your-first-database-and-document">
+<h2>1.4.3. Your First Database and Document<a class="headerlink" href="#your-first-database-and-document" title="Permalink to this headline">¶</a></h2>
+<p>Creating a database in Fauxton is simple. From the overview page,
+click &#8220;Create Database.&#8221; When asked for a name, enter hello-world and click
+the Create button.</p>
+<p>After your database has been created, Fauxton will display a list of all its
+documents. This list will start out empty, so let&#8217;s
+create our first document. Click the plus sign next to &#8220;All Documents&#8221; and
+select the &#8220;New Doc&#8221; link. CouchDB will generate a UUID for you.</p>
+<p>For demoing purposes, having CouchDB assign a UUID is fine. When you write
+your first programs, we recommend assigning your own UUIDs. If you rely on
+the server to generate the UUID and you end up making two POST requests
+because the first POST request bombed out, you might generate two docs and
+never find out about the first one because only the second one will be
+reported back. Generating your own UUIDs makes sure that you&#8217;ll never end up
+with duplicate documents.</p>
+<p>Fauxton will display the newly created document, with its _id field. To create
+a new field, simply use the editor to write valid JSON. Add a new field by
+appending a comma to the <tt class="docutils literal"><span class="pre">_id</span></tt> value, then adding the text:</p>
+<div class="highlight-python"><div class="highlight"><pre>&quot;hello&quot;: &quot;my new value&quot;
+</pre></div>
+</div>
+<p>Click the green Create Document button to finalize creating the
+document.</p>
+<p>You can experiment with other JSON values; e.g., <tt class="docutils literal"><span class="pre">[1,</span> <span class="pre">2,</span> <span class="pre">&quot;c&quot;]</span></tt> or
+<tt class="docutils literal"><span class="pre">{&quot;foo&quot;:</span> <span class="pre">&quot;bar&quot;}</span></tt>.</p>
+<p>You&#8217;ll notice that the document&#8217;s _rev has been added. We&#8217;ll go into more detail
+about this in later documents, but for now, the important thing to note is
+that _rev acts like a safety feature when saving a document. As long as you
+and CouchDB agree on the most recent _rev of a document, you can successfully
+save your changes.</p>
+<p>For clarity, you may want to display the contents of the document in the all
+document view. To enable this, from the upper-right corner of the window,
+select Options, then check the Include Docs option. Finally, press the Run
+Query button. The full document should be displayed along with the <tt class="docutils literal"><span class="pre">_id</span></tt>
+and <tt class="docutils literal"><span class="pre">_rev</span></tt> values.</p>
+</div>
+<div class="section" id="running-a-query-using-mapreduce">
+<h2>1.4.4. Running a Query Using MapReduce<a class="headerlink" href="#running-a-query-using-mapreduce" title="Permalink to this headline">¶</a></h2>
+<p>Traditional relational databases allow you to run any queries you like as
+long as your data is structured correctly. In contrast,
+CouchDB uses predefined map and reduce functions in a style known as
+MapReduce. These functions provide great flexibility because they can adapt
+to variations in document structure, and indexes for each document can be
+computed independently and in parallel. The combination of a map and a reduce
+function is called a view in CouchDB terminology.</p>
+<p>For experienced relational database programmers, MapReduce can take some
+getting used to. Rather than declaring which rows from which tables to
+include in a result set and depending on the database to determine the most
+efficient way to run the query, reduce queries are based on simple range
+requests against the indexes generated by your map functions.</p>
+<p>Map functions are called once with each document as the argument.
+The function can choose to skip the document altogether or emit one or more
+view rows as key/value pairs. Map functions may not depend on any information
+outside of the document. This independence is what allows CouchDB views to be
+generated incrementally and in parallel.</p>
+<p>CouchDB views are stored as rows that are kept sorted by key. This makes
+retrieving data from a range of keys efficient even when there are thousands
+or millions of rows. When writing CouchDB map functions,
+your primary goal is to build an index that stores related data under nearby
+keys.</p>
+<p>Before we can run an example MapReduce view, we&#8217;ll need some data to run it
+on. We&#8217;ll create documents carrying the price of various supermarket items as
+found at different shops. Let&#8217;s create documents for apples, oranges,
+and bananas. (Allow CouchDB to generate the _id and _rev fields.) Use Fauxton
+to create documents that have a final JSON structure that looks like this:</p>
+<div class="highlight-javascript"><div class="highlight"><pre><span class="p">{</span>
+    <span class="s2">&quot;_id&quot;</span><span class="o">:</span> <span class="s2">&quot;00a271787f89c0ef2e10e88a0c0001f4&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;_rev&quot;</span><span class="o">:</span> <span class="s2">&quot;1-2628a75ac8c3abfffc8f6e30c9949fd6&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;item&quot;</span><span class="o">:</span> <span class="s2">&quot;apple&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;prices&quot;</span><span class="o">:</span> <span class="p">{</span>
+        <span class="s2">&quot;Fresh Mart&quot;</span><span class="o">:</span> <span class="mf">1.59</span><span class="p">,</span>
+        <span class="s2">&quot;Price Max&quot;</span><span class="o">:</span> <span class="mf">5.99</span><span class="p">,</span>
+        <span class="s2">&quot;Apples Express&quot;</span><span class="o">:</span> <span class="mf">0.79</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>OK, now that that&#8217;s done, let&#8217;s create the document for oranges:</p>
+<div class="highlight-javascript"><div class="highlight"><pre><span class="p">{</span>
+    <span class="s2">&quot;_id&quot;</span><span class="o">:</span> <span class="s2">&quot;00a271787f89c0ef2e10e88a0c0003f0&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;_rev&quot;</span><span class="o">:</span> <span class="s2">&quot;1-e9680c5d9a688b4ff8dd68549e8e072c&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;item&quot;</span><span class="o">:</span> <span class="s2">&quot;orange&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;prices&quot;</span><span class="o">:</span> <span class="p">{</span>
+        <span class="s2">&quot;Fresh Mart&quot;</span><span class="o">:</span> <span class="mf">1.99</span><span class="p">,</span>
+        <span class="s2">&quot;Price Max&quot;</span><span class="o">:</span> <span class="mf">3.19</span><span class="p">,</span>
+        <span class="s2">&quot;Citrus Circus&quot;</span><span class="o">:</span> <span class="mf">1.09</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>And finally, the document for bananas:</p>
+<div class="highlight-javascript"><div class="highlight"><pre><span class="p">{</span>
+    <span class="s2">&quot;_id&quot;</span><span class="o">:</span> <span class="s2">&quot;00a271787f89c0ef2e10e88a0c00048b&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;_rev&quot;</span><span class="o">:</span> <span class="s2">&quot;1-60e25d93dc12884676d037400a6fa189&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;item&quot;</span><span class="o">:</span> <span class="s2">&quot;banana&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;prices&quot;</span><span class="o">:</span> <span class="p">{</span>
+        <span class="s2">&quot;Fresh Mart&quot;</span><span class="o">:</span> <span class="mf">1.99</span><span class="p">,</span>
+        <span class="s2">&quot;Price Max&quot;</span><span class="o">:</span> <span class="mf">0.79</span><span class="p">,</span>
+        <span class="s2">&quot;Banana Montana&quot;</span><span class="o">:</span> <span class="mf">4.22</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Imagine we&#8217;re catering a big luncheon, but the client is very price-sensitive.
+To find the lowest prices, we&#8217;re going to create our first view,
+which shows each fruit sorted by price. Click &#8220;All Documents&#8221; to return to the
+hello-world overview, and then from the &#8220;All Documents&#8221; plus sign, click &#8220;New
+View&#8221; to create a new view.</p>
+<p>Name the design document <tt class="docutils literal"><span class="pre">_design/myDesignDoc</span></tt>, and set the Index name
+to <tt class="docutils literal"><span class="pre">prices</span></tt>.</p>
+<p>Edit the map function, on the right, so that it looks like the following:</p>
+<div class="highlight-javascript"><div class="highlight"><pre><span class="kd">function</span><span class="p">(</span><span class="nx">doc</span><span class="p">)</span> <span class="p">{</span>
+    <span class="kd">var</span> <span class="nx">shop</span><span class="p">,</span> <span class="nx">price</span><span class="p">,</span> <span class="nx">value</span><span class="p">;</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nx">doc</span><span class="p">.</span><span class="nx">item</span> <span class="o">&amp;&amp;</span> <span class="nx">doc</span><span class="p">.</span><span class="nx">prices</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">for</span> <span class="p">(</span><span class="nx">shop</span> <span class="k">in</span> <span class="nx">doc</span><span class="p">.</span><span class="nx">prices</span><span class="p">)</span> <span class="p">{</span>
+            <span class="nx">price</span> <span class="o">=</span> <span class="nx">doc</span><span class="p">.</span><span class="nx">prices</span><span class="p">[</span><span class="nx">shop</span><span class="p">];</span>
+            <span class="nx">value</span> <span class="o">=</span> <span class="p">[</span><span class="nx">doc</span><span class="p">.</span><span class="nx">item</span><span class="p">,</span> <span class="nx">shop</span><span class="p">];</span>
+            <span class="nx">emit</span><span class="p">(</span><span class="nx">price</span><span class="p">,</span> <span class="nx">value</span><span class="p">);</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>This is a JavaScript function that CouchDB runs for each of our documents as
+it computes the view. We&#8217;ll leave the reduce function blank for the time being.</p>
+<p>Click &#8220;Run&#8221; and you should see result rows,
+with the various items sorted by price. This map function could be even more
+useful if it grouped the items by type so that all the prices for bananas were
+next to each other in the result set. CouchDB&#8217;s key sorting system allows any
+valid JSON object as a key. In this case, we&#8217;ll emit an array of [item, price]
+so that CouchDB groups by item type and price.</p>
+<p>Let&#8217;s modify the view function (click the wrench icon next to the Views &gt;
+prices Design Document on the left, then select Edit) so that it looks like
+this:</p>
+<div class="highlight-javascript"><div class="highlight"><pre><span class="kd">function</span><span class="p">(</span><span class="nx">doc</span><span class="p">)</span> <span class="p">{</span>
+    <span class="kd">var</span> <span class="nx">shop</span><span class="p">,</span> <span class="nx">price</span><span class="p">,</span> <span class="nx">key</span><span class="p">;</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nx">doc</span><span class="p">.</span><span class="nx">item</span> <span class="o">&amp;&amp;</span> <span class="nx">doc</span><span class="p">.</span><span class="nx">prices</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">for</span> <span class="p">(</span><span class="nx">shop</span> <span class="k">in</span> <span class="nx">doc</span><span class="p">.</span><span class="nx">prices</span><span class="p">)</span> <span class="p">{</span>
+            <span class="nx">price</span> <span class="o">=</span> <span class="nx">doc</span><span class="p">.</span><span class="nx">prices</span><span class="p">[</span><span class="nx">shop</span><span class="p">];</span>
+            <span class="nx">key</span> <span class="o">=</span> <span class="p">[</span><span class="nx">doc</span><span class="p">.</span><span class="nx">item</span><span class="p">,</span> <span class="nx">price</span><span class="p">];</span>
+            <span class="nx">emit</span><span class="p">(</span><span class="nx">key</span><span class="p">,</span> <span class="nx">shop</span><span class="p">);</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Here, we first check that the document has the fields we want to use. CouchDB
+recovers gracefully from a few isolated map function failures,
+but when a map function fails regularly (due to a missing required field or
+other JavaScript exception), CouchDB shuts off its indexing to prevent any
+further resource usage. For this reason, it&#8217;s important to check for the
+existence of any fields before you use them. In this case,
+our map function will skip the first &#8220;hello world&#8221; document we created
+without emitting any rows or encountering any errors. The result of this
+query should now be displayed.</p>
+<p>Once we know we&#8217;ve got a document with an item type and some prices,
+we iterate over the item&#8217;s prices and emit key/values pairs. The key is an
+array of the item and the price, and forms the basis for CouchDB&#8217;s sorted
+index. In this case, the value is the name of the shop where the item can be
+found for the listed price.</p>
+<p>View rows are sorted by their keys &#8211; in this example, first by item,
+then by price. This method of complex sorting is at the heart of creating
+useful indexes with CouchDB.</p>
+<p>MapReduce can be challenging, especially if you&#8217;ve spent years working with
+relational databases. The important things to keep in mind are that map
+functions give you an opportunity to sort your data using any key you choose,
+and that CouchDB&#8217;s design is focused on providing fast,
+efficient access to data within a range of keys.</p>
+</div>
+<div class="section" id="triggering-replication">
+<h2>1.4.5. Triggering Replication<a class="headerlink" href="#triggering-replication" title="Permalink to this headline">¶</a></h2>
+<p>Fauxton can trigger replication between two local databases,
+between a local and remote database, or even between two remote databases.
+We&#8217;ll show you how to replicate data from one local database to another,
+which is a simple way of making backups of your databases as we&#8217;re working
+through the examples.</p>
+<p>First we&#8217;ll need to create an empty database to be the target of replication.
+Return to the Databases overview and create a database called
+<tt class="docutils literal"><span class="pre">hello-replication</span></tt>.  Now click &#8220;Replication&#8221; in the sidebar and choose
+hello-world as the source and hello-replication as the target. Click
+&#8220;Replicate&#8221; to replicate your database.</p>
+<p>To view the result of your replication, click on the Databases tab again.
+You should see the hello-replication database has the same number of documents
+as the hello-world database, and it should take up roughly the same size as
+well.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">For larger databases, replication can take much longer. It is important to
+leave the browser window open while replication is taking place.
+As an alternative, you can trigger replication via curl or some other HTTP
+client that can handle long-running connections. If your client closes the
+connection before replication finishes, you&#8217;ll have to retrigger it.
+Luckily, CouchDB&#8217;s replication can take over from where it left off
+instead of starting from scratch.</p>
+</div>
+</div>
+<div class="section" id="wrapping-up">
+<h2>1.4.6. Wrapping Up<a class="headerlink" href="#wrapping-up" title="Permalink to this headline">¶</a></h2>
+<p>Now that you&#8217;ve seen most of Fauxton&#8217;s features, you&#8217;ll be prepared to dive in
+and inspect your data as we build our example application in the next few
+documents. Fauxton&#8217;s pure JavaScript approach to managing CouchDB shows how
+it&#8217;s possible to build a fully featured web application using only CouchDB&#8217;s
+HTTP API and integrated web server.</p>
+<p>But before we get there, we&#8217;ll have another look at CouchDB&#8217;s HTTP API &#8211; now
+with a magnifying glass. Let&#8217;s curl up on the couch and relax.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+    <p class="logo"><a href="../index.html">
+      <img class="logo" src="../_static/logo.png" alt="Logo"/>
+    </a></p><!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+<div id="searchbox" style="display: none">
+
+<h3>Quick Search</h3>
+
+<form class="search" action="../search.html" method="get">
+<input type="text" name="q" style="width:115px">
+<input type="submit" value="Go">
+<input type="hidden" name="check_keywords" value="yes">
+<input type="hidden" name="area" value="default">
+</form>
+
+<br>
+
+</div>
+
+<script type="text/javascript">$('#searchbox').show(0);</script>
+  <h3><a href="../contents.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">1.4. Getting Started</a><ul>
+<li><a class="reference internal" href="#all-systems-are-go">1.4.1. All Systems Are Go!</a></li>
+<li><a class="reference internal" href="#welcome-to-fauxton">1.4.2. Welcome to Fauxton</a></li>
+<li><a class="reference internal" href="#your-first-database-and-document">1.4.3. Your First Database and Document</a></li>
+<li><a class="reference internal" href="#running-a-query-using-mapreduce">1.4.4. Running a Query Using MapReduce</a></li>
+<li><a class="reference internal" href="#triggering-replication">1.4.5. Triggering Replication</a></li>
+<li><a class="reference internal" href="#wrapping-up">1.4.6. Wrapping Up</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="consistency.html"
+                        title="previous chapter">1.3. Eventual Consistency</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="api.html"
+                        title="next chapter">1.5. The Core API</a></p><!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+
+<h3>Utilities</h3>
+
+<ul>
+<li><a href="../">Fauxton</a></li>
+</ul>
+<!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+<h3>More Help</h3>
+
+<ul>
+<li><a href="https://couchdb.apache.org/">Homepage</a></li>
+<li><a href="https://cwiki.apache.org/confluence/display/COUCHDB/">Wiki</a></li>
+<li><a href="https://couchdb.apache.org/#mailing-list">Mailing Lists</a></li>
+<li><a href="http://webchat.freenode.net/?channels=couchdb">IRC</a></li>
+<li><a href="https://issues.apache.org/jira/browse/CouchDB">Issues</a></li>
+<li><a href="../download.html">Download</a></li>
+<li><a href="https://github.com/apache/couchdb-documentation/blob/master/src/intro/tour.rst"
+       rel="nofollow">Show on GitHub</a></li>
+<li><a href="https://github.com/apache/couchdb-documentation/edit/master/src/intro/tour.rst"
+       rel="nofollow">Edit on GitHub</a></li>
+</ul><!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../http-api.html" title="HTTP API Reference"
+             >API Reference</a></li>
+        <li class="right" >
+          <a href="../config-ref.html" title="Configuration Reference"
+             >Config Reference</a> |</li>
+        <li class="right" >
+          <a href="api.html" title="1.5. The Core API"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="consistency.html" title="1.3. Eventual Consistency"
+             >previous</a> |</li>
+  <li><a href="../index.html">Apache CouchDB 2.0 Documentation</a> &raquo;</li>
+          <li><a href="index.html" >1. Introduction</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2016, Apache Software Foundation.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
+    </div>
+  </body>
+</html>

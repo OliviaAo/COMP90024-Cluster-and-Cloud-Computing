@@ -1,0 +1,298 @@
+<!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>9.1. Installation &mdash; Apache CouchDB 2.0 Documentation</title>
+    
+    <link rel="stylesheet" href="../_static/rtd.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '2.0.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+    <link rel="author" title="About these documents" href="../about.html" />
+    <link rel="top" title="Apache CouchDB 2.0 Documentation" href="../index.html" />
+    <link rel="up" title="9. Fauxton" href="index.html" />
+    <link rel="next" title="9.2. Writing Addons" href="addons.html" />
+    <link rel="prev" title="9. Fauxton" href="index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../http-api.html" title="HTTP API Reference"
+             >API Reference</a></li>
+        <li class="right" >
+          <a href="../config-ref.html" title="Configuration Reference"
+             >Config Reference</a> |</li>
+        <li class="right" >
+          <a href="addons.html" title="9.2. Writing Addons"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="9. Fauxton"
+             accesskey="P">previous</a> |</li>
+  <li><a href="../index.html">Apache CouchDB 2.0 Documentation</a> &raquo;</li>
+          <li><a href="index.html" accesskey="U">9. Fauxton</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="installation">
+<span id="fauxton-install"></span><h1>9.1. Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h1>
+<p>Recent versions of <a class="reference external" href="http://nodejs.org/">node.js</a> and <a class="reference external" href="https://npmjs.org/doc/README.html">npm</a> are required.</p>
+<div class="section" id="get-the-source">
+<h2>9.1.1. Get the source<a class="headerlink" href="#get-the-source" title="Permalink to this headline">¶</a></h2>
+<p>Clone the CouchDB repo:</p>
+<div class="highlight-python"><div class="highlight"><pre>$ git clone http://git-wip-us.apache.org/repos/asf/couchdb.git
+$ cd couchdb
+</pre></div>
+</div>
+</div>
+<div class="section" id="fauxton-setup">
+<h2>9.1.2. Fauxton Setup<a class="headerlink" href="#fauxton-setup" title="Permalink to this headline">¶</a></h2>
+<p>Install all dependencies:</p>
+<div class="highlight-python"><div class="highlight"><pre>couchdb/ $ cd src/fauxton
+couchdb/src/fauxton/ $ npm install
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p>To avoid a npm global install add <tt class="docutils literal"><span class="pre">node_modules/.bin</span></tt> to your path:</p>
+<div class="highlight-python"><div class="highlight"><pre>export PATH=./node_modules/.bin:$PATH
+</pre></div>
+</div>
+<p>Or just use the wrappers in <tt class="docutils literal"><span class="pre">./bin/</span></tt>.</p>
+<p>Development mode, non minified files:</p>
+<div class="highlight-python"><div class="highlight"><pre>./bin/grunt couchdebug
+</pre></div>
+</div>
+<p>Or fully compiled install:</p>
+<div class="last highlight-python"><div class="highlight"><pre>./bin/grunt couchdb
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="dev-server">
+<h2>9.1.3. Dev Server<a class="headerlink" href="#dev-server" title="Permalink to this headline">¶</a></h2>
+<p>Using the dev server is the easiest way to use Fauxton, specially when
+developing for it:</p>
+<div class="highlight-python"><div class="highlight"><pre>grunt dev
+</pre></div>
+</div>
+</div>
+<div class="section" id="deploy-fauxton">
+<h2>9.1.4. Deploy Fauxton<a class="headerlink" href="#deploy-fauxton" title="Permalink to this headline">¶</a></h2>
+<p>Deploy Fauxton to your local CouchDB instance:</p>
+<blockquote>
+<div>./bin/grunt couchapp_deploy</div></blockquote>
+<p>The Fauxton be available by <a class="reference external" href="http://localhost:5984/fauxton/_design/fauxton/index.html">/fauxton/_design/fauxton/index.html</a></p>
+<div class="section" id="understanding-fauxton-code-layout">
+<h3>Understanding Fauxton Code layout<a class="headerlink" href="#understanding-fauxton-code-layout" title="Permalink to this headline">¶</a></h3>
+<p>Each bit of functionality is its own separate module or addon.</p>
+<p>All core modules are stored under <cite>app/module</cite> and any addons that are optional
+are under <cite>app/addons</cite>.</p>
+<p>We use <a class="reference external" href="http://backbonejs.org/">backbone.js</a> and <a class="reference external" href="https://github.com/tbranyen/backbone.layoutmanager">Backbone.layoutmanager</a> quite heavily, so best to
+get an idea how they work. Its best at this point to read through a couple of
+the modules and addons to get an idea of how they work.</p>
+<p>Two good starting points are <cite>app/addon/config</cite> and <cite>app/modules/databases</cite>.</p>
+<p>Each module must have a <cite>base.js</cite> file, this is read and compile when Fauxton is
+deployed.</p>
+<p>The <cite>resource.js</cite> file is usually for your <tt class="docutils literal"><span class="pre">Backbone.Models</span></tt> and
+<tt class="docutils literal"><span class="pre">Backbone.Collections</span></tt>, <cite>view.js</cite> for your <tt class="docutils literal"><span class="pre">Backbone.Views</span></tt>.</p>
+<p>The <cite>routes.js</cite> is used to register a url path for your view along with what
+layout, data, breadcrumbs and api point is required for the view.</p>
+</div>
+<div class="section" id="todo-items">
+<h3>ToDo items<a class="headerlink" href="#todo-items" title="Permalink to this headline">¶</a></h3>
+<p>Checkout <a class="reference external" href="https://issues.apache.org/jira/browse/COUCHDB/component/12320406">JIRA</a>  for a list of items to do.</p>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+    <p class="logo"><a href="../index.html">
+      <img class="logo" src="../_static/logo.png" alt="Logo"/>
+    </a></p><!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+<div id="searchbox" style="display: none">
+
+<h3>Quick Search</h3>
+
+<form class="search" action="../search.html" method="get">
+<input type="text" name="q" style="width:115px">
+<input type="submit" value="Go">
+<input type="hidden" name="check_keywords" value="yes">
+<input type="hidden" name="area" value="default">
+</form>
+
+<br>
+
+</div>
+
+<script type="text/javascript">$('#searchbox').show(0);</script>
+  <h3><a href="../contents.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">9.1. Installation</a><ul>
+<li><a class="reference internal" href="#get-the-source">9.1.1. Get the source</a></li>
+<li><a class="reference internal" href="#fauxton-setup">9.1.2. Fauxton Setup</a></li>
+<li><a class="reference internal" href="#dev-server">9.1.3. Dev Server</a></li>
+<li><a class="reference internal" href="#deploy-fauxton">9.1.4. Deploy Fauxton</a><ul>
+<li><a class="reference internal" href="#understanding-fauxton-code-layout">Understanding Fauxton Code layout</a></li>
+<li><a class="reference internal" href="#todo-items">ToDo items</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="index.html"
+                        title="previous chapter">9. Fauxton</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="addons.html"
+                        title="next chapter">9.2. Writing Addons</a></p><!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+
+<h3>Utilities</h3>
+
+<ul>
+<li><a href="../">Fauxton</a></li>
+</ul>
+<!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+<h3>More Help</h3>
+
+<ul>
+<li><a href="https://couchdb.apache.org/">Homepage</a></li>
+<li><a href="https://cwiki.apache.org/confluence/display/COUCHDB/">Wiki</a></li>
+<li><a href="https://couchdb.apache.org/#mailing-list">Mailing Lists</a></li>
+<li><a href="http://webchat.freenode.net/?channels=couchdb">IRC</a></li>
+<li><a href="https://issues.apache.org/jira/browse/CouchDB">Issues</a></li>
+<li><a href="../download.html">Download</a></li>
+<li><a href="https://github.com/apache/couchdb-documentation/blob/master/src/fauxton/install.rst"
+       rel="nofollow">Show on GitHub</a></li>
+<li><a href="https://github.com/apache/couchdb-documentation/edit/master/src/fauxton/install.rst"
+       rel="nofollow">Edit on GitHub</a></li>
+</ul><!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../http-api.html" title="HTTP API Reference"
+             >API Reference</a></li>
+        <li class="right" >
+          <a href="../config-ref.html" title="Configuration Reference"
+             >Config Reference</a> |</li>
+        <li class="right" >
+          <a href="addons.html" title="9.2. Writing Addons"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="9. Fauxton"
+             >previous</a> |</li>
+  <li><a href="../index.html">Apache CouchDB 2.0 Documentation</a> &raquo;</li>
+          <li><a href="index.html" >9. Fauxton</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2016, Apache Software Foundation.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,297 @@
+<!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>10.3. Databases &mdash; Apache CouchDB 2.0 Documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/rtd.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '2.0.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <link rel="author" title="About these documents" href="../../about.html" />
+    <link rel="top" title="Apache CouchDB 2.0 Documentation" href="../../index.html" />
+    <link rel="up" title="10. API Reference" href="../index.html" />
+    <link rel="next" title="10.3.1. /db" href="common.html" />
+    <link rel="prev" title="10.2.14. Configuration" href="../server/configuration.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../http-api.html" title="HTTP API Reference"
+             >API Reference</a></li>
+        <li class="right" >
+          <a href="../../config-ref.html" title="Configuration Reference"
+             >Config Reference</a> |</li>
+        <li class="right" >
+          <a href="common.html" title="10.3.1. /db"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="../server/configuration.html" title="10.2.14. Configuration"
+             accesskey="P">previous</a> |</li>
+  <li><a href="../../index.html">Apache CouchDB 2.0 Documentation</a> &raquo;</li>
+          <li><a href="../index.html" accesskey="U">10. API Reference</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="databases">
+<span id="api-database"></span><h1>10.3. Databases<a class="headerlink" href="#databases" title="Permalink to this headline">¶</a></h1>
+<p>The Database endpoint provides an interface to an entire database with in
+CouchDB. These are database-level, rather than document-level requests.</p>
+<p>For all these requests, the database name within the URL path
+should be the database name that you wish to perform the operation on.
+For example, to obtain the meta information for the database
+<tt class="docutils literal"><span class="pre">recipes</span></tt>, you would use the HTTP request:</p>
+<div class="highlight-none"><div class="highlight"><pre>GET /recipes
+</pre></div>
+</div>
+<p>For clarity, the form below is used in the URL paths:</p>
+<div class="highlight-none"><div class="highlight"><pre>GET /db
+</pre></div>
+</div>
+<p>Where <tt class="docutils literal"><span class="pre">db</span></tt> is the name of any database.</p>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="common.html">10.3.1. <tt class="docutils literal"><span class="pre">/db</span></tt></a><ul>
+<li class="toctree-l2"><a class="reference internal" href="common.html#specifying-the-document-id">Specifying the Document ID</a></li>
+<li class="toctree-l2"><a class="reference internal" href="common.html#batch-mode-writes">Batch Mode Writes</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="bulk-api.html">10.3.2. <tt class="docutils literal"><span class="pre">/db/_all_docs</span></tt></a></li>
+<li class="toctree-l1"><a class="reference internal" href="bulk-api.html#db-bulk-docs">10.3.3. <tt class="docutils literal"><span class="pre">/db/_bulk_docs</span></tt></a><ul>
+<li class="toctree-l2"><a class="reference internal" href="bulk-api.html#inserting-documents-in-bulk">Inserting Documents in Bulk</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bulk-api.html#updating-documents-in-bulk">Updating Documents in Bulk</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bulk-api.html#bulk-documents-transaction-semantics">Bulk Documents Transaction Semantics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bulk-api.html#bulk-document-validation-and-conflict-errors">Bulk Document Validation and Conflict Errors</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="find.html">10.3.4. <tt class="docutils literal"><span class="pre">/db/_find</span></tt></a><ul>
+<li class="toctree-l2"><a class="reference internal" href="find.html#selector-syntax">Selector Syntax</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="find.html#selector-basics">Selector Basics</a></li>
+<li class="toctree-l3"><a class="reference internal" href="find.html#selector-with-2-fields">Selector with 2 fields</a></li>
+<li class="toctree-l3"><a class="reference internal" href="find.html#subfields">Subfields</a></li>
+<li class="toctree-l3"><a class="reference internal" href="find.html#operators">Operators</a></li>
+<li class="toctree-l3"><a class="reference internal" href="find.html#implicit-operators">Implicit Operators</a></li>
+<li class="toctree-l3"><a class="reference internal" href="find.html#explicit-operators">Explicit Operators</a></li>
+<li class="toctree-l3"><a class="reference internal" href="find.html#combination-operators">Combination Operators</a></li>
+<li class="toctree-l3"><a class="reference internal" href="find.html#condition-operators">Condition Operators</a></li>
+<li class="toctree-l3"><a class="reference internal" href="find.html#creating-selector-expressions">Creating Selector Expressions</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="find.html#sort-syntax">Sort Syntax</a></li>
+<li class="toctree-l2"><a class="reference internal" href="find.html#filtering-fields">Filtering Fields</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="find.html#db-index">10.3.5. <tt class="docutils literal"><span class="pre">/db/_index</span></tt></a></li>
+<li class="toctree-l1"><a class="reference internal" href="find.html#db-explain">10.3.6. <tt class="docutils literal"><span class="pre">/db/_explain</span></tt></a><ul>
+<li class="toctree-l2"><a class="reference internal" href="find.html#index-selection">Index selection</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="changes.html">10.3.7. <tt class="docutils literal"><span class="pre">/db/_changes</span></tt></a><ul>
+<li class="toctree-l2"><a class="reference internal" href="changes.html#changes-feeds">Changes Feeds</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="changes.html#polling">Polling</a></li>
+<li class="toctree-l3"><a class="reference internal" href="changes.html#long-polling">Long Polling</a></li>
+<li class="toctree-l3"><a class="reference internal" href="changes.html#continuous">Continuous</a></li>
+<li class="toctree-l3"><a class="reference internal" href="changes.html#event-source">Event Source</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="changes.html#filtering">Filtering</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="changes.html#doc-ids">_doc_ids</a></li>
+<li class="toctree-l3"><a class="reference internal" href="changes.html#selector">_selector</a></li>
+<li class="toctree-l3"><a class="reference internal" href="changes.html#design">_design</a></li>
+<li class="toctree-l3"><a class="reference internal" href="changes.html#view">_view</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="compact.html">10.3.8. <tt class="docutils literal"><span class="pre">/db/_compact</span></tt></a></li>
+<li class="toctree-l1"><a class="reference internal" href="compact.html#db-compact-design-doc">10.3.9. <tt class="docutils literal"><span class="pre">/db/_compact/design-doc</span></tt></a></li>
+<li class="toctree-l1"><a class="reference internal" href="compact.html#db-ensure-full-commit">10.3.10. <tt class="docutils literal"><span class="pre">/db/_ensure_full_commit</span></tt></a></li>
+<li class="toctree-l1"><a class="reference internal" href="compact.html#db-view-cleanup">10.3.11. <tt class="docutils literal"><span class="pre">/db/_view_cleanup</span></tt></a></li>
+<li class="toctree-l1"><a class="reference internal" href="security.html">10.3.12. <tt class="docutils literal"><span class="pre">/db/_security</span></tt></a></li>
+<li class="toctree-l1"><a class="reference internal" href="misc.html">10.3.13. <tt class="docutils literal"><span class="pre">/db/_purge</span></tt></a><ul>
+<li class="toctree-l2"><a class="reference internal" href="misc.html#updating-indexes">Updating Indexes</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="misc.html#db-missing-revs">10.3.14. <tt class="docutils literal"><span class="pre">/db/_missing_revs</span></tt></a></li>
+<li class="toctree-l1"><a class="reference internal" href="misc.html#db-revs-diff">10.3.15. <tt class="docutils literal"><span class="pre">/db/_revs_diff</span></tt></a></li>
+<li class="toctree-l1"><a class="reference internal" href="misc.html#db-revs-limit">10.3.16. <tt class="docutils literal"><span class="pre">/db/_revs_limit</span></tt></a></li>
+</ul>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+    <p class="logo"><a href="../../index.html">
+      <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+    </a></p><!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+<div id="searchbox" style="display: none">
+
+<h3>Quick Search</h3>
+
+<form class="search" action="../../search.html" method="get">
+<input type="text" name="q" style="width:115px">
+<input type="submit" value="Go">
+<input type="hidden" name="check_keywords" value="yes">
+<input type="hidden" name="area" value="default">
+</form>
+
+<br>
+
+</div>
+
+<script type="text/javascript">$('#searchbox').show(0);</script>
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="../server/configuration.html"
+                        title="previous chapter">10.2.14. Configuration</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="common.html"
+                        title="next chapter">10.3.1. <tt class="docutils literal"><span class="pre">/db</span></tt></a></p><!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+
+<h3>Utilities</h3>
+
+<ul>
+<li><a href="../">Fauxton</a></li>
+</ul>
+<!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+<h3>More Help</h3>
+
+<ul>
+<li><a href="https://couchdb.apache.org/">Homepage</a></li>
+<li><a href="https://cwiki.apache.org/confluence/display/COUCHDB/">Wiki</a></li>
+<li><a href="https://couchdb.apache.org/#mailing-list">Mailing Lists</a></li>
+<li><a href="http://webchat.freenode.net/?channels=couchdb">IRC</a></li>
+<li><a href="https://issues.apache.org/jira/browse/CouchDB">Issues</a></li>
+<li><a href="../../download.html">Download</a></li>
+<li><a href="https://github.com/apache/couchdb-documentation/blob/master/src/api/database/index.rst"
+       rel="nofollow">Show on GitHub</a></li>
+<li><a href="https://github.com/apache/couchdb-documentation/edit/master/src/api/database/index.rst"
+       rel="nofollow">Edit on GitHub</a></li>
+</ul><!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../http-api.html" title="HTTP API Reference"
+             >API Reference</a></li>
+        <li class="right" >
+          <a href="../../config-ref.html" title="Configuration Reference"
+             >Config Reference</a> |</li>
+        <li class="right" >
+          <a href="common.html" title="10.3.1. /db"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="../server/configuration.html" title="10.2.14. Configuration"
+             >previous</a> |</li>
+  <li><a href="../../index.html">Apache CouchDB 2.0 Documentation</a> &raquo;</li>
+          <li><a href="../index.html" >10. API Reference</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2016, Apache Software Foundation.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
+    </div>
+  </body>
+</html>

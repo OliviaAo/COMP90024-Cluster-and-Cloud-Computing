@@ -1,0 +1,373 @@
+<!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>5.1. Compaction &mdash; Apache CouchDB 2.0 Documentation</title>
+    
+    <link rel="stylesheet" href="../_static/rtd.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '2.0.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+    <link rel="author" title="About these documents" href="../about.html" />
+    <link rel="top" title="Apache CouchDB 2.0 Documentation" href="../index.html" />
+    <link rel="up" title="5. CouchDB Maintenance" href="index.html" />
+    <link rel="next" title="5.2. Performance" href="performance.html" />
+    <link rel="prev" title="5. CouchDB Maintenance" href="index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../http-api.html" title="HTTP API Reference"
+             >API Reference</a></li>
+        <li class="right" >
+          <a href="../config-ref.html" title="Configuration Reference"
+             >Config Reference</a> |</li>
+        <li class="right" >
+          <a href="performance.html" title="5.2. Performance"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="5. CouchDB Maintenance"
+             accesskey="P">previous</a> |</li>
+  <li><a href="../index.html">Apache CouchDB 2.0 Documentation</a> &raquo;</li>
+          <li><a href="index.html" accesskey="U">5. CouchDB Maintenance</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="compaction">
+<span id="compact"></span><h1>5.1. Compaction<a class="headerlink" href="#compaction" title="Permalink to this headline">¶</a></h1>
+<p>The <cite>compaction</cite> operation is the way to reduce disk space usage by removing
+unused and old data from database or view index files. This operation is a very
+similar to the <cite>vacuum</cite> (<a class="reference external" href="http://www.sqlite.org/lang_vacuum.html">SQLite</a> ex.) available for other database management
+systems.</p>
+<p>During compaction of the <cite>target</cite> CouchDB creates new file with the <tt class="docutils literal"><span class="pre">.compact</span></tt>
+extension and transfers only actual data into. Because of this, CouchDB checks
+first for the available disk space - it should be <em>twice greater</em> than the
+compacted file&#8217;s data.</p>
+<p>When all actual data is successfully transferred to the <cite>compacted</cite> file CouchDB
+replaces the <cite>target</cite> with the <cite>compacted</cite> file.</p>
+<div class="section" id="database-compaction">
+<span id="compact-db"></span><h2>5.1.1. Database Compaction<a class="headerlink" href="#database-compaction" title="Permalink to this headline">¶</a></h2>
+<p>Database compaction compresses the database file by removing unused file
+sections created during updates. Old documents revisions are replaced with
+small amount of metadata called <cite>tombstone</cite> which are used for conflicts
+resolution during replication. The number of stored revisions
+(and their <cite>tombstones</cite>) can be configured by using the <a class="reference internal" href="../api/database/misc.html#get--db-_revs_limit" title="GET /{db}/_revs_limit"><tt class="xref http http-get docutils literal"><span class="pre">_revs_limit</span></tt></a> URL endpoint.</p>
+<p>Compaction is manually triggered operation per database and runs as a background
+task. To start it for specific database there is need to send HTTP
+<a class="reference internal" href="../api/database/compact.html#post--db-_compact" title="POST /{db}/_compact"><tt class="xref http http-post docutils literal"><span class="pre">POST</span> <span class="pre">/{db}/_compact</span></tt></a> sub-resource of the target database:</p>
+<div class="highlight-python"><div class="highlight"><pre>curl -H &quot;Content-Type: application/json&quot; -X POST http://localhost:5984/my_db/_compact
+</pre></div>
+</div>
+<p>On success, HTTP status <a class="reference external" href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.2.3">202 Accepted</a> is returned immediately:</p>
+<div class="highlight-http"><div class="highlight"><pre><span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span> <span class="m">202</span> <span class="ne">Accepted</span>
+<span class="na">Cache-Control</span><span class="o">:</span> <span class="l">must-revalidate</span>
+<span class="na">Content-Length</span><span class="o">:</span> <span class="l">12</span>
+<span class="na">Content-Type</span><span class="o">:</span> <span class="l">text/plain; charset=utf-8</span>
+<span class="na">Date</span><span class="o">:</span> <span class="l">Wed, 19 Jun 2013 09:43:52 GMT</span>
+<span class="na">Server</span><span class="o">:</span> <span class="l">CouchDB (Erlang/OTP)</span>
+</pre></div>
+</div>
+<div class="highlight-javascript"><div class="highlight"><pre><span class="p">{</span><span class="s2">&quot;ok&quot;</span><span class="o">:</span><span class="kc">true</span><span class="p">}</span>
+</pre></div>
+</div>
+<p>Although the request body is not used you must still specify
+<a class="reference external" href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.17">Content-Type</a> header with <em class="mimetype">application/json</em> value
+for the request. If you don&#8217;t, you will be aware about with HTTP status
+<a class="reference external" href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.4.16">415 Unsupported Media Type</a> response:</p>
+<div class="highlight-http"><div class="highlight"><pre><span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span> <span class="m">415</span> <span class="ne">Unsupported Media Type</span>
+<span class="na">Cache-Control</span><span class="o">:</span> <span class="l">must-revalidate</span>
+<span class="na">Content-Length</span><span class="o">:</span> <span class="l">78</span>
+<span class="na">Content-Type</span><span class="o">:</span> <span class="l">application/json</span>
+<span class="na">Date</span><span class="o">:</span> <span class="l">Wed, 19 Jun 2013 09:43:44 GMT</span>
+<span class="na">Server</span><span class="o">:</span> <span class="l">CouchDB (Erlang/OTP)</span>
+
+<span class="p">{</span><span class="nt">&quot;error&quot;</span><span class="p">:</span><span class="s2">&quot;bad_content_type&quot;</span><span class="p">,</span><span class="nt">&quot;reason&quot;</span><span class="p">:</span><span class="s2">&quot;Content-Type must be application/json&quot;</span><span class="p">}</span>
+</pre></div>
+</div>
+<p>When the compaction is successful started and running it is possible to get
+information about it via <a class="reference internal" href="../api/database/common.html#api-db"><em>database information resource</em></a>:</p>
+<div class="highlight-python"><div class="highlight"><pre>curl http://localhost:5984/my_db
+</pre></div>
+</div>
+<div class="highlight-http"><div class="highlight"><pre><span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span> <span class="m">200</span> <span class="ne">OK</span>
+<span class="na">Cache-Control</span><span class="o">:</span> <span class="l">must-revalidate</span>
+<span class="na">Content-Length</span><span class="o">:</span> <span class="l">246</span>
+<span class="na">Content-Type</span><span class="o">:</span> <span class="l">application/json</span>
+<span class="na">Date</span><span class="o">:</span> <span class="l">Wed, 19 Jun 2013 16:51:20 GMT</span>
+<span class="na">Server</span><span class="o">:</span> <span class="l">CouchDB (Erlang/OTP)</span>
+
+<span class="p">{</span>
+    <span class="nt">&quot;committed_update_seq&quot;</span><span class="p">:</span> <span class="mi">76215</span><span class="p">,</span>
+    <span class="nt">&quot;compact_running&quot;</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
+    <span class="nt">&quot;data_size&quot;</span><span class="p">:</span> <span class="mi">3787996</span><span class="p">,</span>
+    <span class="nt">&quot;db_name&quot;</span><span class="p">:</span> <span class="s2">&quot;my_db&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;disk_format_version&quot;</span><span class="p">:</span> <span class="mi">6</span><span class="p">,</span>
+    <span class="nt">&quot;disk_size&quot;</span><span class="p">:</span> <span class="mi">17703025</span><span class="p">,</span>
+    <span class="nt">&quot;doc_count&quot;</span><span class="p">:</span> <span class="mi">5091</span><span class="p">,</span>
+    <span class="nt">&quot;doc_del_count&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="nt">&quot;instance_start_time&quot;</span><span class="p">:</span> <span class="s2">&quot;1371660751878859&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;purge_seq&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="nt">&quot;update_seq&quot;</span><span class="p">:</span> <span class="mi">76215</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Note that <tt class="docutils literal"><span class="pre">compaction_running</span></tt> field is <tt class="docutils literal"><span class="pre">true</span></tt> indicating that compaction
+is actually running. To track the compaction progress you may query the
+<a class="reference internal" href="../api/server/common.html#get--_active_tasks" title="GET /_active_tasks"><tt class="xref http http-get docutils literal"><span class="pre">_active_tasks</span></tt></a> resource:</p>
+<div class="highlight-python"><div class="highlight"><pre>curl http://localhost:5984/my_db
+</pre></div>
+</div>
+<div class="highlight-http"><div class="highlight"><pre><span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span> <span class="m">200</span> <span class="ne">OK</span>
+<span class="na">Cache-Control</span><span class="o">:</span> <span class="l">must-revalidate</span>
+<span class="na">Content-Length</span><span class="o">:</span> <span class="l">175</span>
+<span class="na">Content-Type</span><span class="o">:</span> <span class="l">application/json</span>
+<span class="na">Date</span><span class="o">:</span> <span class="l">Wed, 19 Jun 2013 16:27:23 GMT</span>
+<span class="na">Server</span><span class="o">:</span> <span class="l">CouchDB (Erlang/OTP)</span>
+
+<span class="p">[</span>
+    <span class="p">{</span>
+        <span class="nt">&quot;changes_done&quot;</span><span class="p">:</span> <span class="mi">44461</span><span class="p">,</span>
+        <span class="nt">&quot;database&quot;</span><span class="p">:</span> <span class="s2">&quot;my_db&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;pid&quot;</span><span class="p">:</span> <span class="s2">&quot;&lt;0.218.0&gt;&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;progress&quot;</span><span class="p">:</span> <span class="mi">58</span><span class="p">,</span>
+        <span class="nt">&quot;started_on&quot;</span><span class="p">:</span> <span class="mi">1371659228</span><span class="p">,</span>
+        <span class="nt">&quot;total_changes&quot;</span><span class="p">:</span> <span class="mi">76215</span><span class="p">,</span>
+        <span class="nt">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;database_compaction&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;updated_on&quot;</span><span class="p">:</span> <span class="mi">1371659241</span>
+    <span class="p">}</span>
+<span class="p">]</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="views-compaction">
+<span id="compact-views"></span><h2>5.1.2. Views Compaction<a class="headerlink" href="#views-compaction" title="Permalink to this headline">¶</a></h2>
+<p><cite>Views</cite> are also need compaction like databases, unlike databases views
+are compacted by groups per <cite>design document</cite>. To start their compaction there
+is need to send HTTP <a class="reference internal" href="../api/database/compact.html#post--db-_compact-ddoc" title="POST /{db}/_compact/{ddoc}"><tt class="xref http http-post docutils literal"><span class="pre">POST</span> <span class="pre">/{db}/_compact/{ddoc}</span></tt></a> request:</p>
+<div class="highlight-python"><div class="highlight"><pre>curl -H &quot;Content-Type: application/json&quot; -X POST http://localhost:5984/dbname/_compact/designname
+</pre></div>
+</div>
+<div class="highlight-javascript"><div class="highlight"><pre><span class="p">{</span><span class="s2">&quot;ok&quot;</span><span class="o">:</span><span class="kc">true</span><span class="p">}</span>
+</pre></div>
+</div>
+<p>This compacts the view index from the current version of the specified design
+document. The HTTP response code is <a class="reference external" href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.2.3">202 Accepted</a>
+(like <a class="reference internal" href="#compact-db"><em>compaction for databases</em></a>) and a compaction background
+task will be created.</p>
+<div class="section" id="views-cleanup">
+<span id="compact-views-cleanup"></span><h3>Views cleanup<a class="headerlink" href="#views-cleanup" title="Permalink to this headline">¶</a></h3>
+<p>View indexes on disk are named after their <cite>MD5</cite> hash of the view definition.
+When you change a view, old indexes remain on disk. To clean up all outdated
+view indexes (files named after the MD5 representation of views, that does not
+exist anymore) you can trigger a <a class="reference internal" href="../api/database/compact.html#api-db-view-cleanup"><em>view cleanup</em></a>:</p>
+<div class="highlight-python"><div class="highlight"><pre>curl -H &quot;Content-Type: application/json&quot; -X POST http://localhost:5984/dbname/_view_cleanup
+</pre></div>
+</div>
+<div class="highlight-javascript"><div class="highlight"><pre><span class="p">{</span><span class="s2">&quot;ok&quot;</span><span class="o">:</span><span class="kc">true</span><span class="p">}</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="automatic-compaction">
+<span id="compact-auto"></span><h2>5.1.3. Automatic Compaction<a class="headerlink" href="#automatic-compaction" title="Permalink to this headline">¶</a></h2>
+<p>While both <a class="reference internal" href="#compact-db"><em>database</em></a> and <a class="reference internal" href="#compact-views"><em>views</em></a>
+compactions are required be manually triggered, it is also possible to configure
+automatic compaction, so that compaction of databases and views is automatically
+triggered based on various criteria. Automatic compaction is configured in
+CouchDB&#8217;s <a class="reference internal" href="../config/intro.html#config-intro"><em>configuration files</em></a>.</p>
+<p>The <a class="reference internal" href="../config/services.html#daemons/compaction_daemon" title="compaction_daemon"><tt class="xref config config-option docutils literal"><span class="pre">daemons/compaction_daemon</span></tt></a> is responsible for triggering
+the compaction. It is automatically started, but disabled by default.
+The criteria for triggering the compactions is configured in the
+<a class="reference internal" href="../config/compaction.html#compactions" title="[compactions]"><tt class="xref config config-section docutils literal"><span class="pre">compactions</span></tt></a> section.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+    <p class="logo"><a href="../index.html">
+      <img class="logo" src="../_static/logo.png" alt="Logo"/>
+    </a></p><!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+<div id="searchbox" style="display: none">
+
+<h3>Quick Search</h3>
+
+<form class="search" action="../search.html" method="get">
+<input type="text" name="q" style="width:115px">
+<input type="submit" value="Go">
+<input type="hidden" name="check_keywords" value="yes">
+<input type="hidden" name="area" value="default">
+</form>
+
+<br>
+
+</div>
+
+<script type="text/javascript">$('#searchbox').show(0);</script>
+  <h3><a href="../contents.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">5.1. Compaction</a><ul>
+<li><a class="reference internal" href="#database-compaction">5.1.1. Database Compaction</a></li>
+<li><a class="reference internal" href="#views-compaction">5.1.2. Views Compaction</a><ul>
+<li><a class="reference internal" href="#views-cleanup">Views cleanup</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#automatic-compaction">5.1.3. Automatic Compaction</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="index.html"
+                        title="previous chapter">5. CouchDB Maintenance</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="performance.html"
+                        title="next chapter">5.2. Performance</a></p><!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+
+<h3>Utilities</h3>
+
+<ul>
+<li><a href="../">Fauxton</a></li>
+</ul>
+<!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+<h3>More Help</h3>
+
+<ul>
+<li><a href="https://couchdb.apache.org/">Homepage</a></li>
+<li><a href="https://cwiki.apache.org/confluence/display/COUCHDB/">Wiki</a></li>
+<li><a href="https://couchdb.apache.org/#mailing-list">Mailing Lists</a></li>
+<li><a href="http://webchat.freenode.net/?channels=couchdb">IRC</a></li>
+<li><a href="https://issues.apache.org/jira/browse/CouchDB">Issues</a></li>
+<li><a href="../download.html">Download</a></li>
+<li><a href="https://github.com/apache/couchdb-documentation/blob/master/src/maintenance/compaction.rst"
+       rel="nofollow">Show on GitHub</a></li>
+<li><a href="https://github.com/apache/couchdb-documentation/edit/master/src/maintenance/compaction.rst"
+       rel="nofollow">Edit on GitHub</a></li>
+</ul><!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../http-api.html" title="HTTP API Reference"
+             >API Reference</a></li>
+        <li class="right" >
+          <a href="../config-ref.html" title="Configuration Reference"
+             >Config Reference</a> |</li>
+        <li class="right" >
+          <a href="performance.html" title="5.2. Performance"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="5. CouchDB Maintenance"
+             >previous</a> |</li>
+  <li><a href="../index.html">Apache CouchDB 2.0 Documentation</a> &raquo;</li>
+          <li><a href="index.html" >5. CouchDB Maintenance</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2016, Apache Software Foundation.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,32 @@
+
+
+text.indexOf('fast food') != -1 || text.indexOf('kfc') != -1 
+            || text.indexOf('hamburger') != -1 || text.indexOf('burger king') != -1 
+            || text.indexOf('fried chicken') != -1 || text.indexOf('macca') != -1
+            || text.indexOf('beer') != -1 || text.search( /m[a]?cdo(na)?(l)?d?/i ) != -1
+            || text.indexOf('junk food') != -1 || text.indexOf('alcohol') != -1
+            || text.indexOf('hot dog') != -1 || text.search(/p[i|a]?[i]?[z]+a?z?/i) != -1
+	    || text.indexOf('dominos') != -1 || text.indexOf('fries') != -1
+            || text.indexOf('chicken nuggets') != -1 || text.indexOf('hungry jack') != -1
+	    || text.indexOf('fish chips') != -1) {
+
+
+
+
+fast food
+kfc
+hamburger   ----> hamburg
+burger king  ---> burger/brgr/burgr/buger/bruger/brger/burgar/burer kiing    
+fried chicken
+macca   ---> maca
+beer
+mcdonald    ---> mcdo/mcdonal/mcdona/mcdonals/macdonalds   text.search( /m[a]?cdo(na)?(l)?d?/i )
+junk food
+alcohol
+hot dog  ---> hotdog/hotdogs/hot dogs
+pizza  ---> piiza/pizaz/pizzza/piiza/pizza/pazza/pizzan/pezza/pizz/  text.search(/p[i|a]?[i]?[z]+a?z?/i)
+dominos ---> dominoes/domino's
+fries 
+chicken nuggets
+hungry jack
+fish chips  ---> fish & chips/ fish&chips/ fish and chips

@@ -1,0 +1,431 @@
+<!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>2.1. Installation on Unix-like systems &mdash; Apache CouchDB 2.0 Documentation</title>
+    
+    <link rel="stylesheet" href="../_static/rtd.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '2.0.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+    <link rel="author" title="About these documents" href="../about.html" />
+    <link rel="top" title="Apache CouchDB 2.0 Documentation" href="../index.html" />
+    <link rel="up" title="2. Installation" href="index.html" />
+    <link rel="next" title="2.2. Installation on Windows" href="windows.html" />
+    <link rel="prev" title="2. Installation" href="index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../http-api.html" title="HTTP API Reference"
+             >API Reference</a></li>
+        <li class="right" >
+          <a href="../config-ref.html" title="Configuration Reference"
+             >Config Reference</a> |</li>
+        <li class="right" >
+          <a href="windows.html" title="2.2. Installation on Windows"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="2. Installation"
+             accesskey="P">previous</a> |</li>
+  <li><a href="../index.html">Apache CouchDB 2.0 Documentation</a> &raquo;</li>
+          <li><a href="index.html" accesskey="U">2. Installation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="installation-on-unix-like-systems">
+<span id="install-unix"></span><h1>2.1. Installation on Unix-like systems<a class="headerlink" href="#installation-on-unix-like-systems" title="Permalink to this headline">¶</a></h1>
+<p>A high-level guide to Unix-like systems, including Mac OS X and Ubuntu.</p>
+<p>This document as well as the INSTALL.Unix document in the official
+release are the canonical sources of installation information. However, many
+systems have gotchas that you need to be aware of. In addition, dependencies
+frequently change as distributions update their archives.</p>
+<div class="section" id="dependencies">
+<span id="install-unix-dependencies"></span><h2>2.1.1. Dependencies<a class="headerlink" href="#dependencies" title="Permalink to this headline">¶</a></h2>
+<p>You should have the following installed:</p>
+<ul class="simple">
+<li><a class="reference external" href="http://erlang.org/">Erlang OTP (&gt;=R61B03, =&lt;19.x)</a></li>
+<li><a class="reference external" href="http://icu-project.org/">ICU</a></li>
+<li><a class="reference external" href="http://www.openssl.org/">OpenSSL</a></li>
+<li><a class="reference external" href="http://www.mozilla.org/js/spidermonkey/">Mozilla SpiderMonkey (1.8.5)</a></li>
+<li><a class="reference external" href="http://www.gnu.org/software/make/">GNU Make</a></li>
+<li><a class="reference external" href="http://gcc.gnu.org/">GNU Compiler Collection</a></li>
+<li><a class="reference external" href="http://curl.haxx.se/libcurl/">libcurl</a></li>
+<li><a class="reference external" href="http://www.gnu.org/s/help2man/">help2man</a></li>
+<li><a class="reference external" href="http://python.org/">Python (&gt;=2.7) for docs</a></li>
+<li><a class="reference external" href="http://pypi.python.org/pypi/Sphinx">Python Sphinx (&gt;=1.1.3)</a></li>
+</ul>
+<p>It is recommended that you install Erlang OTP R16B03-1 or above where possible.
+You will only need libcurl if you plan to run the JavaScript test suite. And
+help2man is only need if you plan on installing the CouchDB man pages.
+Python and Sphinx are only required for building the online documentation.
+Documentation build can be disabled by adding the <tt class="docutils literal"><span class="pre">--disable-docs</span></tt> flag to
+the <tt class="docutils literal"><span class="pre">configure</span></tt> script.</p>
+<div class="admonition seealso">
+<p class="first admonition-title">See also</p>
+<ul class="last simple">
+<li><a class="reference external" href="https://cwiki.apache.org/confluence/display/COUCHDB/Installing+CouchDB">Installing CouchDB</a></li>
+</ul>
+</div>
+<div class="section" id="debian-based-systems">
+<h3>Debian-based Systems<a class="headerlink" href="#debian-based-systems" title="Permalink to this headline">¶</a></h3>
+<p>You can install the dependencies by running:</p>
+<div class="highlight-python"><div class="highlight"><pre>sudo apt-get --no-install-recommends -y install \
+    build-essential pkg-config erlang \
+    libicu-dev libmozjs185-dev libcurl4-openssl-dev
+</pre></div>
+</div>
+<p>Be sure to update the version numbers to match your system&#8217;s available
+packages.</p>
+</div>
+<div class="section" id="redhat-based-fedora-centos-rhel-systems">
+<h3>RedHat-based (Fedora, Centos, RHEL) Systems<a class="headerlink" href="#redhat-based-fedora-centos-rhel-systems" title="Permalink to this headline">¶</a></h3>
+<p>You can install the dependencies by running:</p>
+<div class="highlight-python"><div class="highlight"><pre>sudo yum install autoconf autoconf-archive automake \
+    curl-devel erlang-asn1 erlang-erts erlang-eunit \
+    erlang-os_mon erlang-xmerl help2man \
+    js-devel-1.8.5 libicu-devel libtool perl-Test-Harness
+</pre></div>
+</div>
+<p>While CouchDB builds against the default js-devel-1.7.0 included in some
+distributions, it&#8217;s recommended to use a more recent js-devel-1.8.5.</p>
+</div>
+<div class="section" id="mac-os-x">
+<h3>Mac OS X<a class="headerlink" href="#mac-os-x" title="Permalink to this headline">¶</a></h3>
+<p>Follow <a class="reference internal" href="mac.html#install-mac-homebrew"><em>Installation with Homebrew</em></a> reference for Mac App installation.</p>
+<p>If you are installing from source, you will need to install the Command
+Line Tools:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">xcode</span><span class="o">-</span><span class="n">select</span> <span class="o">--</span><span class="n">install</span>
+</pre></div>
+</div>
+<p>You can then install the other dependencies by running:</p>
+<div class="highlight-python"><div class="highlight"><pre>brew install autoconf autoconf-archive automake libtool \
+    erlang icu4c spidermonkey curl pkg-config
+</pre></div>
+</div>
+<p>You will need <cite>Homebrew</cite> installed to use the <tt class="docutils literal"><span class="pre">brew</span></tt> command.</p>
+<p>Some versions of Mac OS X ship a problematic OpenSSL library. If
+you&#8217;re experiencing troubles with CouchDB crashing intermittently with
+a segmentation fault or a bus error, you will need to install your own
+version of OpenSSL. See the wiki, mentioned above, for more information.</p>
+<div class="admonition seealso">
+<p class="first admonition-title">See also</p>
+<ul class="last simple">
+<li><a class="reference external" href="http://mxcl.github.com/homebrew/">Homebrew</a></li>
+</ul>
+</div>
+</div>
+<div class="section" id="freebsd">
+<h3>FreeBSD<a class="headerlink" href="#freebsd" title="Permalink to this headline">¶</a></h3>
+<p>FreeBSD requires the use of GNU Make. Where <tt class="docutils literal"><span class="pre">make</span></tt> is specified in this
+documentation, substitute <tt class="docutils literal"><span class="pre">gmake</span></tt>.</p>
+<p>You can install this by running:</p>
+<div class="highlight-python"><div class="highlight"><pre>pkg install gmake
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="installing">
+<h2>2.1.2. Installing<a class="headerlink" href="#installing" title="Permalink to this headline">¶</a></h2>
+<p>Once you have satisfied the dependencies you should run:</p>
+<div class="highlight-python"><div class="highlight"><pre>./configure
+</pre></div>
+</div>
+<p>If you wish to customize the installation, pass <tt class="docutils literal"><span class="pre">--help</span></tt> to this script.</p>
+<p>If everything was successful you should see the following message:</p>
+<div class="highlight-python"><div class="highlight"><pre>You have configured Apache CouchDB, time to relax.
+</pre></div>
+</div>
+<p>Relax.</p>
+<p>To build CouchDB you should run:</p>
+<div class="highlight-python"><div class="highlight"><pre>make release
+</pre></div>
+</div>
+<p>Try <tt class="docutils literal"><span class="pre">gmake</span></tt> if <tt class="docutils literal"><span class="pre">make</span></tt> is giving you any problems.</p>
+<p>If everything was successful you should see the following message:</p>
+<div class="highlight-python"><div class="highlight"><pre>... done
+You can now copy the rel/couchdb directory anywhere on your system.
+Start CouchDB with ./bin/couchdb from within that directory.
+</pre></div>
+</div>
+<p>Relax.</p>
+<p>Note: a fully-fledged <tt class="docutils literal"><span class="pre">./configure</span></tt> with the usual GNU Autotools options
+for package managers and a corresponding <tt class="docutils literal"><span class="pre">make</span> <span class="pre">install</span></tt> are in
+development, but not part of the 2.0.0 release.</p>
+</div>
+<div class="section" id="user-registration-and-security">
+<span id="install-unix-security"></span><h2>2.1.3. User Registration and Security<a class="headerlink" href="#user-registration-and-security" title="Permalink to this headline">¶</a></h2>
+<p>For OS X, in the steps below, substitute <tt class="docutils literal"><span class="pre">/Users/couchdb</span></tt> for
+<tt class="docutils literal"><span class="pre">/home/couchdb</span></tt>.</p>
+<p>You should create a special <tt class="docutils literal"><span class="pre">couchdb</span></tt> user for CouchDB.</p>
+<p>On many Unix-like systems you can run:</p>
+<div class="highlight-python"><div class="highlight"><pre>adduser --system \
+        --no-create-home \
+        --shell /bin/bash \
+        --group --gecos \
+        &quot;CouchDB Administrator&quot; couchdb
+</pre></div>
+</div>
+<p>On Mac OS X you can use the Workgroup Manager to create users up to version
+10.9, and dscl or sysadminctl after version 10.9. Search Apple&#8217;s support
+site to find the documentation appropriate for your system. As of recent
+versions of OS X, this functionality is also included in Server.app,
+available through the App Store only as part of OS X Server.</p>
+<p>You must make sure that:</p>
+<ul class="simple">
+<li>The user has a working POSIX shell</li>
+<li>The user&#8217;s home directory is wherever you have copied the release.
+As a recommendation, copy the <tt class="docutils literal"><span class="pre">rel/couchdb</span></tt> directory into
+<tt class="docutils literal"><span class="pre">/home/couchdb</span></tt> or <tt class="docutils literal"><span class="pre">/Users/couchdb</span></tt>.</li>
+</ul>
+<p>You can test this by:</p>
+<ul class="simple">
+<li>Trying to log in as the <tt class="docutils literal"><span class="pre">couchdb</span></tt> user</li>
+<li>Running <tt class="docutils literal"><span class="pre">pwd</span></tt> and checking the present working directory</li>
+</ul>
+<p>Copy the built couchdb release to the new user&#8217;s home directory:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">cp</span> <span class="o">-</span><span class="n">R</span> <span class="o">/</span><span class="n">path</span><span class="o">/</span><span class="n">to</span><span class="o">/</span><span class="n">couchdb</span><span class="o">/</span><span class="n">rel</span><span class="o">/</span><span class="n">couchdb</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">couchdb</span>
+</pre></div>
+</div>
+<p>Change the ownership of the CouchDB directories by running:</p>
+<div class="highlight-python"><div class="highlight"><pre>chown -R couchdb:couchdb /home/couchdb/couchdb
+</pre></div>
+</div>
+<p>Change the permission of the CouchDB directories by running:</p>
+<div class="highlight-python"><div class="highlight"><pre>find /home/couchdb/couchdb -type d -exec chmod 0770 {} \;
+</pre></div>
+</div>
+<p>Update the permissions for your ini files:</p>
+<div class="highlight-python"><div class="highlight"><pre>chmod 0644 /home/couchdb/couchdb/etc/*
+</pre></div>
+</div>
+</div>
+<div class="section" id="first-run">
+<h2>2.1.4. First Run<a class="headerlink" href="#first-run" title="Permalink to this headline">¶</a></h2>
+<p>You can start the CouchDB server by running:</p>
+<div class="highlight-python"><div class="highlight"><pre>sudo -i -u couchdb couchdb/bin/couchdb
+</pre></div>
+</div>
+<p>This uses the <tt class="docutils literal"><span class="pre">sudo</span></tt> command to run the <tt class="docutils literal"><span class="pre">couchdb</span></tt> command as the
+<tt class="docutils literal"><span class="pre">couchdb</span></tt> user.</p>
+<p>When CouchDB starts it should eventually display the following message:</p>
+<div class="highlight-python"><div class="highlight"><pre>Apache CouchDB has started, time to relax.
+</pre></div>
+</div>
+<p>Relax.</p>
+<p>To check that everything has worked, point your web browser to:</p>
+<div class="highlight-python"><div class="highlight"><pre>http://127.0.0.1:5984/_utils/index.html
+</pre></div>
+</div>
+<p>From here you should verify your installation by pointing your web browser to:</p>
+<div class="highlight-python"><div class="highlight"><pre>http://localhost:5984/_utils/verify_install.html
+</pre></div>
+</div>
+</div>
+<div class="section" id="running-as-a-daemon">
+<h2>2.1.5. Running as a Daemon<a class="headerlink" href="#running-as-a-daemon" title="Permalink to this headline">¶</a></h2>
+<p>CouchDB no longer ships with any daemonization scripts.</p>
+<p>The couchdb team recommends <a class="reference external" href="http://smarden.org/runit/">runit</a> to
+run CouchDB persistently and reliably. Configuration of runit is
+straightforward; if you have questions, reach out to the CouchDB
+user mailing list.</p>
+<p>Naturally, you can configure systemd, launchd or SysV-init daemons to
+launch CouchDB and keep it running using standard configuration files.</p>
+<p>Consult your system documentation for more information.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+    <p class="logo"><a href="../index.html">
+      <img class="logo" src="../_static/logo.png" alt="Logo"/>
+    </a></p><!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+<div id="searchbox" style="display: none">
+
+<h3>Quick Search</h3>
+
+<form class="search" action="../search.html" method="get">
+<input type="text" name="q" style="width:115px">
+<input type="submit" value="Go">
+<input type="hidden" name="check_keywords" value="yes">
+<input type="hidden" name="area" value="default">
+</form>
+
+<br>
+
+</div>
+
+<script type="text/javascript">$('#searchbox').show(0);</script>
+  <h3><a href="../contents.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">2.1. Installation on Unix-like systems</a><ul>
+<li><a class="reference internal" href="#dependencies">2.1.1. Dependencies</a><ul>
+<li><a class="reference internal" href="#debian-based-systems">Debian-based Systems</a></li>
+<li><a class="reference internal" href="#redhat-based-fedora-centos-rhel-systems">RedHat-based (Fedora, Centos, RHEL) Systems</a></li>
+<li><a class="reference internal" href="#mac-os-x">Mac OS X</a></li>
+<li><a class="reference internal" href="#freebsd">FreeBSD</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#installing">2.1.2. Installing</a></li>
+<li><a class="reference internal" href="#user-registration-and-security">2.1.3. User Registration and Security</a></li>
+<li><a class="reference internal" href="#first-run">2.1.4. First Run</a></li>
+<li><a class="reference internal" href="#running-as-a-daemon">2.1.5. Running as a Daemon</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="index.html"
+                        title="previous chapter">2. Installation</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="windows.html"
+                        title="next chapter">2.2. Installation on Windows</a></p><!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+
+<h3>Utilities</h3>
+
+<ul>
+<li><a href="../">Fauxton</a></li>
+</ul>
+<!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+<h3>More Help</h3>
+
+<ul>
+<li><a href="https://couchdb.apache.org/">Homepage</a></li>
+<li><a href="https://cwiki.apache.org/confluence/display/COUCHDB/">Wiki</a></li>
+<li><a href="https://couchdb.apache.org/#mailing-list">Mailing Lists</a></li>
+<li><a href="http://webchat.freenode.net/?channels=couchdb">IRC</a></li>
+<li><a href="https://issues.apache.org/jira/browse/CouchDB">Issues</a></li>
+<li><a href="../download.html">Download</a></li>
+<li><a href="https://github.com/apache/couchdb-documentation/blob/master/src/install/unix.rst"
+       rel="nofollow">Show on GitHub</a></li>
+<li><a href="https://github.com/apache/couchdb-documentation/edit/master/src/install/unix.rst"
+       rel="nofollow">Edit on GitHub</a></li>
+</ul><!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../http-api.html" title="HTTP API Reference"
+             >API Reference</a></li>
+        <li class="right" >
+          <a href="../config-ref.html" title="Configuration Reference"
+             >Config Reference</a> |</li>
+        <li class="right" >
+          <a href="windows.html" title="2.2. Installation on Windows"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="2. Installation"
+             >previous</a> |</li>
+  <li><a href="../index.html">Apache CouchDB 2.0 Documentation</a> &raquo;</li>
+          <li><a href="index.html" >2. Installation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2016, Apache Software Foundation.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,243 @@
+<!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>8. Query Server &mdash; Apache CouchDB 2.0 Documentation</title>
+    
+    <link rel="stylesheet" href="../_static/rtd.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '2.0.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+    <link rel="author" title="About these documents" href="../about.html" />
+    <link rel="top" title="Apache CouchDB 2.0 Documentation" href="../index.html" />
+    <link rel="next" title="8.1. Query Server Protocol" href="protocol.html" />
+    <link rel="prev" title="7. CouchDB Externals API" href="../externals.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../http-api.html" title="HTTP API Reference"
+             >API Reference</a></li>
+        <li class="right" >
+          <a href="../config-ref.html" title="Configuration Reference"
+             >Config Reference</a> |</li>
+        <li class="right" >
+          <a href="protocol.html" title="8.1. Query Server Protocol"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="../externals.html" title="7. CouchDB Externals API"
+             accesskey="P">previous</a> |</li>
+  <li><a href="../index.html">Apache CouchDB 2.0 Documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="query-server">
+<span id="id1"></span><h1>8. Query Server<a class="headerlink" href="#query-server" title="Permalink to this headline">¶</a></h1>
+<p>The <cite>Query server</cite> is an external process that communicates with CouchDB by JSON
+protocol through stdio interface and processed all
+<a class="reference internal" href="../couchapp/ddocs.html#ddocs"><em>design functions</em></a> calls:
+<a class="reference internal" href="../couchapp/ddocs.html#viewfun"><em>views</em></a>, <a class="reference internal" href="../couchapp/ddocs.html#showfun"><em>shows</em></a>, <a class="reference internal" href="../couchapp/ddocs.html#listfun"><em>lists</em></a> and more.</p>
+<p>The default query server is written in
+<a class="reference internal" href="javascript.html#query-server-js"><em>JavaScript</em></a>, running via <a class="reference external" href="https://developer.mozilla.org/en/docs/SpiderMonkey">Mozilla SpiderMonkey</a>.
+You can use other languages by setting a Query server key in the <tt class="docutils literal"><span class="pre">language</span></tt>
+property of a design document or the <cite>Content-Type</cite> header of a
+<cite>temporary view</cite>. Design documents that do not specify a <tt class="docutils literal"><span class="pre">language</span></tt> property
+are assumed to be of type <cite>javascript</cite>.</p>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="protocol.html">8.1. Query Server Protocol</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="protocol.html#reset">8.1.1. <tt class="docutils literal"><span class="pre">reset</span></tt></a></li>
+<li class="toctree-l2"><a class="reference internal" href="protocol.html#add-lib">8.1.2. <tt class="docutils literal"><span class="pre">add_lib</span></tt></a></li>
+<li class="toctree-l2"><a class="reference internal" href="protocol.html#map-doc">8.1.3. <tt class="docutils literal"><span class="pre">map_doc</span></tt></a></li>
+<li class="toctree-l2"><a class="reference internal" href="protocol.html#reduce">8.1.4. <tt class="docutils literal"><span class="pre">reduce</span></tt></a></li>
+<li class="toctree-l2"><a class="reference internal" href="protocol.html#rereduce">8.1.5. <tt class="docutils literal"><span class="pre">rereduce</span></tt></a></li>
+<li class="toctree-l2"><a class="reference internal" href="protocol.html#ddoc">8.1.6. <tt class="docutils literal"><span class="pre">ddoc</span></tt></a></li>
+<li class="toctree-l2"><a class="reference internal" href="protocol.html#raising-errors">8.1.7. Raising errors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="protocol.html#logging">8.1.8. Logging</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="javascript.html">8.2. JavaScript</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="javascript.html#design-functions-context">8.2.1. Design functions context</a></li>
+<li class="toctree-l2"><a class="reference internal" href="javascript.html#commonjs-modules">8.2.2. CommonJS Modules</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="erlang.html">8.3. Erlang</a></li>
+</ul>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+    <p class="logo"><a href="../index.html">
+      <img class="logo" src="../_static/logo.png" alt="Logo"/>
+    </a></p><!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+<div id="searchbox" style="display: none">
+
+<h3>Quick Search</h3>
+
+<form class="search" action="../search.html" method="get">
+<input type="text" name="q" style="width:115px">
+<input type="submit" value="Go">
+<input type="hidden" name="check_keywords" value="yes">
+<input type="hidden" name="area" value="default">
+</form>
+
+<br>
+
+</div>
+
+<script type="text/javascript">$('#searchbox').show(0);</script>
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="../externals.html"
+                        title="previous chapter">7. CouchDB Externals API</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="protocol.html"
+                        title="next chapter">8.1. Query Server Protocol</a></p><!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+
+<h3>Utilities</h3>
+
+<ul>
+<li><a href="../">Fauxton</a></li>
+</ul>
+<!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+<h3>More Help</h3>
+
+<ul>
+<li><a href="https://couchdb.apache.org/">Homepage</a></li>
+<li><a href="https://cwiki.apache.org/confluence/display/COUCHDB/">Wiki</a></li>
+<li><a href="https://couchdb.apache.org/#mailing-list">Mailing Lists</a></li>
+<li><a href="http://webchat.freenode.net/?channels=couchdb">IRC</a></li>
+<li><a href="https://issues.apache.org/jira/browse/CouchDB">Issues</a></li>
+<li><a href="../download.html">Download</a></li>
+<li><a href="https://github.com/apache/couchdb-documentation/blob/master/src/query-server/index.rst"
+       rel="nofollow">Show on GitHub</a></li>
+<li><a href="https://github.com/apache/couchdb-documentation/edit/master/src/query-server/index.rst"
+       rel="nofollow">Edit on GitHub</a></li>
+</ul><!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../http-api.html" title="HTTP API Reference"
+             >API Reference</a></li>
+        <li class="right" >
+          <a href="../config-ref.html" title="Configuration Reference"
+             >Config Reference</a> |</li>
+        <li class="right" >
+          <a href="protocol.html" title="8.1. Query Server Protocol"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="../externals.html" title="7. CouchDB Externals API"
+             >previous</a> |</li>
+  <li><a href="../index.html">Apache CouchDB 2.0 Documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2016, Apache Software Foundation.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
+    </div>
+  </body>
+</html>

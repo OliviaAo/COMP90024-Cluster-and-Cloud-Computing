@@ -1,0 +1,404 @@
+<!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>15.12. 0.8.x Branch &mdash; Apache CouchDB 2.0 Documentation</title>
+    
+    <link rel="stylesheet" href="../_static/rtd.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '2.0.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+    <link rel="author" title="About these documents" href="../about.html" />
+    <link rel="top" title="Apache CouchDB 2.0 Documentation" href="../index.html" />
+    <link rel="up" title="15. Release History" href="index.html" />
+    <link rel="next" title="16. Security Issues Information" href="../cve/index.html" />
+    <link rel="prev" title="15.11. 0.9.x Branch" href="0.9.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../http-api.html" title="HTTP API Reference"
+             >API Reference</a></li>
+        <li class="right" >
+          <a href="../config-ref.html" title="Configuration Reference"
+             >Config Reference</a> |</li>
+        <li class="right" >
+          <a href="../cve/index.html" title="16. Security Issues Information"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="0.9.html" title="15.11. 0.9.x Branch"
+             accesskey="P">previous</a> |</li>
+  <li><a href="../index.html">Apache CouchDB 2.0 Documentation</a> &raquo;</li>
+          <li><a href="index.html" accesskey="U">15. Release History</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="x-branch">
+<span id="release-0-8-x"></span><h1>15.12. 0.8.x Branch<a class="headerlink" href="#x-branch" title="Permalink to this headline">¶</a></h1>
+<div class="contents local topic" id="contents">
+<ul class="simple">
+<li><a class="reference internal" href="#version-0-8-1-incubating" id="id6">Version 0.8.1-incubating</a></li>
+<li><a class="reference internal" href="#version-0-8-0-incubating" id="id7">Version 0.8.0-incubating</a></li>
+</ul>
+</div>
+<div class="section" id="version-0-8-1-incubating">
+<span id="release-0-8-1"></span><h2><a class="toc-backref" href="#id6">15.12.1. Version 0.8.1-incubating</a><a class="headerlink" href="#version-0-8-1-incubating" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="build-and-system-integration">
+<h3>Build and System Integration<a class="headerlink" href="#build-and-system-integration" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>The <cite>couchdb</cite> script no longer uses <cite>awk</cite> for configuration checks as this
+was causing portability problems.</li>
+<li>Updated <cite>sudo</cite> example in <cite>README</cite> to use the <cite>-i</cite> option, this fixes
+problems when invoking from a directory the <cite>couchdb</cite> user cannot access.</li>
+</ul>
+</div>
+<div class="section" id="database-core">
+<h3>Database Core<a class="headerlink" href="#database-core" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>Fix for replication problems where the write queues can get backed up if the
+writes aren&#8217;t happening fast enough to keep up with the reads. For a large
+replication, this can exhaust memory and crash, or slow down the machine
+dramatically. The fix keeps only one document in the write queue at a time.</li>
+<li>Fix for databases sometimes incorrectly reporting that they contain 0
+documents after compaction.</li>
+<li>CouchDB now uses ibrowse instead of inets for its internal HTTP client
+implementation. This means better replication stability.</li>
+</ul>
+</div>
+<div class="section" id="futon">
+<h3>Futon<a class="headerlink" href="#futon" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>The view selector dropdown should now work in Opera and Internet Explorer
+even when it includes optgroups for design documents. (<a class="reference external" href="https://issues.apache.org/jira/browse/COUCHDB-81">COUCHDB-81</a>)</li>
+</ul>
+</div>
+<div class="section" id="javascript-view-server">
+<h3>JavaScript View Server<a class="headerlink" href="#javascript-view-server" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>Sealing of documents has been disabled due to an incompatibility with
+SpiderMonkey 1.9.</li>
+<li>Improve error handling for undefined values emitted by map functions.
+(<a class="reference external" href="https://issues.apache.org/jira/browse/COUCHDB-83">COUCHDB-83</a>)</li>
+</ul>
+</div>
+<div class="section" id="http-interface">
+<h3>HTTP Interface<a class="headerlink" href="#http-interface" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>Fix for chunked responses where chunks were always being split into multiple
+TCP packets, which caused problems with the test suite under Safari, and in
+some other cases.</li>
+<li>Fix for an invalid JSON response body being returned for some kinds of
+views. (<a class="reference external" href="https://issues.apache.org/jira/browse/COUCHDB-84">COUCHDB-84</a>)</li>
+<li>Fix for connections not getting closed after rejecting a chunked request.
+(<a class="reference external" href="https://issues.apache.org/jira/browse/COUCHDB-55">COUCHDB-55</a>)</li>
+<li>CouchDB can now be bound to IPv6 addresses.</li>
+<li>The HTTP <cite>Server</cite> header now contains the versions of CouchDB and Erlang.</li>
+</ul>
+</div>
+</div>
+<div class="section" id="version-0-8-0-incubating">
+<span id="release-0-8-0"></span><h2><a class="toc-backref" href="#id7">15.12.2. Version 0.8.0-incubating</a><a class="headerlink" href="#version-0-8-0-incubating" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id1">
+<h3>Build and System Integration<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>CouchDB can automatically respawn following a server crash.</li>
+<li>Database server no longer refuses to start with a stale PID file.</li>
+<li>System logrotate configuration provided.</li>
+<li>Improved handling of ICU shared libraries.</li>
+<li>The <cite>couchdb</cite> script now automatically enables SMP support in Erlang.</li>
+<li>The <cite>couchdb</cite> and <cite>couchjs</cite> scripts have been improved for portability.</li>
+<li>The build and system integration have been improved for portability.</li>
+</ul>
+</div>
+<div class="section" id="id2">
+<h3>Database Core<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>The view engine has been completely decoupled from the storage engine. Index
+data is now stored in separate files, and the format of the main database
+file has changed.</li>
+<li>Databases can now be compacted to reclaim space used for deleted documents
+and old document revisions.</li>
+<li>Support for incremental map/reduce views has been added.</li>
+<li>To support map/reduce, the structure of design documents has changed. View
+values are now JSON objects containing at least a <cite>map</cite> member, and
+optionally a <cite>reduce</cite> member.</li>
+<li>View servers are now identified by name (for example <cite>javascript</cite>) instead of
+by media type.</li>
+<li>Automatically generated document IDs are now based on proper UUID generation
+using the crypto module.</li>
+<li>The field <cite>content-type</cite> in the JSON representation of attachments has been
+renamed to <cite>content_type</cite> (underscore).</li>
+</ul>
+</div>
+<div class="section" id="id3">
+<h3>Futon<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>When adding a field to a document, Futon now just adds a field with an
+autogenerated name instead of prompting for the name with a dialog. The name
+is automatically put into edit mode so that it can be changed immediately.</li>
+<li>Fields are now sorted alphabetically by name when a document is displayed.</li>
+<li>Futon can be used to create and update permanent views.</li>
+<li>The maximum number of rows to display per page on the database page can now
+be adjusted.</li>
+<li>Futon now uses the XMLHTTPRequest API asynchronously to communicate with the
+CouchDB HTTP server, so that most operations no longer block the browser.</li>
+<li>View results sorting can now be switched between ascending and descending by
+clicking on the <cite>Key</cite> column header.</li>
+<li>Fixed a bug where documents that contained a <cite>&#64;</cite> character could not be
+viewed. (<a class="reference external" href="https://issues.apache.org/jira/browse/COUCHDB-12">COUCHDB-12</a>)</li>
+<li>The database page now provides a <cite>Compact</cite> button to trigger database
+compaction. (<a class="reference external" href="https://issues.apache.org/jira/browse/COUCHDB-38">COUCHDB-38</a>)</li>
+<li>Fixed portential double encoding of document IDs and other URI segments in
+many instances. (<a class="reference external" href="https://issues.apache.org/jira/browse/COUCHDB-39">COUCHDB-39</a>)</li>
+<li>Improved display of attachments.</li>
+<li>The JavaScript Shell has been removed due to unresolved licensing issues.</li>
+</ul>
+</div>
+<div class="section" id="id4">
+<h3>JavaScript View Server<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>SpiderMonkey is no longer included with CouchDB, but rather treated as a
+normal external dependency. A simple C program (<cite>_couchjs</cite>) is provided that
+links against an existing SpiderMonkey installation and uses the interpreter
+embedding API.</li>
+<li>View functions using the default JavaScript view server can now do logging
+using the global <cite>log(message)</cite> function. Log messages are directed into the
+CouchDB log at <cite>INFO</cite> level. (<a class="reference external" href="https://issues.apache.org/jira/browse/COUCHDB-59">COUCHDB-59</a>)</li>
+<li>The global <cite>map(key, value)</cite> function made available to view code has been
+renamed to <cite>emit(key, value)</cite>.</li>
+<li>Fixed handling of exceptions raised by view functions.</li>
+</ul>
+</div>
+<div class="section" id="id5">
+<h3>HTTP Interface<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>CouchDB now uses MochiWeb instead of inets for the HTTP server
+implementation. Among other things, this means that the extra configuration
+files needed for inets (such as <cite>couch_httpd.conf</cite>) are no longer used.</li>
+<li>The HTTP interface now completely supports the <cite>HEAD</cite> method. (<a class="reference external" href="https://issues.apache.org/jira/browse/COUCHDB-3">COUCHDB-3</a>)</li>
+<li>Improved compliance of <cite>Etag</cite> handling with the HTTP specification.
+(<a class="reference external" href="https://issues.apache.org/jira/browse/COUCHDB-13">COUCHDB-13</a>)</li>
+<li>Etags are no longer included in responses to document <cite>GET</cite> requests that
+include query string parameters causing the JSON response to change without
+the revision or the URI having changed.</li>
+<li>The bulk document update API has changed slightly on both the request and the
+response side. In addition, bulk updates are now atomic.</li>
+<li>CouchDB now uses <cite>TCP_NODELAY</cite> to fix performance problems with persistent
+connections on some platforms due to nagling.</li>
+<li>Including a <cite>?descending=false</cite> query string parameter in requests to views
+no longer raises an error.</li>
+<li>Requests to unknown top-level reserved URLs (anything with a leading
+underscore) now return a <cite>unknown_private_path</cite> error instead of the
+confusing <cite>illegal_database_name</cite>.</li>
+<li>The Temporary view handling now expects a JSON request body, where the JSON
+is an object with at least a <cite>map</cite> member, and optional <cite>reduce</cite> and
+<cite>language</cite> members.</li>
+<li>Temporary views no longer determine the view server based on the Content-Type
+header of the <cite>POST</cite> request, but rather by looking for a <cite>language</cite> member
+in the JSON body of the request.</li>
+<li>The status code of responses to <cite>DELETE</cite> requests is now 200 to reflect that
+that the deletion is performed synchronously.</li>
+</ul>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+    <p class="logo"><a href="../index.html">
+      <img class="logo" src="../_static/logo.png" alt="Logo"/>
+    </a></p><!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+<div id="searchbox" style="display: none">
+
+<h3>Quick Search</h3>
+
+<form class="search" action="../search.html" method="get">
+<input type="text" name="q" style="width:115px">
+<input type="submit" value="Go">
+<input type="hidden" name="check_keywords" value="yes">
+<input type="hidden" name="area" value="default">
+</form>
+
+<br>
+
+</div>
+
+<script type="text/javascript">$('#searchbox').show(0);</script>
+  <h3><a href="../contents.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">15.12. 0.8.x Branch</a><ul>
+<li><a class="reference internal" href="#version-0-8-1-incubating">15.12.1. Version 0.8.1-incubating</a><ul>
+<li><a class="reference internal" href="#build-and-system-integration">Build and System Integration</a></li>
+<li><a class="reference internal" href="#database-core">Database Core</a></li>
+<li><a class="reference internal" href="#futon">Futon</a></li>
+<li><a class="reference internal" href="#javascript-view-server">JavaScript View Server</a></li>
+<li><a class="reference internal" href="#http-interface">HTTP Interface</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#version-0-8-0-incubating">15.12.2. Version 0.8.0-incubating</a><ul>
+<li><a class="reference internal" href="#id1">Build and System Integration</a></li>
+<li><a class="reference internal" href="#id2">Database Core</a></li>
+<li><a class="reference internal" href="#id3">Futon</a></li>
+<li><a class="reference internal" href="#id4">JavaScript View Server</a></li>
+<li><a class="reference internal" href="#id5">HTTP Interface</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="0.9.html"
+                        title="previous chapter">15.11. 0.9.x Branch</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="../cve/index.html"
+                        title="next chapter">16. Security Issues Information</a></p><!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+
+<h3>Utilities</h3>
+
+<ul>
+<li><a href="../">Fauxton</a></li>
+</ul>
+<!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+<h3>More Help</h3>
+
+<ul>
+<li><a href="https://couchdb.apache.org/">Homepage</a></li>
+<li><a href="https://cwiki.apache.org/confluence/display/COUCHDB/">Wiki</a></li>
+<li><a href="https://couchdb.apache.org/#mailing-list">Mailing Lists</a></li>
+<li><a href="http://webchat.freenode.net/?channels=couchdb">IRC</a></li>
+<li><a href="https://issues.apache.org/jira/browse/CouchDB">Issues</a></li>
+<li><a href="../download.html">Download</a></li>
+<li><a href="https://github.com/apache/couchdb-documentation/blob/master/src/whatsnew/0.8.rst"
+       rel="nofollow">Show on GitHub</a></li>
+<li><a href="https://github.com/apache/couchdb-documentation/edit/master/src/whatsnew/0.8.rst"
+       rel="nofollow">Edit on GitHub</a></li>
+</ul><!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../http-api.html" title="HTTP API Reference"
+             >API Reference</a></li>
+        <li class="right" >
+          <a href="../config-ref.html" title="Configuration Reference"
+             >Config Reference</a> |</li>
+        <li class="right" >
+          <a href="../cve/index.html" title="16. Security Issues Information"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="0.9.html" title="15.11. 0.9.x Branch"
+             >previous</a> |</li>
+  <li><a href="../index.html">Apache CouchDB 2.0 Documentation</a> &raquo;</li>
+          <li><a href="index.html" >15. Release History</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2016, Apache Software Foundation.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
+    </div>
+  </body>
+</html>

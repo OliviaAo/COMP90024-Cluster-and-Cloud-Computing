@@ -1,0 +1,289 @@
+<!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>1. Introduction &mdash; Apache CouchDB 2.0 Documentation</title>
+    
+    <link rel="stylesheet" href="../_static/rtd.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '2.0.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+    <link rel="author" title="About these documents" href="../about.html" />
+    <link rel="top" title="Apache CouchDB 2.0 Documentation" href="../index.html" />
+    <link rel="next" title="1.1. Technical Overview" href="overview.html" />
+    <link rel="prev" title="Apache CouchDB™ 2.0.0 Documentation" href="../contents.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../http-api.html" title="HTTP API Reference"
+             >API Reference</a></li>
+        <li class="right" >
+          <a href="../config-ref.html" title="Configuration Reference"
+             >Config Reference</a> |</li>
+        <li class="right" >
+          <a href="overview.html" title="1.1. Technical Overview"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="../contents.html" title="Apache CouchDB™ 2.0.0 Documentation"
+             accesskey="P">previous</a> |</li>
+  <li><a href="../index.html">Apache CouchDB 2.0 Documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="introduction">
+<span id="intro"></span><h1>1. Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h1>
+<p>CouchDB is a database that completely embraces the web. Store your data with
+JSON documents. Access your documents with your web browser, <a class="reference internal" href="../api/basics.html#api-basics"><em>via HTTP</em></a>. <a class="reference internal" href="../api/document/common.html#api-doc"><em>Query</em></a>, <a class="reference internal" href="../couchapp/views/index.html#views"><em>combine</em></a>,
+and <a class="reference internal" href="../couchapp/ddocs.html#listfun"><em>transform</em></a> your documents with <a class="reference internal" href="../query-server/javascript.html#query-server-js"><em>JavaScript</em></a>. CouchDB works well with modern web and mobile apps. You can
+even serve web apps directly out of CouchDB. And you can distribute your data,
+or your apps, efficiently using CouchDB’s <a class="reference internal" href="../replication/intro.html#replication-intro"><em>incremental replication</em></a>. CouchDB supports master-master setups with
+<a class="reference internal" href="../replication/conflicts.html#replication-conflicts"><em>automatic conflict</em></a> detection.</p>
+<p>CouchDB comes with a suite of features, such as on-the-fly document
+transformation and real-time <a class="reference internal" href="../api/database/changes.html#changes"><em>change notifications</em></a>, that makes
+<a class="reference internal" href="../couchapp/index.html#couchapp"><em>web app</em></a> development a breeze. It even comes with an easy
+to use web administration console. You guessed it,
+served up directly out of CouchDB! We care a lot about <a class="reference external" href="http://en.wikipedia.org/wiki/CAP_theorem">distributed scaling</a>.
+CouchDB is highly available and partition tolerant, but is also <a class="reference internal" href="consistency.html#intro-consistency"><em>eventually
+consistent</em></a>. And we care <em>a lot</em> about your data.
+CouchDB has a fault-tolerant storage engine that puts the safety of your data
+first.</p>
+<p>In this section you&#8217;ll learn about every basic bit of CouchDB, see upon what
+conceptions and technologies it built and walk through short tutorial that
+teach how to use CouchDB.</p>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="overview.html">1.1. Technical Overview</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="overview.html#document-storage">1.1.1. Document Storage</a></li>
+<li class="toctree-l2"><a class="reference internal" href="overview.html#acid-properties">1.1.2. ACID Properties</a></li>
+<li class="toctree-l2"><a class="reference internal" href="overview.html#compaction">1.1.3. Compaction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="overview.html#views">1.1.4. Views</a></li>
+<li class="toctree-l2"><a class="reference internal" href="overview.html#security-and-validation">1.1.5. Security and Validation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="overview.html#distributed-updates-and-replication">1.1.6. Distributed Updates and Replication</a></li>
+<li class="toctree-l2"><a class="reference internal" href="overview.html#implementation">1.1.7. Implementation</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="why.html">1.2. Why CouchDB?</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="why.html#relax">1.2.1. Relax</a></li>
+<li class="toctree-l2"><a class="reference internal" href="why.html#a-different-way-to-model-your-data">1.2.2. A Different Way to Model Your Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="why.html#a-better-fit-for-common-applications">1.2.3. A Better Fit for Common Applications</a></li>
+<li class="toctree-l2"><a class="reference internal" href="why.html#building-blocks-for-larger-systems">1.2.4. Building Blocks for Larger Systems</a></li>
+<li class="toctree-l2"><a class="reference internal" href="why.html#couchdb-replication">1.2.5. CouchDB Replication</a></li>
+<li class="toctree-l2"><a class="reference internal" href="why.html#local-data-is-king">1.2.6. Local Data Is King</a></li>
+<li class="toctree-l2"><a class="reference internal" href="why.html#wrapping-up">1.2.7. Wrapping Up</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="consistency.html">1.3. Eventual Consistency</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="consistency.html#working-with-the-grain">1.3.1. Working with the Grain</a></li>
+<li class="toctree-l2"><a class="reference internal" href="consistency.html#the-cap-theorem">1.3.2. The CAP Theorem</a></li>
+<li class="toctree-l2"><a class="reference internal" href="consistency.html#local-consistency">1.3.3. Local Consistency</a></li>
+<li class="toctree-l2"><a class="reference internal" href="consistency.html#validation">1.3.4. Validation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="consistency.html#distributed-consistency">1.3.5. Distributed Consistency</a></li>
+<li class="toctree-l2"><a class="reference internal" href="consistency.html#incremental-replication">1.3.6. Incremental Replication</a></li>
+<li class="toctree-l2"><a class="reference internal" href="consistency.html#case-study">1.3.7. Case Study</a></li>
+<li class="toctree-l2"><a class="reference internal" href="consistency.html#wrapping-up">1.3.8. Wrapping Up</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="tour.html">1.4. Getting Started</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="tour.html#all-systems-are-go">1.4.1. All Systems Are Go!</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tour.html#welcome-to-fauxton">1.4.2. Welcome to Fauxton</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tour.html#your-first-database-and-document">1.4.3. Your First Database and Document</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tour.html#running-a-query-using-mapreduce">1.4.4. Running a Query Using MapReduce</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tour.html#triggering-replication">1.4.5. Triggering Replication</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tour.html#wrapping-up">1.4.6. Wrapping Up</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">1.5. The Core API</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="api.html#server">1.5.1. Server</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api.html#databases">1.5.2. Databases</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api.html#documents">1.5.3. Documents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api.html#replication">1.5.4. Replication</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api.html#wrapping-up">1.5.5. Wrapping Up</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="security.html">1.6. Security</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="security.html#authentication">1.6.1. Authentication</a></li>
+<li class="toctree-l2"><a class="reference internal" href="security.html#authentication-database">1.6.2. Authentication Database</a></li>
+<li class="toctree-l2"><a class="reference internal" href="security.html#authorization">1.6.3. Authorization</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="curl.html">1.7. cURL: Your Command Line Friend</a></li>
+</ul>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+    <p class="logo"><a href="../index.html">
+      <img class="logo" src="../_static/logo.png" alt="Logo"/>
+    </a></p><!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+<div id="searchbox" style="display: none">
+
+<h3>Quick Search</h3>
+
+<form class="search" action="../search.html" method="get">
+<input type="text" name="q" style="width:115px">
+<input type="submit" value="Go">
+<input type="hidden" name="check_keywords" value="yes">
+<input type="hidden" name="area" value="default">
+</form>
+
+<br>
+
+</div>
+
+<script type="text/javascript">$('#searchbox').show(0);</script>
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="../contents.html"
+                        title="previous chapter">Apache CouchDB™ 2.0.0 Documentation</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="overview.html"
+                        title="next chapter">1.1. Technical Overview</a></p><!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+
+<h3>Utilities</h3>
+
+<ul>
+<li><a href="../">Fauxton</a></li>
+</ul>
+<!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+<h3>More Help</h3>
+
+<ul>
+<li><a href="https://couchdb.apache.org/">Homepage</a></li>
+<li><a href="https://cwiki.apache.org/confluence/display/COUCHDB/">Wiki</a></li>
+<li><a href="https://couchdb.apache.org/#mailing-list">Mailing Lists</a></li>
+<li><a href="http://webchat.freenode.net/?channels=couchdb">IRC</a></li>
+<li><a href="https://issues.apache.org/jira/browse/CouchDB">Issues</a></li>
+<li><a href="../download.html">Download</a></li>
+<li><a href="https://github.com/apache/couchdb-documentation/blob/master/src/intro/index.rst"
+       rel="nofollow">Show on GitHub</a></li>
+<li><a href="https://github.com/apache/couchdb-documentation/edit/master/src/intro/index.rst"
+       rel="nofollow">Edit on GitHub</a></li>
+</ul><!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../http-api.html" title="HTTP API Reference"
+             >API Reference</a></li>
+        <li class="right" >
+          <a href="../config-ref.html" title="Configuration Reference"
+             >Config Reference</a> |</li>
+        <li class="right" >
+          <a href="overview.html" title="1.1. Technical Overview"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="../contents.html" title="Apache CouchDB™ 2.0.0 Documentation"
+             >previous</a> |</li>
+  <li><a href="../index.html">Apache CouchDB 2.0 Documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2016, Apache Software Foundation.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
+    </div>
+  </body>
+</html>

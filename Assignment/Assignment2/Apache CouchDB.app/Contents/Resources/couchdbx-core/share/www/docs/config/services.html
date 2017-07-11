@@ -1,0 +1,369 @@
+<!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>3.12. CouchDB Internal Services &mdash; Apache CouchDB 2.0 Documentation</title>
+    
+    <link rel="stylesheet" href="../_static/rtd.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '2.0.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+    <link rel="author" title="About these documents" href="../about.html" />
+    <link rel="top" title="Apache CouchDB 2.0 Documentation" href="../index.html" />
+    <link rel="up" title="3. Configuring CouchDB" href="index.html" />
+    <link rel="next" title="3.13. Miscellaneous Parameters" href="misc.html" />
+    <link rel="prev" title="3.11. HTTP Resource Handlers" href="http-handlers.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../http-api.html" title="HTTP API Reference"
+             >API Reference</a></li>
+        <li class="right" >
+          <a href="../config-ref.html" title="Configuration Reference"
+             >Config Reference</a> |</li>
+        <li class="right" >
+          <a href="misc.html" title="3.13. Miscellaneous Parameters"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="http-handlers.html" title="3.11. HTTP Resource Handlers"
+             accesskey="P">previous</a> |</li>
+  <li><a href="../index.html">Apache CouchDB 2.0 Documentation</a> &raquo;</li>
+          <li><a href="index.html" accesskey="U">3. Configuring CouchDB</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="couchdb-internal-services">
+<h1>3.12. CouchDB Internal Services<a class="headerlink" href="#couchdb-internal-services" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="couchdb-daemonized-mini-apps">
+<span id="config-daemons"></span><h2>3.12.1. CouchDB Daemonized Mini Apps<a class="headerlink" href="#couchdb-daemonized-mini-apps" title="Permalink to this headline">¶</a></h2>
+<dl class="section">
+<dt id="daemons">
+<tt class="descname">[daemons]</tt><a class="headerlink" href="#daemons" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="option">
+<dt id="daemons/auth_cache">
+<tt class="descname">auth_cache</tt><a class="headerlink" href="#daemons/auth_cache" title="Permalink to this definition">¶</a></dt>
+<dd><p>This daemon provides authentication caching to avoid repeated opening
+and closing of the <cite>_users</cite> database for each request requiring
+authentication:</p>
+<div class="highlight-ini"><div class="highlight"><pre><span class="k">[daemons]</span>
+<span class="na">auth_cache</span><span class="o">=</span><span class="s">{couch_auth_cache, start_link, []}</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="option">
+<dt id="daemons/compaction_daemon">
+<tt class="descname">compaction_daemon</tt><a class="headerlink" href="#daemons/compaction_daemon" title="Permalink to this definition">¶</a></dt>
+<dd><p><a class="reference internal" href="compaction.html#config-compactions"><em>Automatic compaction</em></a> daemon:</p>
+<div class="highlight-ini"><div class="highlight"><pre><span class="k">[daemons]</span>
+<span class="na">compaction_daemon</span><span class="o">=</span><span class="s">{couch_compaction_daemon, start_link, []}</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="option">
+<dt id="daemons/external_manager">
+<tt class="descname">external_manager</tt><a class="headerlink" href="#daemons/external_manager" title="Permalink to this definition">¶</a></dt>
+<dd><p><cite>External</cite> processes manager:</p>
+<div class="highlight-ini"><div class="highlight"><pre><span class="k">[daemons]</span>
+<span class="na">external_manager</span><span class="o">=</span><span class="s">{couch_external_manager, start_link, []}</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="option">
+<dt id="daemons/httpd">
+<tt class="descname">httpd</tt><a class="headerlink" href="#daemons/httpd" title="Permalink to this definition">¶</a></dt>
+<dd><p>HTTP server daemon:</p>
+<div class="highlight-ini"><div class="highlight"><pre><span class="k">[daemons]</span>
+<span class="na">httpd</span><span class="o">=</span><span class="s">{couch_httpd, start_link, []}</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="option">
+<dt id="daemons/httpsd">
+<tt class="descname">httpsd</tt><a class="headerlink" href="#daemons/httpsd" title="Permalink to this definition">¶</a></dt>
+<dd><p>Provides <a class="reference internal" href="http.html#config-ssl"><em>SSL support</em></a>. The default ssl port CouchDB
+listens on is <cite>6984</cite>:</p>
+<div class="highlight-ini"><div class="highlight"><pre><span class="k">[daemons]</span>
+<span class="na">httpsd</span> <span class="o">=</span> <span class="s">{couch_httpd, start_link, [https]}</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="option">
+<dt id="daemons/index_server">
+<tt class="descname">index_server</tt><a class="headerlink" href="#daemons/index_server" title="Permalink to this definition">¶</a></dt>
+<dd><p>The <cite>couch_index</cite> application is responsible for managing all of the
+different types of indexers. This manages the process handling for
+keeping track of the index state as well as managing the updater and
+compactor handling:</p>
+<div class="highlight-ini"><div class="highlight"><pre><span class="k">[daemons]</span>
+<span class="na">index_server</span><span class="o">=</span><span class="s">{couch_index_server, start_link, []}</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="option">
+<dt id="daemons/os_daemons">
+<tt class="descname">os_daemons</tt><a class="headerlink" href="#daemons/os_daemons" title="Permalink to this definition">¶</a></dt>
+<dd><p><a class="reference internal" href="externals.html#config-os-daemons"><em>OS Daemons</em></a> manager:</p>
+<div class="highlight-ini"><div class="highlight"><pre><span class="k">[daemons]</span>
+<span class="na">os_daemons</span><span class="o">=</span><span class="s">{couch_os_daemons, start_link, []}</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="option">
+<dt id="daemons/query_servers">
+<tt class="descname">query_servers</tt><a class="headerlink" href="#daemons/query_servers" title="Permalink to this definition">¶</a></dt>
+<dd><p><a class="reference internal" href="query-servers.html#config-query-servers"><em>Query servers</em></a> manager:</p>
+<div class="highlight-ini"><div class="highlight"><pre><span class="k">[daemons]</span>
+<span class="na">query_servers</span><span class="o">=</span><span class="s">{couch_query_servers, start_link, []}</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="option">
+<dt id="daemons/replicator_manager">
+<tt class="descname">replicator_manager</tt><a class="headerlink" href="#daemons/replicator_manager" title="Permalink to this definition">¶</a></dt>
+<dd><p>Replications manager:</p>
+<div class="highlight-ini"><div class="highlight"><pre><span class="k">[daemons]</span>
+<span class="na">replicator_manager</span><span class="o">=</span><span class="s">{couch_replicator_manager, start_link, []}</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="option">
+<dt id="daemons/stats_aggregator">
+<tt class="descname">stats_aggregator</tt><a class="headerlink" href="#daemons/stats_aggregator" title="Permalink to this definition">¶</a></dt>
+<dd><p>Runtime statistics aggregator:</p>
+<div class="highlight-ini"><div class="highlight"><pre><span class="k">[daemons]</span>
+<span class="na">stats_aggregator</span><span class="o">=</span><span class="s">{couch_stats_aggregator, start, []}</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="option">
+<dt id="daemons/stats_collector">
+<tt class="descname">stats_collector</tt><a class="headerlink" href="#daemons/stats_collector" title="Permalink to this definition">¶</a></dt>
+<dd><p>Runtime statistics collector:</p>
+<div class="highlight-ini"><div class="highlight"><pre><span class="k">[daemons]</span>
+<span class="na">stats_collector</span><span class="o">=</span><span class="s">{couch_stats_collector, start, []}</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="option">
+<dt id="daemons/uuids">
+<tt class="descname">uuids</tt><a class="headerlink" href="#daemons/uuids" title="Permalink to this definition">¶</a></dt>
+<dd><p><a class="reference internal" href="misc.html#config-uuids"><em>UUIDs</em></a> generator daemon:</p>
+<div class="highlight-ini"><div class="highlight"><pre><span class="k">[daemons]</span>
+<span class="na">uuids</span><span class="o">=</span><span class="s">{couch_uuids, start, []}</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="option">
+<dt id="daemons/vhosts">
+<tt class="descname">vhosts</tt><a class="headerlink" href="#daemons/vhosts" title="Permalink to this definition">¶</a></dt>
+<dd><p><a class="reference internal" href="http.html#config-vhosts"><em>Virtual hosts</em></a> manager. Provides dynamic add of
+vhosts without restart, wildcards support and dynamic routing via
+pattern matching</p>
+<div class="highlight-ini"><div class="highlight"><pre><span class="k">[daemons]</span>
+<span class="na">vhosts</span><span class="o">=</span><span class="s">{couch_httpd_vhost, start_link, []}</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+    <p class="logo"><a href="../index.html">
+      <img class="logo" src="../_static/logo.png" alt="Logo"/>
+    </a></p><!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+<div id="searchbox" style="display: none">
+
+<h3>Quick Search</h3>
+
+<form class="search" action="../search.html" method="get">
+<input type="text" name="q" style="width:115px">
+<input type="submit" value="Go">
+<input type="hidden" name="check_keywords" value="yes">
+<input type="hidden" name="area" value="default">
+</form>
+
+<br>
+
+</div>
+
+<script type="text/javascript">$('#searchbox').show(0);</script>
+  <h3><a href="../contents.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">3.12. CouchDB Internal Services</a><ul>
+<li><a class="reference internal" href="#couchdb-daemonized-mini-apps">3.12.1. CouchDB Daemonized Mini Apps</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="http-handlers.html"
+                        title="previous chapter">3.11. HTTP Resource Handlers</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="misc.html"
+                        title="next chapter">3.13. Miscellaneous Parameters</a></p><!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+
+<h3>Utilities</h3>
+
+<ul>
+<li><a href="../">Fauxton</a></li>
+</ul>
+<!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+<h3>More Help</h3>
+
+<ul>
+<li><a href="https://couchdb.apache.org/">Homepage</a></li>
+<li><a href="https://cwiki.apache.org/confluence/display/COUCHDB/">Wiki</a></li>
+<li><a href="https://couchdb.apache.org/#mailing-list">Mailing Lists</a></li>
+<li><a href="http://webchat.freenode.net/?channels=couchdb">IRC</a></li>
+<li><a href="https://issues.apache.org/jira/browse/CouchDB">Issues</a></li>
+<li><a href="../download.html">Download</a></li>
+<li><a href="https://github.com/apache/couchdb-documentation/blob/master/src/config/services.rst"
+       rel="nofollow">Show on GitHub</a></li>
+<li><a href="https://github.com/apache/couchdb-documentation/edit/master/src/config/services.rst"
+       rel="nofollow">Edit on GitHub</a></li>
+</ul><!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../http-api.html" title="HTTP API Reference"
+             >API Reference</a></li>
+        <li class="right" >
+          <a href="../config-ref.html" title="Configuration Reference"
+             >Config Reference</a> |</li>
+        <li class="right" >
+          <a href="misc.html" title="3.13. Miscellaneous Parameters"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="http-handlers.html" title="3.11. HTTP Resource Handlers"
+             >previous</a> |</li>
+  <li><a href="../index.html">Apache CouchDB 2.0 Documentation</a> &raquo;</li>
+          <li><a href="index.html" >3. Configuring CouchDB</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2016, Apache Software Foundation.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
+    </div>
+  </body>
+</html>

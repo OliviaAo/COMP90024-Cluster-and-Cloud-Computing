@@ -1,0 +1,781 @@
+<!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Apache CouchDB™ 2.0.0 Documentation &mdash; Apache CouchDB 2.0 Documentation</title>
+    
+    <link rel="stylesheet" href="_static/rtd.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '2.0.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="shortcut icon" href="_static/favicon.ico"/>
+    <link rel="author" title="About these documents" href="about.html" />
+    <link rel="top" title="Apache CouchDB 2.0 Documentation" href="index.html" />
+    <link rel="next" title="1. Introduction" href="intro/index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="http-api.html" title="HTTP API Reference"
+             >API Reference</a></li>
+        <li class="right" >
+          <a href="config-ref.html" title="Configuration Reference"
+             >Config Reference</a> |</li>
+        <li class="right" >
+          <a href="intro/index.html" title="1. Introduction"
+             accesskey="N">next</a> |</li>
+  <li><a href="index.html">Apache CouchDB 2.0 Documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="apache-couchdb-tm-release-documentation">
+<h1><a class="reference external" href="http://couchdb.apache.org/">Apache CouchDB™</a> 2.0.0 Documentation<a class="headerlink" href="#apache-couchdb-tm-release-documentation" title="Permalink to this headline">¶</a></h1>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="intro/index.html">1. Introduction</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="intro/overview.html">1.1. Technical Overview</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="intro/overview.html#document-storage">1.1.1. Document Storage</a></li>
+<li class="toctree-l3"><a class="reference internal" href="intro/overview.html#acid-properties">1.1.2. ACID Properties</a></li>
+<li class="toctree-l3"><a class="reference internal" href="intro/overview.html#compaction">1.1.3. Compaction</a></li>
+<li class="toctree-l3"><a class="reference internal" href="intro/overview.html#views">1.1.4. Views</a></li>
+<li class="toctree-l3"><a class="reference internal" href="intro/overview.html#security-and-validation">1.1.5. Security and Validation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="intro/overview.html#distributed-updates-and-replication">1.1.6. Distributed Updates and Replication</a></li>
+<li class="toctree-l3"><a class="reference internal" href="intro/overview.html#implementation">1.1.7. Implementation</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="intro/why.html">1.2. Why CouchDB?</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="intro/why.html#relax">1.2.1. Relax</a></li>
+<li class="toctree-l3"><a class="reference internal" href="intro/why.html#a-different-way-to-model-your-data">1.2.2. A Different Way to Model Your Data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="intro/why.html#a-better-fit-for-common-applications">1.2.3. A Better Fit for Common Applications</a></li>
+<li class="toctree-l3"><a class="reference internal" href="intro/why.html#building-blocks-for-larger-systems">1.2.4. Building Blocks for Larger Systems</a></li>
+<li class="toctree-l3"><a class="reference internal" href="intro/why.html#couchdb-replication">1.2.5. CouchDB Replication</a></li>
+<li class="toctree-l3"><a class="reference internal" href="intro/why.html#local-data-is-king">1.2.6. Local Data Is King</a></li>
+<li class="toctree-l3"><a class="reference internal" href="intro/why.html#wrapping-up">1.2.7. Wrapping Up</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="intro/consistency.html">1.3. Eventual Consistency</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="intro/consistency.html#working-with-the-grain">1.3.1. Working with the Grain</a></li>
+<li class="toctree-l3"><a class="reference internal" href="intro/consistency.html#the-cap-theorem">1.3.2. The CAP Theorem</a></li>
+<li class="toctree-l3"><a class="reference internal" href="intro/consistency.html#local-consistency">1.3.3. Local Consistency</a></li>
+<li class="toctree-l3"><a class="reference internal" href="intro/consistency.html#validation">1.3.4. Validation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="intro/consistency.html#distributed-consistency">1.3.5. Distributed Consistency</a></li>
+<li class="toctree-l3"><a class="reference internal" href="intro/consistency.html#incremental-replication">1.3.6. Incremental Replication</a></li>
+<li class="toctree-l3"><a class="reference internal" href="intro/consistency.html#case-study">1.3.7. Case Study</a></li>
+<li class="toctree-l3"><a class="reference internal" href="intro/consistency.html#wrapping-up">1.3.8. Wrapping Up</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="intro/tour.html">1.4. Getting Started</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="intro/tour.html#all-systems-are-go">1.4.1. All Systems Are Go!</a></li>
+<li class="toctree-l3"><a class="reference internal" href="intro/tour.html#welcome-to-fauxton">1.4.2. Welcome to Fauxton</a></li>
+<li class="toctree-l3"><a class="reference internal" href="intro/tour.html#your-first-database-and-document">1.4.3. Your First Database and Document</a></li>
+<li class="toctree-l3"><a class="reference internal" href="intro/tour.html#running-a-query-using-mapreduce">1.4.4. Running a Query Using MapReduce</a></li>
+<li class="toctree-l3"><a class="reference internal" href="intro/tour.html#triggering-replication">1.4.5. Triggering Replication</a></li>
+<li class="toctree-l3"><a class="reference internal" href="intro/tour.html#wrapping-up">1.4.6. Wrapping Up</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="intro/api.html">1.5. The Core API</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="intro/api.html#server">1.5.1. Server</a></li>
+<li class="toctree-l3"><a class="reference internal" href="intro/api.html#databases">1.5.2. Databases</a></li>
+<li class="toctree-l3"><a class="reference internal" href="intro/api.html#documents">1.5.3. Documents</a></li>
+<li class="toctree-l3"><a class="reference internal" href="intro/api.html#replication">1.5.4. Replication</a></li>
+<li class="toctree-l3"><a class="reference internal" href="intro/api.html#wrapping-up">1.5.5. Wrapping Up</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="intro/security.html">1.6. Security</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="intro/security.html#authentication">1.6.1. Authentication</a></li>
+<li class="toctree-l3"><a class="reference internal" href="intro/security.html#authentication-database">1.6.2. Authentication Database</a></li>
+<li class="toctree-l3"><a class="reference internal" href="intro/security.html#authorization">1.6.3. Authorization</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="intro/curl.html">1.7. cURL: Your Command Line Friend</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="install/index.html">2. Installation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="install/unix.html">2.1. Installation on Unix-like systems</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="install/unix.html#dependencies">2.1.1. Dependencies</a></li>
+<li class="toctree-l3"><a class="reference internal" href="install/unix.html#installing">2.1.2. Installing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="install/unix.html#user-registration-and-security">2.1.3. User Registration and Security</a></li>
+<li class="toctree-l3"><a class="reference internal" href="install/unix.html#first-run">2.1.4. First Run</a></li>
+<li class="toctree-l3"><a class="reference internal" href="install/unix.html#running-as-a-daemon">2.1.5. Running as a Daemon</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="install/windows.html">2.2. Installation on Windows</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="install/windows.html#installation-from-binaries">2.2.1. Installation from binaries</a></li>
+<li class="toctree-l3"><a class="reference internal" href="install/windows.html#installation-from-sources">2.2.2. Installation from sources</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="install/mac.html">2.3. Installation on Mac OS X</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="install/mac.html#installation-using-the-apache-couchdb-native-application">2.3.1. Installation using the Apache CouchDB native application</a></li>
+<li class="toctree-l3"><a class="reference internal" href="install/mac.html#installation-with-homebrew">2.3.2. Installation with Homebrew</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="install/freebsd.html">2.4. Installation on FreeBSD</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="install/freebsd.html#installation-from-ports">2.4.1. Installation from ports</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="install/troubleshooting.html">2.5. Troubleshooting an Installation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="install/troubleshooting.html#first-install">2.5.1. First Install</a></li>
+<li class="toctree-l3"><a class="reference internal" href="install/troubleshooting.html#quick-build">2.5.2. Quick Build</a></li>
+<li class="toctree-l3"><a class="reference internal" href="install/troubleshooting.html#upgrading">2.5.3. Upgrading</a></li>
+<li class="toctree-l3"><a class="reference internal" href="install/troubleshooting.html#runtime-errors">2.5.4. Runtime Errors</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="install/index.html#single-node-setup">2.6. Single Node Setup</a></li>
+<li class="toctree-l2"><a class="reference internal" href="install/index.html#cluster-setup">2.7. Cluster Setup</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="config/index.html">3. Configuring CouchDB</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="config/intro.html">3.1. Introduction Into Configuring</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="config/intro.html#configuration-files">3.1.1. Configuration files</a></li>
+<li class="toctree-l3"><a class="reference internal" href="config/intro.html#parameter-names-and-values">3.1.2. Parameter names and values</a></li>
+<li class="toctree-l3"><a class="reference internal" href="config/intro.html#setting-parameters-via-the-configuration-file">3.1.3. Setting parameters via the configuration file</a></li>
+<li class="toctree-l3"><a class="reference internal" href="config/intro.html#setting-parameters-via-the-http-api">3.1.4. Setting parameters via the HTTP API</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="config/couchdb.html">3.2. Base Configuration</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="config/couchdb.html#base-couchdb-options">3.2.1. Base CouchDB Options</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="config/couch-peruser.html">3.3. couch_peruser</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="config/couch-peruser.html#couch-peruser-options">3.3.1. couch_peruser Options</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="config/http.html">3.4. CouchDB HTTP Server</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="config/http.html#http-server-options">3.4.1. HTTP Server Options</a></li>
+<li class="toctree-l3"><a class="reference internal" href="config/http.html#secure-socket-level-options">3.4.2. Secure Socket Level Options</a></li>
+<li class="toctree-l3"><a class="reference internal" href="config/http.html#cross-origin-resource-sharing">3.4.3. Cross-Origin Resource Sharing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="config/http.html#virtual-hosts">3.4.4. Virtual Hosts</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="config/auth.html">3.5. Authentication and Authorization</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="config/auth.html#server-administrators">3.5.1. Server Administrators</a></li>
+<li class="toctree-l3"><a class="reference internal" href="config/auth.html#authentication-configuration">3.5.2. Authentication Configuration</a></li>
+<li class="toctree-l3"><a class="reference internal" href="config/auth.html#http-oauth-configuration">3.5.3. HTTP OAuth Configuration</a></li>
+<li class="toctree-l3"><a class="reference internal" href="config/auth.html#oauth-configuration">3.5.4. OAuth Configuration</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="config/compaction.html">3.6. Compaction Configuration</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="config/compaction.html#database-compaction-options">3.6.1. Database Compaction Options</a></li>
+<li class="toctree-l3"><a class="reference internal" href="config/compaction.html#compaction-daemon-rules">3.6.2. Compaction Daemon Rules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="config/compaction.html#configuration-of-compaction-daemon">3.6.3. Configuration of Compaction Daemon</a></li>
+<li class="toctree-l3"><a class="reference internal" href="config/compaction.html#views-compaction-options">3.6.4. Views Compaction Options</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="config/logging.html">3.7. Logging</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="config/logging.html#logging-options">3.7.1. Logging options</a></li>
+<li class="toctree-l3"><a class="reference internal" href="config/logging.html#per-module-logging">3.7.2. Per module logging</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="config/replicator.html">3.8. Replicator</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="config/replicator.html#replicator-database-configuration">3.8.1. Replicator Database Configuration</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="config/query-servers.html">3.9. Query Servers</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="config/query-servers.html#query-servers-definition">3.9.1. Query Servers Definition</a></li>
+<li class="toctree-l3"><a class="reference internal" href="config/query-servers.html#query-servers-configuration">3.9.2. Query Servers Configuration</a></li>
+<li class="toctree-l3"><a class="reference internal" href="config/query-servers.html#native-erlang-query-server">3.9.3. Native Erlang Query Server</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="config/externals.html">3.10. External Processes</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="config/externals.html#os-daemons">3.10.1. OS Daemons</a></li>
+<li class="toctree-l3"><a class="reference internal" href="config/externals.html#os-daemons-settings">3.10.2. OS Daemons settings</a></li>
+<li class="toctree-l3"><a class="reference internal" href="config/externals.html#config-update-notification">3.10.3. Update notifications</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="config/http-handlers.html">3.11. HTTP Resource Handlers</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="config/http-handlers.html#global-http-handlers">3.11.1. Global HTTP Handlers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="config/http-handlers.html#database-http-handlers">3.11.2. Database HTTP Handlers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="config/http-handlers.html#design-documents-http-handlers">3.11.3. Design Documents HTTP Handlers</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="config/services.html">3.12. CouchDB Internal Services</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="config/services.html#couchdb-daemonized-mini-apps">3.12.1. CouchDB Daemonized Mini Apps</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="config/misc.html">3.13. Miscellaneous Parameters</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="config/misc.html#configuration-of-attachment-storage">3.13.1. Configuration of Attachment Storage</a></li>
+<li class="toctree-l3"><a class="reference internal" href="config/misc.html#statistic-calculation">3.13.2. Statistic Calculation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="config/misc.html#uuids-configuration">3.13.3. UUIDs Configuration</a></li>
+<li class="toctree-l3"><a class="reference internal" href="config/misc.html#vendor-information">3.13.4. Vendor information</a></li>
+<li class="toctree-l3"><a class="reference internal" href="config/misc.html#content-security-policy">3.13.5. Content-Security-Policy</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="config/proxying.html">3.14. Proxying Configuration</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="config/proxying.html#couchdb-as-proxy">3.14.1. CouchDB As Proxy</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="replication/index.html">4. Replication</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="replication/intro.html">4.1. Introduction to Replication</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="replication/intro.html#triggering-replication">4.1.1. Triggering Replication</a></li>
+<li class="toctree-l3"><a class="reference internal" href="replication/intro.html#replication-procedure">4.1.2. Replication Procedure</a></li>
+<li class="toctree-l3"><a class="reference internal" href="replication/intro.html#master-master-replication">4.1.3. Master - Master replication</a></li>
+<li class="toctree-l3"><a class="reference internal" href="replication/intro.html#controlling-which-documents-to-replicate">4.1.4. Controlling which Documents to Replicate</a></li>
+<li class="toctree-l3"><a class="reference internal" href="replication/intro.html#migrating-data-to-clients">4.1.5. Migrating Data to Clients</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="replication/protocol.html">4.2. CouchDB Replication Protocol</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="replication/protocol.html#preface">4.2.1. Preface</a></li>
+<li class="toctree-l3"><a class="reference internal" href="replication/protocol.html#replication-protocol-algorithm">4.2.2. Replication Protocol Algorithm</a></li>
+<li class="toctree-l3"><a class="reference internal" href="replication/protocol.html#protocol-robustness">4.2.3. Protocol Robustness</a></li>
+<li class="toctree-l3"><a class="reference internal" href="replication/protocol.html#error-responses">4.2.4. Error Responses</a></li>
+<li class="toctree-l3"><a class="reference internal" href="replication/protocol.html#optimisations">4.2.5. Optimisations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="replication/protocol.html#api-reference">4.2.6. API Reference</a></li>
+<li class="toctree-l3"><a class="reference internal" href="replication/protocol.html#reference">4.2.7. Reference</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="replication/replicator.html">4.3. Replicator Database</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="replication/replicator.html#basics">4.3.1. Basics</a></li>
+<li class="toctree-l3"><a class="reference internal" href="replication/replicator.html#documents-describing-the-same-replication">4.3.2. Documents describing the same replication</a></li>
+<li class="toctree-l3"><a class="reference internal" href="replication/replicator.html#canceling-replications">4.3.3. Canceling replications</a></li>
+<li class="toctree-l3"><a class="reference internal" href="replication/replicator.html#server-restart">4.3.4. Server restart</a></li>
+<li class="toctree-l3"><a class="reference internal" href="replication/replicator.html#updating-documents-in-the-replicator-database">4.3.5. Updating Documents in the Replicator Database</a></li>
+<li class="toctree-l3"><a class="reference internal" href="replication/replicator.html#additional-replicator-databases">4.3.6. Additional Replicator Databases</a></li>
+<li class="toctree-l3"><a class="reference internal" href="replication/replicator.html#replicating-the-replicator-database">4.3.7. Replicating the replicator database</a></li>
+<li class="toctree-l3"><a class="reference internal" href="replication/replicator.html#delegations">4.3.8. Delegations</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="replication/conflicts.html">4.4. Replication and conflict model</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="replication/conflicts.html#couchdb-replication">4.4.1. CouchDB replication</a></li>
+<li class="toctree-l3"><a class="reference internal" href="replication/conflicts.html#conflict-avoidance">4.4.2. Conflict avoidance</a></li>
+<li class="toctree-l3"><a class="reference internal" href="replication/conflicts.html#revision-tree">4.4.3. Revision tree</a></li>
+<li class="toctree-l3"><a class="reference internal" href="replication/conflicts.html#working-with-conflicting-documents">4.4.4. Working with conflicting documents</a></li>
+<li class="toctree-l3"><a class="reference internal" href="replication/conflicts.html#multiple-document-api">4.4.5. Multiple document API</a></li>
+<li class="toctree-l3"><a class="reference internal" href="replication/conflicts.html#view-map-functions">4.4.6. View map functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="replication/conflicts.html#merging-and-revision-history">4.4.7. Merging and revision history</a></li>
+<li class="toctree-l3"><a class="reference internal" href="replication/conflicts.html#comparison-with-other-replicating-data-stores">4.4.8. Comparison with other replicating data stores</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="maintenance/index.html">5. CouchDB Maintenance</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="maintenance/compaction.html">5.1. Compaction</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="maintenance/compaction.html#database-compaction">5.1.1. Database Compaction</a></li>
+<li class="toctree-l3"><a class="reference internal" href="maintenance/compaction.html#views-compaction">5.1.2. Views Compaction</a></li>
+<li class="toctree-l3"><a class="reference internal" href="maintenance/compaction.html#automatic-compaction">5.1.3. Automatic Compaction</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="maintenance/performance.html">5.2. Performance</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="maintenance/performance.html#disk-i-o">5.2.1. Disk I/O</a></li>
+<li class="toctree-l3"><a class="reference internal" href="maintenance/performance.html#system-resource-limits">5.2.2. System Resource Limits</a></li>
+<li class="toctree-l3"><a class="reference internal" href="maintenance/performance.html#network">5.2.3. Network</a></li>
+<li class="toctree-l3"><a class="reference internal" href="maintenance/performance.html#couchdb">5.2.4. CouchDB</a></li>
+<li class="toctree-l3"><a class="reference internal" href="maintenance/performance.html#views">5.2.5. Views</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="couchapp/index.html">6. CouchApp</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="couchapp/ddocs.html">6.1. Design Documents</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="couchapp/ddocs.html#view-functions">6.1.1. View Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="couchapp/ddocs.html#show-functions">6.1.2. Show Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="couchapp/ddocs.html#list-functions">6.1.3. List Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="couchapp/ddocs.html#update-functions">6.1.4. Update Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="couchapp/ddocs.html#filter-functions">6.1.5. Filter Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="couchapp/ddocs.html#validate-document-update-functions">6.1.6. Validate Document Update Functions</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="couchapp/views/index.html">6.2. Guide to Views</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="couchapp/views/intro.html">6.2.1. Introduction to Views</a></li>
+<li class="toctree-l3"><a class="reference internal" href="couchapp/views/collation.html">6.2.2. Views Collation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="couchapp/views/joins.html">6.2.3. Joins With Views</a></li>
+<li class="toctree-l3"><a class="reference internal" href="couchapp/views/nosql.html">6.2.4. View Cookbook for SQL Jockeys</a></li>
+<li class="toctree-l3"><a class="reference internal" href="couchapp/views/pagination.html">6.2.5. Pagination Recipe</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="externals.html">7. CouchDB Externals API</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="externals.html#the-new-hotness">7.1. The New Hotness</a></li>
+<li class="toctree-l2"><a class="reference internal" href="externals.html#how-does-it-work-http-proxying">7.2. How does it work? - HTTP Proxying</a></li>
+<li class="toctree-l2"><a class="reference internal" href="externals.html#how-does-it-work-os-daemons">7.3. How does it work? - OS Daemons</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="externals.html#configuration-api">7.3.1. Configuration API</a></li>
+<li class="toctree-l3"><a class="reference internal" href="externals.html#logging-api">7.3.2. Logging API</a></li>
+<li class="toctree-l3"><a class="reference internal" href="externals.html#dynamic-daemons">7.3.3. Dynamic Daemons</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="externals.html#neat-but-so-what">7.4. Neat. But So What?</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="query-server/index.html">8. Query Server</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="query-server/protocol.html">8.1. Query Server Protocol</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="query-server/protocol.html#reset">8.1.1. <tt class="docutils literal"><span class="pre">reset</span></tt></a></li>
+<li class="toctree-l3"><a class="reference internal" href="query-server/protocol.html#add-lib">8.1.2. <tt class="docutils literal"><span class="pre">add_lib</span></tt></a></li>
+<li class="toctree-l3"><a class="reference internal" href="query-server/protocol.html#map-doc">8.1.3. <tt class="docutils literal"><span class="pre">map_doc</span></tt></a></li>
+<li class="toctree-l3"><a class="reference internal" href="query-server/protocol.html#reduce">8.1.4. <tt class="docutils literal"><span class="pre">reduce</span></tt></a></li>
+<li class="toctree-l3"><a class="reference internal" href="query-server/protocol.html#rereduce">8.1.5. <tt class="docutils literal"><span class="pre">rereduce</span></tt></a></li>
+<li class="toctree-l3"><a class="reference internal" href="query-server/protocol.html#ddoc">8.1.6. <tt class="docutils literal"><span class="pre">ddoc</span></tt></a></li>
+<li class="toctree-l3"><a class="reference internal" href="query-server/protocol.html#raising-errors">8.1.7. Raising errors</a></li>
+<li class="toctree-l3"><a class="reference internal" href="query-server/protocol.html#logging">8.1.8. Logging</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="query-server/javascript.html">8.2. JavaScript</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="query-server/javascript.html#design-functions-context">8.2.1. Design functions context</a></li>
+<li class="toctree-l3"><a class="reference internal" href="query-server/javascript.html#commonjs-modules">8.2.2. CommonJS Modules</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="query-server/erlang.html">8.3. Erlang</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="fauxton/index.html">9. Fauxton</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="fauxton/install.html">9.1. Installation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="fauxton/install.html#get-the-source">9.1.1. Get the source</a></li>
+<li class="toctree-l3"><a class="reference internal" href="fauxton/install.html#fauxton-setup">9.1.2. Fauxton Setup</a></li>
+<li class="toctree-l3"><a class="reference internal" href="fauxton/install.html#dev-server">9.1.3. Dev Server</a></li>
+<li class="toctree-l3"><a class="reference internal" href="fauxton/install.html#deploy-fauxton">9.1.4. Deploy Fauxton</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="fauxton/addons.html">9.2. Writing Addons</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="fauxton/addons.html#generating-an-addon">9.2.1. Generating an Addon</a></li>
+<li class="toctree-l3"><a class="reference internal" href="fauxton/addons.html#routes-and-hooks">9.2.2. Routes and hooks</a></li>
+<li class="toctree-l3"><a class="reference internal" href="fauxton/addons.html#hello-world-addon">9.2.3. Hello world Addon</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="api/index.html">10. API Reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="api/basics.html">10.1. API Basics</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="api/basics.html#request-format-and-responses">10.1.1. Request Format and Responses</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/basics.html#http-headers">10.1.2. HTTP Headers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/basics.html#json-basics">10.1.3. JSON Basics</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/basics.html#http-status-codes">10.1.4. HTTP Status Codes</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="api/server/index.html">10.2. Server</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="api/server/common.html">10.2.1. <tt class="docutils literal"><span class="pre">/</span></tt></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/server/common.html#active-tasks">10.2.2. <tt class="docutils literal"><span class="pre">/_active_tasks</span></tt></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/server/common.html#all-dbs">10.2.3. <tt class="docutils literal"><span class="pre">/_all_dbs</span></tt></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/server/common.html#db-updates">10.2.4. <tt class="docutils literal"><span class="pre">/_db_updates</span></tt></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/server/common.html#membership">10.2.5. <tt class="docutils literal"><span class="pre">/_membership</span></tt></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/server/common.html#log">10.2.6. <tt class="docutils literal"><span class="pre">/_log</span></tt></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/server/common.html#replicate">10.2.7. <tt class="docutils literal"><span class="pre">/_replicate</span></tt></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/server/common.html#restart">10.2.8. <tt class="docutils literal"><span class="pre">/_restart</span></tt></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/server/common.html#stats">10.2.9. <tt class="docutils literal"><span class="pre">/_stats</span></tt></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/server/common.html#utils">10.2.10. <tt class="docutils literal"><span class="pre">/_utils</span></tt></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/server/common.html#uuids">10.2.11. <tt class="docutils literal"><span class="pre">/_uuids</span></tt></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/server/common.html#favicon-ico">10.2.12. <tt class="docutils literal"><span class="pre">/favicon.ico</span></tt></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/server/authn.html">10.2.13. Authentication</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/server/configuration.html">10.2.14. Configuration</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="api/database/index.html">10.3. Databases</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="api/database/common.html">10.3.1. <tt class="docutils literal"><span class="pre">/db</span></tt></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/database/bulk-api.html">10.3.2. <tt class="docutils literal"><span class="pre">/db/_all_docs</span></tt></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/database/bulk-api.html#db-bulk-docs">10.3.3. <tt class="docutils literal"><span class="pre">/db/_bulk_docs</span></tt></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/database/find.html">10.3.4. <tt class="docutils literal"><span class="pre">/db/_find</span></tt></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/database/find.html#db-index">10.3.5. <tt class="docutils literal"><span class="pre">/db/_index</span></tt></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/database/find.html#db-explain">10.3.6. <tt class="docutils literal"><span class="pre">/db/_explain</span></tt></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/database/changes.html">10.3.7. <tt class="docutils literal"><span class="pre">/db/_changes</span></tt></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/database/compact.html">10.3.8. <tt class="docutils literal"><span class="pre">/db/_compact</span></tt></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/database/compact.html#db-compact-design-doc">10.3.9. <tt class="docutils literal"><span class="pre">/db/_compact/design-doc</span></tt></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/database/compact.html#db-ensure-full-commit">10.3.10. <tt class="docutils literal"><span class="pre">/db/_ensure_full_commit</span></tt></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/database/compact.html#db-view-cleanup">10.3.11. <tt class="docutils literal"><span class="pre">/db/_view_cleanup</span></tt></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/database/security.html">10.3.12. <tt class="docutils literal"><span class="pre">/db/_security</span></tt></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/database/misc.html">10.3.13. <tt class="docutils literal"><span class="pre">/db/_purge</span></tt></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/database/misc.html#db-missing-revs">10.3.14. <tt class="docutils literal"><span class="pre">/db/_missing_revs</span></tt></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/database/misc.html#db-revs-diff">10.3.15. <tt class="docutils literal"><span class="pre">/db/_revs_diff</span></tt></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/database/misc.html#db-revs-limit">10.3.16. <tt class="docutils literal"><span class="pre">/db/_revs_limit</span></tt></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="api/document/index.html">10.4. Documents</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="api/document/common.html">10.4.1. <tt class="docutils literal"><span class="pre">/db/doc</span></tt></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/document/attachments.html">10.4.2. <tt class="docutils literal"><span class="pre">/db/doc/attachment</span></tt></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="api/ddoc/index.html">10.5. Design Documents</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="api/ddoc/common.html">10.5.1. <tt class="docutils literal"><span class="pre">/db/_design/design-doc</span></tt></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/ddoc/common.html#db-design-design-doc-attachment">10.5.2. <tt class="docutils literal"><span class="pre">/db/_design/design-doc/attachment</span></tt></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/ddoc/common.html#db-design-design-doc-info">10.5.3. <tt class="docutils literal"><span class="pre">/db/_design/design-doc/_info</span></tt></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/ddoc/views.html">10.5.4. <tt class="docutils literal"><span class="pre">/db/_design/design-doc/_view/view-name</span></tt></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/ddoc/render.html">10.5.5. <tt class="docutils literal"><span class="pre">/db/_design/design-doc/_show/show-name</span></tt></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/ddoc/render.html#db-design-design-doc-show-show-name-doc-id">10.5.6. <tt class="docutils literal"><span class="pre">/db/_design/design-doc/_show/show-name/doc-id</span></tt></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/ddoc/render.html#db-design-design-doc-list-list-name-view-name">10.5.7. <tt class="docutils literal"><span class="pre">/db/_design/design-doc/_list/list-name/view-name</span></tt></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/ddoc/render.html#db-design-design-doc-list-list-name-other-ddoc-view-name">10.5.8. <tt class="docutils literal"><span class="pre">/db/_design/design-doc/_list/list-name/other-ddoc/view-name</span></tt></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/ddoc/render.html#db-design-design-doc-update-update-name">10.5.9. <tt class="docutils literal"><span class="pre">/db/_design/design-doc/_update/update-name</span></tt></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/ddoc/render.html#db-design-design-doc-update-update-name-doc-id">10.5.10. <tt class="docutils literal"><span class="pre">/db/_design/design-doc/_update/update-name/doc-id</span></tt></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/ddoc/rewrites.html">10.5.11. <tt class="docutils literal"><span class="pre">/db/_design/design-doc/_rewrite/path</span></tt></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="api/local.html">10.6. Local (non-replicating) Documents</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="api/local.html#db-local-id">10.6.1. <tt class="docutils literal"><span class="pre">/db/_local/id</span></tt></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="cluster/index.html">11. Cluster Reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="cluster/setup.html">11.1. Setup</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="cluster/setup.html#firewall">11.1.1. Firewall</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cluster/setup.html#the-cluster-setup-wizard">11.1.2. The Cluster Setup Wizard</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="cluster/theory.html">11.2. Theory</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cluster/nodes.html">11.3. Node Management</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="cluster/nodes.html#adding-a-node">11.3.1. Adding a node</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cluster/nodes.html#removing-a-node">11.3.2. Removing a node</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="cluster/databases.html">11.4. Database Management</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="cluster/databases.html#creating-a-database">11.4.1. Creating a database</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cluster/databases.html#deleteing-a-database">11.4.2. Deleteing a database</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cluster/databases.html#placing-a-database-on-specific-nodes">11.4.3. Placing a database on specific nodes</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="cluster/sharding.html">11.5. Sharding</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="cluster/sharding.html#scaling-out">11.5.1. Scaling out</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cluster/sharding.html#moving-shards">11.5.2. Moving Shards</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cluster/sharding.html#views">11.5.3. Views</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cluster/sharding.html#reshard-no-preshard">11.5.4. Reshard? No, Preshard!</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="json-structure.html">12. JSON Structure Reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="json-structure.html#all-database-documents">12.1. All Database Documents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="json-structure.html#bulk-document-response">12.2. Bulk Document Response</a></li>
+<li class="toctree-l2"><a class="reference internal" href="json-structure.html#bulk-documents">12.3. Bulk Documents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="json-structure.html#changes-information-for-a-database">12.4. Changes information for a database</a></li>
+<li class="toctree-l2"><a class="reference internal" href="json-structure.html#couchdb-document">12.5. CouchDB Document</a></li>
+<li class="toctree-l2"><a class="reference internal" href="json-structure.html#couchdb-error-status">12.6. CouchDB Error Status</a></li>
+<li class="toctree-l2"><a class="reference internal" href="json-structure.html#couchdb-database-information-object">12.7. CouchDB database information object</a></li>
+<li class="toctree-l2"><a class="reference internal" href="json-structure.html#design-document">12.8. Design Document</a></li>
+<li class="toctree-l2"><a class="reference internal" href="json-structure.html#design-document-information">12.9. Design Document Information</a></li>
+<li class="toctree-l2"><a class="reference internal" href="json-structure.html#document-with-attachments">12.10. Document with Attachments</a></li>
+<li class="toctree-l2"><a class="reference internal" href="json-structure.html#list-of-active-tasks">12.11. List of Active Tasks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="json-structure.html#replication-settings">12.12. Replication Settings</a></li>
+<li class="toctree-l2"><a class="reference internal" href="json-structure.html#replication-status">12.13. Replication Status</a></li>
+<li class="toctree-l2"><a class="reference internal" href="json-structure.html#request-object">12.14. Request object</a></li>
+<li class="toctree-l2"><a class="reference internal" href="json-structure.html#request2-object">12.15. Request2 object</a></li>
+<li class="toctree-l2"><a class="reference internal" href="json-structure.html#response-object">12.16. Response object</a></li>
+<li class="toctree-l2"><a class="reference internal" href="json-structure.html#returned-couchdb-document-with-detailed-revision-info">12.17. Returned CouchDB Document with Detailed Revision Info</a></li>
+<li class="toctree-l2"><a class="reference internal" href="json-structure.html#returned-couchdb-document-with-revision-info">12.18. Returned CouchDB Document with Revision Info</a></li>
+<li class="toctree-l2"><a class="reference internal" href="json-structure.html#returned-document-with-attachments">12.19. Returned Document with Attachments</a></li>
+<li class="toctree-l2"><a class="reference internal" href="json-structure.html#security-object">12.20. Security Object</a></li>
+<li class="toctree-l2"><a class="reference internal" href="json-structure.html#user-context-object">12.21. User Context Object</a></li>
+<li class="toctree-l2"><a class="reference internal" href="json-structure.html#view-head-information">12.22. View Head Information</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="experimental.html">13. Experimental Features</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="experimental.html#nodejs-query-server">13.1. NodeJS Query Server</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="experimental.html#setup">13.1.1. Setup</a></li>
+<li class="toctree-l3"><a class="reference internal" href="experimental.html#differences-from-the-spidermonkey-query-server">13.1.2. Differences from the SpiderMonkey Query Server</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="experimental.html#plugins">13.2. Plugins</a></li>
+<li class="toctree-l2"><a class="reference internal" href="experimental.html#content-security-policy-csp-header-support-for-utils-fauxton">13.3. Content-Security-Policy (CSP) Header Support for /_utils (Fauxton)</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="contributing.html">14. Contributing to this Documentation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="contributing.html#style-guidelines-for-this-documentation">14.1. Style Guidelines for this Documentation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="contributing.html#the-guidelines">14.1.1. The guidelines</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="whatsnew/index.html">15. Release History</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="whatsnew/2.0.html">15.1. 2.0.x Branch</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="whatsnew/2.0.html#version-2-0-0">15.1.1. Version 2.0.0</a></li>
+<li class="toctree-l3"><a class="reference internal" href="whatsnew/2.0.html#upgrade-notes">15.1.2. Upgrade Notes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="whatsnew/2.0.html#known-issues">15.1.3. Known Issues</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="whatsnew/1.6.html">15.2. 1.6.x Branch</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="whatsnew/1.6.html#upgrade-notes">15.2.1. Upgrade Notes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="whatsnew/1.6.html#version-1-6-0">15.2.2. Version 1.6.0</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="whatsnew/1.5.html">15.3. 1.5.x Branch</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="whatsnew/1.5.html#version-1-5-1">15.3.1. Version 1.5.1</a></li>
+<li class="toctree-l3"><a class="reference internal" href="whatsnew/1.5.html#version-1-5-0">15.3.2. Version 1.5.0</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="whatsnew/1.4.html">15.4. 1.4.x Branch</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="whatsnew/1.4.html#upgrade-notes">15.4.1. Upgrade Notes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="whatsnew/1.4.html#version-1-4-0">15.4.2. Version 1.4.0</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="whatsnew/1.3.html">15.5. 1.3.x Branch</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="whatsnew/1.3.html#upgrade-notes">15.5.1. Upgrade Notes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="whatsnew/1.3.html#version-1-3-1">15.5.2. Version 1.3.1</a></li>
+<li class="toctree-l3"><a class="reference internal" href="whatsnew/1.3.html#version-1-3-0">15.5.3. Version 1.3.0</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="whatsnew/1.2.html">15.6. 1.2.x Branch</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="whatsnew/1.2.html#upgrade-notes">15.6.1. Upgrade Notes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="whatsnew/1.2.html#version-1-2-2">15.6.2. Version 1.2.2</a></li>
+<li class="toctree-l3"><a class="reference internal" href="whatsnew/1.2.html#version-1-2-1">15.6.3. Version 1.2.1</a></li>
+<li class="toctree-l3"><a class="reference internal" href="whatsnew/1.2.html#version-1-2-0">15.6.4. Version 1.2.0</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="whatsnew/1.1.html">15.7. 1.1.x Branch</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="whatsnew/1.1.html#upgrade-notes">15.7.1. Upgrade Notes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="whatsnew/1.1.html#version-1-1-2">15.7.2. Version 1.1.2</a></li>
+<li class="toctree-l3"><a class="reference internal" href="whatsnew/1.1.html#version-1-1-1">15.7.3. Version 1.1.1</a></li>
+<li class="toctree-l3"><a class="reference internal" href="whatsnew/1.1.html#version-1-1-0">15.7.4. Version 1.1.0</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="whatsnew/1.0.html">15.8. 1.0.x Branch</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="whatsnew/1.0.html#upgrade-notes">15.8.1. Upgrade Notes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="whatsnew/1.0.html#version-1-0-4">15.8.2. Version 1.0.4</a></li>
+<li class="toctree-l3"><a class="reference internal" href="whatsnew/1.0.html#version-1-0-3">15.8.3. Version 1.0.3</a></li>
+<li class="toctree-l3"><a class="reference internal" href="whatsnew/1.0.html#version-1-0-2">15.8.4. Version 1.0.2</a></li>
+<li class="toctree-l3"><a class="reference internal" href="whatsnew/1.0.html#version-1-0-1">15.8.5. Version 1.0.1</a></li>
+<li class="toctree-l3"><a class="reference internal" href="whatsnew/1.0.html#version-1-0-0">15.8.6. Version 1.0.0</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="whatsnew/0.11.html">15.9. 0.11.x Branch</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="whatsnew/0.11.html#upgrade-notes">15.9.1. Upgrade Notes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="whatsnew/0.11.html#version-0-11-2">15.9.2. Version 0.11.2</a></li>
+<li class="toctree-l3"><a class="reference internal" href="whatsnew/0.11.html#version-0-11-1">15.9.3. Version 0.11.1</a></li>
+<li class="toctree-l3"><a class="reference internal" href="whatsnew/0.11.html#version-0-11-0">15.9.4. Version 0.11.0</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="whatsnew/0.10.html">15.10. 0.10.x Branch</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="whatsnew/0.10.html#upgrade-notes">15.10.1. Upgrade Notes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="whatsnew/0.10.html#version-0-10-2">15.10.2. Version 0.10.2</a></li>
+<li class="toctree-l3"><a class="reference internal" href="whatsnew/0.10.html#version-0-10-1">15.10.3. Version 0.10.1</a></li>
+<li class="toctree-l3"><a class="reference internal" href="whatsnew/0.10.html#version-0-10-0">15.10.4. Version 0.10.0</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="whatsnew/0.9.html">15.11. 0.9.x Branch</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="whatsnew/0.9.html#upgrade-notes">15.11.1. Upgrade Notes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="whatsnew/0.9.html#version-0-9-2">15.11.2. Version 0.9.2</a></li>
+<li class="toctree-l3"><a class="reference internal" href="whatsnew/0.9.html#version-0-9-1">15.11.3. Version 0.9.1</a></li>
+<li class="toctree-l3"><a class="reference internal" href="whatsnew/0.9.html#version-0-9-0">15.11.4. Version 0.9.0</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="whatsnew/0.8.html">15.12. 0.8.x Branch</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="whatsnew/0.8.html#version-0-8-1-incubating">15.12.1. Version 0.8.1-incubating</a></li>
+<li class="toctree-l3"><a class="reference internal" href="whatsnew/0.8.html#version-0-8-0-incubating">15.12.2. Version 0.8.0-incubating</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="cve/index.html">16. Security Issues Information</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="cve/2010-0009.html">16.1. CVE-2010-0009: Apache CouchDB Timing Attack Vulnerability</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="cve/2010-0009.html#description">16.1.1. Description</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cve/2010-0009.html#mitigation">16.1.2. Mitigation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cve/2010-0009.html#example">16.1.3. Example</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cve/2010-0009.html#credit">16.1.4. Credit</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="cve/2010-2234.html">16.2. CVE-2010-2234: Apache CouchDB Cross Site Request Forgery Attack</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="cve/2010-2234.html#description">16.2.1. Description</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cve/2010-2234.html#mitigation">16.2.2. Mitigation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cve/2010-2234.html#example">16.2.3. Example</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cve/2010-2234.html#credit">16.2.4. Credit</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="cve/2010-3854.html">16.3. CVE-2010-3854: Apache CouchDB Cross Site Scripting Issue</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="cve/2010-3854.html#description">16.3.1. Description</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cve/2010-3854.html#mitigation">16.3.2. Mitigation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cve/2010-3854.html#example">16.3.3. Example</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cve/2010-3854.html#credit">16.3.4. Credit</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="cve/2012-5641.html">16.4. CVE-2012-5641: Information disclosure via unescaped backslashes in URLs on Windows</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="cve/2012-5641.html#description">16.4.1. Description</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cve/2012-5641.html#mitigation">16.4.2. Mitigation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cve/2012-5641.html#work-around">16.4.3. Work-Around</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cve/2012-5641.html#acknowledgement">16.4.4. Acknowledgement</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cve/2012-5641.html#references">16.4.5. References</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="cve/2012-5649.html">16.5. CVE-2012-5649: JSONP arbitrary code execution with Adobe Flash</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="cve/2012-5649.html#description">16.5.1. Description</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cve/2012-5649.html#mitigation">16.5.2. Mitigation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cve/2012-5649.html#work-around">16.5.3. Work-Around</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="cve/2012-5650.html">16.6. CVE-2012-5650: DOM based Cross-Site Scripting via Futon UI</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="cve/2012-5650.html#description">16.6.1. Description</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cve/2012-5650.html#mitigation">16.6.2. Mitigation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cve/2012-5650.html#work-around">16.6.3. Work-Around</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cve/2012-5650.html#acknowledgement">16.6.4. Acknowledgement</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="cve/2014-2668.html">16.7. CVE-2014-2668: DoS (CPU and memory consumption) via the count parameter to /_uuids</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="cve/2014-2668.html#description">16.7.1. Description</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cve/2014-2668.html#mitigation">16.7.2. Mitigation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cve/2014-2668.html#work-around">16.7.3. Work-Around</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="cve/index.html#reporting-new-security-problems-with-apache-couchdb">17. Reporting New Security Problems with Apache CouchDB</a></li>
+<li class="toctree-l1"><a class="reference internal" href="about.html">18. About CouchDB Documentation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="about.html#license">18.1. License</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+    <p class="logo"><a href="index.html">
+      <img class="logo" src="_static/logo.png" alt="Logo"/>
+    </a></p><!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+<div id="searchbox" style="display: none">
+
+<h3>Quick Search</h3>
+
+<form class="search" action="search.html" method="get">
+<input type="text" name="q" style="width:115px">
+<input type="submit" value="Go">
+<input type="hidden" name="check_keywords" value="yes">
+<input type="hidden" name="area" value="default">
+</form>
+
+<br>
+
+</div>
+
+<script type="text/javascript">$('#searchbox').show(0);</script>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="intro/index.html"
+                        title="next chapter">1. Introduction</a></p><!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+
+<h3>Utilities</h3>
+
+<ul>
+<li><a href="../">Fauxton</a></li>
+</ul>
+<!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+<h3>More Help</h3>
+
+<ul>
+<li><a href="https://couchdb.apache.org/">Homepage</a></li>
+<li><a href="https://cwiki.apache.org/confluence/display/COUCHDB/">Wiki</a></li>
+<li><a href="https://couchdb.apache.org/#mailing-list">Mailing Lists</a></li>
+<li><a href="http://webchat.freenode.net/?channels=couchdb">IRC</a></li>
+<li><a href="https://issues.apache.org/jira/browse/CouchDB">Issues</a></li>
+<li><a href="download.html">Download</a></li>
+<li><a href="https://github.com/apache/couchdb-documentation/blob/master/src/contents.rst"
+       rel="nofollow">Show on GitHub</a></li>
+<li><a href="https://github.com/apache/couchdb-documentation/edit/master/src/contents.rst"
+       rel="nofollow">Edit on GitHub</a></li>
+</ul><!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="http-api.html" title="HTTP API Reference"
+             >API Reference</a></li>
+        <li class="right" >
+          <a href="config-ref.html" title="Configuration Reference"
+             >Config Reference</a> |</li>
+        <li class="right" >
+          <a href="intro/index.html" title="1. Introduction"
+             >next</a> |</li>
+  <li><a href="index.html">Apache CouchDB 2.0 Documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2016, Apache Software Foundation.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
+    </div>
+  </body>
+</html>
